@@ -56,5 +56,42 @@ class DatabaseSeeder extends Seeder
             ]);
 
         $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);
+
+        $account = Account::factory()
+            ->for(
+                Company::factory()
+                    ->for(
+                        Address::factory()->create([
+                            'line_one' => 'Rastislavova 2151',
+                            'postal_code' => '093 02',
+                            'city' => 'Hencovce',
+                            'country_code' => 'sk',
+                        ])
+                    )
+                    ->create([
+                        'business_name' => 'Peter Štovka',
+                        'business_id' => '50898493',
+                        'vat_id' => '1123299826',
+                        'en_vat_id' => null,
+                        'email' => 'peter@peterstovka.com',
+                        'website' => 'https://www.peterstovka.com',
+                        'phone_number' => '+421 950 498 911',
+                        'bank_name' => 'Tatra Banka a.s.',
+                        'bank_address' => 'Hodžovo námestie 3, 811 06 Bratislava 1',
+                        'bank_bic' => 'TATRSKBX',
+                        'bank_account_iban' => 'SK86 1100 0000 0029 4925 2916',
+                    ])
+            )
+            ->create([
+                'vat_enabled' => false,
+                'invoice_payment_method' => PaymentMethod::BankTransfer,
+                'invoice_footer_note' => 'Zapísaný v ŽR OÚ Vranov nad Topľou č. 790-16724',
+                'document_created_by' => 'Peter Štovka',
+                'document_created_by_email' => null,
+                'document_created_by_phone' => null,
+                'document_created_by_website' => null,
+            ]);
+
+        $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);
     }
 }

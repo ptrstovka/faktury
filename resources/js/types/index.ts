@@ -1,38 +1,36 @@
-import type { LucideIcon } from 'lucide-vue-next';
-import type { Config } from 'ziggy-js';
-
-export interface Auth {
-  user: User;
-}
+import type { LucideIcon } from 'lucide-vue-next'
+import type { Config } from 'ziggy-js'
 
 export interface BreadcrumbItem {
-  title: string;
-  href: string;
+  title: string
+  href: string
 }
 
 export interface NavItem {
-  title: string;
-  href: string;
-  icon?: LucideIcon;
-  isActive?: boolean;
+  title: string
+  href: string
+  icon?: LucideIcon
+  isActive?: boolean
 }
 
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
-  name: string;
-  quote: { message: string; author: string };
-  auth: Auth;
-  ziggy: Config & { location: string };
-  sidebarOpen: boolean;
+  auth: {
+    user: User;
+  }
+  ziggy: Config & { location: string }
+  sidebarOpen: boolean
 };
 
 export interface User {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
+  name: string
+  email: string
+  avatar?: string
+  emailVerifiedAt: string | null
+  accounts: Array<{
+    id: number
+    name: string
+    current: boolean
+  }>
 }
 
-export type BreadcrumbItemType = BreadcrumbItem;
+export type BreadcrumbItemType = BreadcrumbItem
