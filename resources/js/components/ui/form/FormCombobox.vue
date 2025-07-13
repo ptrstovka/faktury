@@ -52,7 +52,7 @@ import { type SelectOption } from '@stacktrace/ui'
 const emit = defineEmits(['update:modelValue'])
 
 const props = withDefaults(defineProps<{
-  options: Array<SelectOption<{}, V>>
+  options: Array<SelectOption<V>>
   searchLabel?: string | undefined
   placeholder?: string | null
   notFoundLabel?: string | null
@@ -68,7 +68,7 @@ const props = withDefaults(defineProps<{
 const open = ref(false)
 const value = useVModel(props, 'modelValue', emit) as Ref<V | null>
 
-const onSelected = (option: SelectOption<{}, V>) => {
+const onSelected = (option: SelectOption<V>) => {
   if (props.nullable && value.value === option.value) {
     value.value = null
   } else {

@@ -1,3 +1,18 @@
+<template>
+  <Primitive
+    data-slot="sidebar-menu-button"
+    data-sidebar="menu-button"
+    :data-size="size"
+    :data-active="isActive"
+    :class="cn(sidebarMenuButtonVariants({ variant, size }), props.class)"
+    :as="as"
+    :as-child="asChild"
+    v-bind="$attrs"
+  >
+    <slot />
+  </Primitive>
+</template>
+
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
 import { Primitive, type PrimitiveProps } from 'reka-ui'
@@ -17,18 +32,3 @@ const props = withDefaults(defineProps<SidebarMenuButtonProps>(), {
   size: 'default',
 })
 </script>
-
-<template>
-  <Primitive
-    data-slot="sidebar-menu-button"
-    data-sidebar="menu-button"
-    :data-size="size"
-    :data-active="isActive"
-    :class="cn(sidebarMenuButtonVariants({ variant, size }), props.class)"
-    :as="as"
-    :as-child="asChild"
-    v-bind="$attrs"
-  >
-    <slot />
-  </Primitive>
-</template>

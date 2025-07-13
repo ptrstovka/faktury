@@ -1,7 +1,7 @@
 <template>
   <SidebarGroup v-for="item in navigation">
     <template v-if="item.hasChildren">
-      <SidebarGroupLabel v-if="item.item.title">{{ item.item.title }}</SidebarGroupLabel>
+      <SidebarGroupLabel v-if="item.title">{{ item.title }}</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           <template v-for="child in item.children">
@@ -50,6 +50,7 @@
 
 <script setup lang="ts">
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { computed } from 'vue'
 import SidebarMenuItem from './SidebarMenuItem.vue'
 import SidebarGroup from './SidebarGroup.vue'
 import SidebarGroupContent from './SidebarGroupContent.vue'
@@ -60,9 +61,11 @@ import SidebarNavigationButton from './SidebarNavigationButton.vue'
 import SidebarMenuButton from './SidebarMenuButton.vue'
 import SidebarMenuSubButton from './SidebarMenuSubButton.vue'
 import { ChevronRightIcon } from 'lucide-vue-next'
-import { type Navigation } from '@stacktrace/ui'
+import { type Menu, useNavigation } from '@stacktrace/ui'
 
-defineProps<{
-  navigation: Navigation
+const props = defineProps<{
+  menu: Menu
 }>()
+
+const navigation = useNavigation(computed(() => props.menu))
 </script>

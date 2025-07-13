@@ -17,7 +17,7 @@
   <DropdownMenuSeparator/>
   <DropdownMenuGroup>
     <DropdownMenuItem :as-child="true">
-      <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
+      <Link class="block w-full" :href="route('accounts.edit')" prefetch as="button">
         <Settings class="mr-2 h-4 w-4"/>
         Nastavenia
       </Link>

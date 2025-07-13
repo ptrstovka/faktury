@@ -1,16 +1,3 @@
-<script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { Primitive, type PrimitiveProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
-
-const props = withDefaults(defineProps<PrimitiveProps & {
-  showOnHover?: boolean
-  class?: HTMLAttributes['class']
-}>(), {
-  as: 'button',
-})
-</script>
-
 <template>
   <Primitive
     data-slot="sidebar-menu-action"
@@ -32,3 +19,16 @@ const props = withDefaults(defineProps<PrimitiveProps & {
     <slot />
   </Primitive>
 </template>
+
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue'
+import { Primitive, type PrimitiveProps } from 'reka-ui'
+import { cn } from '@/lib/utils'
+
+const props = withDefaults(defineProps<PrimitiveProps & {
+  showOnHover?: boolean
+  class?: HTMLAttributes['class']
+}>(), {
+  as: 'button',
+})
+</script>
