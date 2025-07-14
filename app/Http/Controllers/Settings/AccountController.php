@@ -28,12 +28,18 @@ class AccountController
             'website' => $account->company->website,
             'email' => $account->company->email,
             'phoneNumber' => $account->company->phone_number,
+            'additionalInfo' => $account->company->additional_info,
             'addressLineOne' => $account->company->address?->line_one,
             'addressLineTwo' => $account->company->address?->line_two,
             'addressLineThree' => $account->company->address?->line_three,
             'addressCity' => $account->company->address?->city,
             'addressPostalCode' => $account->company->address?->postal_code,
             'addressCountryCode' => $account->company->address?->country_code?->value,
+            'bankName' => $account->company->bank_name,
+            'bankBic' => $account->company->bank_bic,
+            'bankAddress' => $account->company->bank_address,
+            'bankAccountIban' => $account->company->bank_account_iban,
+            'bankAccountNumber' => $account->company->bank_account_number,
         ]);
     }
 
@@ -53,6 +59,7 @@ class AccountController
             'website' => ['nullable', 'string', 'max:500'],
             'email' => ['nullable', 'string', 'email', 'max:191'],
             'phone_number' => ['nullable', 'string', 'max:191'],
+            'additional_info' => ['nullable', 'string', 'max:500'],
         ]);
 
         $account = Accounts::current();
@@ -80,6 +87,7 @@ class AccountController
                 'website' => $request->input('website'),
                 'email' => $request->input('email'),
                 'phone_number' => $request->input('phone_number'),
+                'additional_info' => $request->input('additional_info'),
             ]);
             $company->save();
         });

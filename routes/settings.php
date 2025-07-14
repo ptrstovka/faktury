@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Settings\AccountController;
+use App\Http\Controllers\Settings\BankAccountController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/account', [AccountController::class, 'edit'])->name('accounts.edit');
     Route::patch('settings/account', [AccountController::class, 'update'])->name('accounts.update');
+    Route::patch('settings/bank-account', [BankAccountController::class, 'update'])->name('bank-accounts.update');
 });

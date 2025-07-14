@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $email
  * @property string|null $phone_number
  * @property string|null $website
+ * @property string|null $additional_info
  * @property string|null $bank_name
  * @property string|null $bank_address
  * @property string|null $bank_bic

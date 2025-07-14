@@ -3,7 +3,7 @@
     <Head title="Firma"/>
 
     <SettingsLayout>
-      <div class="space-y-6">
+      <section class="space-y-6">
         <HeadingSmall title="Základné informácie" description="Nastavte si základné údaje o Vašej firme"/>
 
         <form @submit.prevent="saveGeneral" class="space-y-6">
@@ -47,6 +47,10 @@
             <FormSelect v-model="general.address_country_code" :options="countries" />
           </FormControl>
 
+          <FormControl label="Doplňujúce informácie" :error="general.errors.additional_info">
+            <Textarea v-model="general.additional_info" rows="4" />
+          </FormControl>
+
           <FormControl label="Webová stránka" :error="general.errors.website" class="max-w-xs">
             <Input v-model="general.website" />
           </FormControl>
@@ -61,7 +65,35 @@
 
           <Button :processing="general.processing" :recently-successful="general.recentlySuccessful">Uložiť</Button>
         </form>
-      </div>
+      </section>
+
+      <section class="space-y-6 mt-10">
+        <HeadingSmall title="Bankové spojenie" description="Nastavte si informácie o bankovom účte Vašej firmy"/>
+
+        <form @submit.prevent="saveBank" class="space-y-6">
+          <FormControl label="Názov banky" :error="bank.errors.bank_name">
+            <Input v-model="bank.bank_name" />
+          </FormControl>
+
+          <FormControl label="Adresa banky" :error="bank.errors.bank_address">
+            <Input v-model="bank.bank_address" />
+          </FormControl>
+
+          <FormControl label="BIC" :error="bank.errors.bank_bic" class="max-w-40">
+            <Input v-model="bank.bank_bic" />
+          </FormControl>
+
+          <FormControl label="Číslo účtu" :error="bank.errors.bank_account_number" class="max-w-sm">
+            <Input v-model="bank.bank_account_number" />
+          </FormControl>
+
+          <FormControl label="IBAN" :error="bank.errors.bank_account_iban" class="max-w-sm">
+            <Input v-model="bank.bank_account_iban" />
+          </FormControl>
+
+          <Button :processing="bank.processing" :recently-successful="bank.recentlySuccessful">Uložiť</Button>
+        </form>
+      </section>
     </SettingsLayout>
   </AppLayout>
 </template>
@@ -74,6 +106,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import SettingsLayout from '@/layouts/settings/Layout.vue'
 import { FormControl, FormSelect } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { type SelectOption } from '@stacktrace/ui'
 import { Button } from '@/components/ui/button'
 
@@ -99,7 +132,13 @@ const props = defineProps<{
   addressCountryCode: string | null
   website: string | null
   email: string | null
+  additionalInfo: string | null
   phoneNumber: string | null
+  bankName: string | null
+  bankBic: string | null
+  bankAddress: string | null
+  bankAccountIban: string | null
+  bankAccountNumber: string | null
 }>()
 
 const general = useForm(() => ({
@@ -116,8 +155,20 @@ const general = useForm(() => ({
   website: props.website || '',
   email: props.email || '',
   phone_number: props.phoneNumber || '',
+  additional_info: props.additionalInfo || '',
 }))
 const saveGeneral = () => {
   general.patch(route('accounts.update'), { preserveScroll: true })
+}
+
+const bank = useForm(() => ({
+  bank_name: props.bankName || '',
+  bank_address: props.bankAddress || '',
+  bank_bic: props.bankBic || '',
+  bank_account_number: props.bankAccountNumber || '',
+  bank_account_iban: props.bankAccountIban || '',
+}))
+const saveBank = () => {
+  bank.patch(route('bank-accounts.update'), { preserveScroll: true })
 }
 </script>
