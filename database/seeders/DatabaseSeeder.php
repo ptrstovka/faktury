@@ -49,10 +49,6 @@ class DatabaseSeeder extends Seeder
                 'default_vat_rate' => 23,
                 'invoice_payment_method' => PaymentMethod::BankTransfer,
                 'invoice_footer_note' => 'Spoločnosť je zapísaná v obchodnom registri Okresného súdu Prešov, oddiel: Sro, vložka č. 42064/P',
-                'document_created_by' => 'Peter Štovka',
-                'document_created_by_email' => 'ps@stacktrace.sk',
-                'document_created_by_phone' => null,
-                'document_created_by_website' => null,
             ]);
 
         $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);
@@ -86,10 +82,6 @@ class DatabaseSeeder extends Seeder
                 'vat_enabled' => false,
                 'invoice_payment_method' => PaymentMethod::BankTransfer,
                 'invoice_footer_note' => 'Zapísaný v ŽR OÚ Vranov nad Topľou č. 790-16724',
-                'document_created_by' => 'Peter Štovka',
-                'document_created_by_email' => null,
-                'document_created_by_phone' => null,
-                'document_created_by_website' => null,
             ]);
 
         $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);

@@ -8,12 +8,16 @@
     <div
       class="flex flex-col space-y-8 md:space-y-0 lg:flex-row lg:space-y-0 lg:space-x-12"
     >
-      <aside class="w-full max-w-xl lg:w-48 gap-4 flex flex-col">
+      <aside class="w-full max-w-xl lg:w-48 gap-8 flex flex-col">
         <TabsNavigation
           :menu="[
             {
               title: 'Firma',
               action: { route: 'accounts.edit' },
+            },
+            {
+              title: 'Faktúry',
+              action: { route: 'invoices.settings.edit' },
             },
           ]"
           orientation="vertical"
@@ -23,7 +27,7 @@
         <TabsNavigation
           :menu="[
             {
-              title: 'Účet',
+              title: 'Používateľ',
               action: { route: 'profile.edit' },
             },
             {

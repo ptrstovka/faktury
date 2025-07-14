@@ -12,6 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property \App\Models\Company $company
  * @property boolean $vat_enabled
+ * @property string $invoice_numbering_format
+ * @property float $default_vat_rate
+ * @property int $invoice_due_days
+ * @property \App\Enums\PaymentMethod $invoice_payment_method
+ * @property string|null $invoice_footer_note
+ * @property string $invoice_template
  */
 class Account extends Model
 {

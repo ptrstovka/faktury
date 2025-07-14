@@ -15,14 +15,9 @@ return new class extends Migration
             $table->decimal('default_vat_rate');
             $table->integer('invoice_due_days');
             $table->string('invoice_numbering_format');
-            $table->integer('next_invoice_number');
             $table->string('invoice_payment_method');
             $table->text('invoice_footer_note')->nullable();
             $table->string('invoice_template');
-            $table->string('document_created_by')->nullable();
-            $table->string('document_created_by_email')->nullable();
-            $table->string('document_created_by_phone')->nullable();
-            $table->string('document_created_by_website')->nullable();
             $table->foreignId('signature_id')->nullable()->constrained('signatures');
             $table->timestamps();
         });
