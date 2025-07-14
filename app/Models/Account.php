@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /**
  * @property int $id
  * @property \App\Models\Company $company
+ * @property boolean $vat_enabled
  */
 class Account extends Model
 {
@@ -23,6 +24,7 @@ class Account extends Model
     {
         return [
             'invoice_payment_method' => PaymentMethod::class,
+            'vat_enabled' => 'boolean',
         ];
     }
 

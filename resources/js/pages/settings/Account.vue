@@ -25,6 +25,10 @@
             </FormControl>
           </div>
 
+          <FormControl :error="general.errors.vat_enabled">
+            <CheckboxControl v-model="general.vat_enabled">Platca DPH</CheckboxControl>
+          </FormControl>
+
           <FormControl label="Adresa" :error="general.errors.address_line_one || general.errors.address_line_two || general.errors.address_line_three">
             <div class="flex flex-col gap-2">
               <Input v-model="general.address_line_one" />
@@ -109,6 +113,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { type SelectOption } from '@stacktrace/ui'
 import { Button } from '@/components/ui/button'
+import { CheckboxControl } from '@/components/ui/checkbox'
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
@@ -139,6 +144,7 @@ const props = defineProps<{
   bankAddress: string | null
   bankAccountIban: string | null
   bankAccountNumber: string | null
+  vatEnabled: boolean
 }>()
 
 const general = useForm(() => ({
@@ -156,6 +162,7 @@ const general = useForm(() => ({
   email: props.email || '',
   phone_number: props.phoneNumber || '',
   additional_info: props.additionalInfo || '',
+  vat_enabled: props.vatEnabled,
 }))
 const saveGeneral = () => {
   general.patch(route('accounts.update'), { preserveScroll: true })

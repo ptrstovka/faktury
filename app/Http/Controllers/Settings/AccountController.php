@@ -40,6 +40,7 @@ class AccountController
             'bankAddress' => $account->company->bank_address,
             'bankAccountIban' => $account->company->bank_account_iban,
             'bankAccountNumber' => $account->company->bank_account_number,
+            'vatEnabled' => $account->vat_enabled,
         ]);
     }
 
@@ -60,6 +61,7 @@ class AccountController
             'email' => ['nullable', 'string', 'email', 'max:191'],
             'phone_number' => ['nullable', 'string', 'max:191'],
             'additional_info' => ['nullable', 'string', 'max:500'],
+            'vat_enabled' => ['boolean'],
         ]);
 
         $account = Accounts::current();
@@ -90,6 +92,10 @@ class AccountController
                 'additional_info' => $request->input('additional_info'),
             ]);
             $company->save();
+
+            $account->update([
+                'vat_enabled' => $request->boolean('vat_enabled'),
+            ]);
         });
 
         return back();
