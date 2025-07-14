@@ -15,8 +15,8 @@ return new class extends Migration
             $table->boolean('sent');
             $table->boolean('paid');
             $table->foreignId('account_id')->constrained('accounts');
-            $table->foreignId('supplier_company_id')->constrained('companies');
-            $table->foreignId('customer_company_id')->constrained('companies');
+            $table->foreignId('supplier_id')->constrained('companies');
+            $table->foreignId('customer_id')->constrained('companies');
             $table->string('public_invoice_number')->nullable();
             $table->integer('invoice_number')->nullable();
             $table->string('payment_method');

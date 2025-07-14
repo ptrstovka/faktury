@@ -7,7 +7,7 @@
           <Sheet>
             <SheetTrigger :as-child="true">
               <Button variant="ghost" size="icon" class="mr-2 h-9 w-9">
-                <Menu class="h-5 w-5"/>
+                <MenuIcon class="h-5 w-5"/>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" class="w-[300px] p-6">
@@ -17,16 +17,17 @@
               </SheetHeader>
               <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
                 <nav class="-mx-3 space-y-1">
-                  <Link
-                    v-for="item in mainNavItems"
-                    :key="item.title"
-                    :href="item.href"
-                    class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
-                    :class="activeItemStyles(item.href)"
+                  <NavigationButton
+                    v-for="item in navigation"
+                    :item="item"
+                    :class="[
+                      'flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent',
+                      { 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100': item.isActive },
+                    ]"
                   >
-                    <component v-if="item.icon" :is="item.icon" class="h-5 w-5"/>
+                    <NavigationButtonIcon class="h-5 w-5" />
                     {{ item.title }}
-                  </Link>
+                  </NavigationButton>
                 </nav>
               </div>
             </SheetContent>
@@ -41,12 +42,18 @@
         <div class="hidden h-full lg:flex lg:flex-1">
           <NavigationMenu class="ml-10 flex h-full items-stretch">
             <NavigationMenuList class="flex h-full items-stretch space-x-2">
-              <NavigationMenuItem v-for="(item, index) in mainNavItems" :key="index" class="relative flex h-full items-center">
-                <Link :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']" :href="item.href">
-                  <component v-if="item.icon" :is="item.icon" class="mr-2 h-4 w-4"/>
+              <NavigationMenuItem v-for="item in navigation" class="relative flex h-full items-center">
+                <NavigationButton
+                  :item="item"
+                  :class="[
+                    navigationMenuTriggerStyle(),
+                    { 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100': item.isActive },
+                    'h-9 cursor-pointer px-3'
+                  ]">
+                  <NavigationButtonIcon class="mr-2 h-4 w-4" />
                   {{ item.title }}
-                </Link>
-                <div v-if="isCurrentRoute(item.href)" class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                </NavigationButton>
+                <div v-if="item.isActive" class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
@@ -55,7 +62,7 @@
         <div class="ml-auto flex items-center">
           <div class="relative flex items-center space-x-1">
             <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
-              <Search class="size-5 opacity-80 group-hover:opacity-100"/>
+              <SearchIcon class="size-5 opacity-80 group-hover:opacity-100"/>
             </Button>
           </div>
 
@@ -93,9 +100,10 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import UserMenuContent from '@/components/UserMenuContent.vue'
-import type { BreadcrumbItem, NavItem } from '@/types'
+import type { BreadcrumbItem } from '@/types'
 import { Link, usePage } from '@inertiajs/vue3'
-import { LayoutGrid, Menu, Search, ChevronDownIcon } from 'lucide-vue-next'
+import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
+import { LayoutGridIcon, MenuIcon, SearchIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 interface Props {
@@ -111,17 +119,16 @@ const auth = computed(() => page.props.auth)
 
 const account = computed(() => page.props.auth.user.accounts.find(it => it.current)!)
 
-const isCurrentRoute = computed(() => (url: string) => page.url === url)
-
-const activeItemStyles = computed(
-  () => (url: string) => (isCurrentRoute.value(url) ? 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100' : ''),
-)
-
-const mainNavItems: NavItem[] = [
+const navigation = useNavigation([
   {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutGrid,
+    title: 'Prehľad',
+    action: { route: 'dashboard' },
+    icon: LayoutGridIcon,
   },
-]
+  {
+    title: 'Faktúry',
+    action: { route: 'invoices' },
+    icon: FileTextIcon,
+  },
+])
 </script>
