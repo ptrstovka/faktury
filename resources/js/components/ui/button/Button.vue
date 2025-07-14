@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   plain: false,
 })
 
-const recentlySuccessfulLocalizedLabel = computed(() => props.recentlySuccessfulLabel || 'Saved.')
+const recentlySuccessfulLocalizedLabel = computed(() => props.recentlySuccessfulLabel || 'Uložené.')
 
 const showProcessing = computed(() => props.processing)
 const showRecentlySuccessful = computed(() => props.recentlySuccessful)

@@ -21,4 +21,5 @@ Route::middleware('auth')->group(function () {
     })->name('appearance');
 
     Route::get('settings/account', [AccountController::class, 'edit'])->name('accounts.edit');
+    Route::patch('settings/account', [AccountController::class, 'update'])->name('accounts.update');
 });

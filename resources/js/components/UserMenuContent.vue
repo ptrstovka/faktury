@@ -52,6 +52,8 @@ defineProps<{
 const handleLogout = () => router.flushAll()
 
 const switchAccount = (id: number) => {
-  router.post(route('accounts.switch', id))
+  router.post(route('accounts.switch', id), {}, {
+    preserveState: false,
+  })
 }
 </script>

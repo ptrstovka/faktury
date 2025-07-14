@@ -16,7 +16,7 @@ class CompanyFactory extends Factory
             'business_name' => fake()->company,
             'business_id' => Str::upper(Str::random(10)),
             'vat_id' => Str::upper(Str::random(10)),
-            'en_vat_id' => Str::upper(Str::random(10)),
+            'eu_vat_id' => Str::upper(Str::random(10)),
             'email' => fake()->email,
             'website' => fake()->url,
             'phone_number' => fake()->phoneNumber,
