@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Settings\AccountController;
 use App\Http\Controllers\Settings\BankAccountController;
+use App\Http\Controllers\Settings\ChangeInvoiceLogoController;
+use App\Http\Controllers\Settings\ChangeInvoiceSignatureController;
+use App\Http\Controllers\Settings\InvoiceController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('settings/account', [AccountController::class, 'update'])->name('accounts.update');
     Route::patch('settings/bank-account', [BankAccountController::class, 'update'])->name('bank-accounts.update');
 
-    Route::get('settings/invoices', [\App\Http\Controllers\Settings\InvoiceController::class, 'edit'])->name('invoices.settings.edit');
-    Route::patch('settings/invoices', [\App\Http\Controllers\Settings\InvoiceController::class, 'update'])->name('invoices.settings.update');
+    Route::get('settings/invoices', [InvoiceController::class, 'edit'])->name('invoices.settings.edit');
+    Route::patch('settings/invoices', [InvoiceController::class, 'update'])->name('invoices.settings.update');
+    Route::patch('settings/invoices/signature', ChangeInvoiceSignatureController::class)->name('invoices.settings.signature');
+    Route::patch('settings/invoices/logo', ChangeInvoiceLogoController::class)->name('invoices.settings.logo');
 });

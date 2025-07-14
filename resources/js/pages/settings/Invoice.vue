@@ -4,11 +4,11 @@
 
     <SettingsLayout>
       <section class="space-y-6">
-        <HeadingSmall title="Nastavenie fakturácie" description="Prispôsobte si predvolené možnosti použité pri tvorbe nových faktúr"/>
+        <HeadingSmall title="Predvolené nastavenia faktúr" description="Prispôsobte si predvolené možnosti použité pri tvorbe nových faktúr"/>
 
         <form @submit.prevent="save" class="space-y-6">
           <FormControl label="Číselný formát" :error="form.errors.numbering_format">
-            <Input v-model="form.numbering_format" />
+            <Input v-model="form.numbering_format" class="max-w-sm" />
           </FormControl>
 
           <FormControl label="Počet dní splatnosti" :error="form.errors.due_days">
@@ -34,6 +34,22 @@
           <Button :processing="form.processing" :recently-successful="form.recentlySuccessful">Uložiť</Button>
         </form>
       </section>
+
+      <section class="space-y-6">
+        <HeadingSmall title="Logo" description="Nastavte si logo zbrazené v hlavičke faktúry"/>
+
+        <div class="space-y-6">
+          <UploadSingleImage :url="route('invoices.settings.logo')" :src="logoFileUrl" />
+        </div>
+      </section>
+
+      <section class="space-y-6">
+        <HeadingSmall title="Podpis" description="Nastavte si podpis zbrazený na Vašich faktúrach"/>
+
+        <div class="space-y-6">
+          <UploadSingleImage :url="route('invoices.settings.signature')" :src="signatureFileUrl" />
+        </div>
+      </section>
     </SettingsLayout>
   </AppLayout>
 </template>
@@ -49,6 +65,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { type SelectOption } from '@stacktrace/ui'
 import { Button } from '@/components/ui/button'
+import UploadSingleImage from "@/components/settings/UploadSingleImage.vue";
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
@@ -67,6 +84,8 @@ const props = defineProps<{
   templates: Array<SelectOption>
   paymentMethod: string
   paymentMethods: Array<SelectOption>
+  signatureFileUrl: string | null
+  logoFileUrl: string | null
 }>()
 
 const form = useForm(() => ({

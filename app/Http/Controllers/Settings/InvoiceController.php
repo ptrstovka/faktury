@@ -28,6 +28,8 @@ class InvoiceController
             'templates' => [new SelectOption('Predvolená', 'default')],
             'paymentMethod' => $account->invoice_payment_method->value,
             'paymentMethods' => PaymentMethod::options(),
+            'signatureFileUrl' => $account->invoiceSignature?->url(),
+            'logoFileUrl' => $account->invoiceLogo?->url(),
         ]);
     }
 

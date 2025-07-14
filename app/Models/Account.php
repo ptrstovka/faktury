@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \App\Enums\PaymentMethod $invoice_payment_method
  * @property string|null $invoice_footer_note
  * @property string $invoice_template
+ * @property \App\Models\Upload|null $invoiceSignature
+ * @property \App\Models\Upload|null $invoiceLogo
  */
 class Account extends Model
 {
@@ -42,5 +44,15 @@ class Account extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withPivot(['role']);
+    }
+
+    public function invoiceSignature(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function invoiceLogo(): BelongsTo
+    {
+        return $this->belongsTo(Upload::class);
     }
 }

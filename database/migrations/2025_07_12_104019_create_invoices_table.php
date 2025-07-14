@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('currency');
             $table->unsignedBigInteger('total_vat_inclusive')->nullable();
             $table->unsignedBigInteger('total_vat_exclusive')->nullable();
-            $table->foreignId('signature_id')->nullable()->constrained('signatures');
+            $table->foreignId('signature_id')->nullable()->constrained('uploads');
+            $table->foreignId('logo_id')->nullable()->constrained('uploads');
             $table->string('issued_by')->nullable();
             $table->string('issued_by_email')->nullable();
             $table->string('issued_by_phone_number')->nullable();

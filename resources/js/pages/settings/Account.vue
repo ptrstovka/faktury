@@ -71,7 +71,7 @@
         </form>
       </section>
 
-      <section class="space-y-6 mt-10">
+      <section class="space-y-6">
         <HeadingSmall title="Bankové spojenie" description="Nastavte si informácie o bankovom účte Vašej firmy"/>
 
         <form @submit.prevent="saveBank" class="space-y-6">
