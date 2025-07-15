@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import { cn } from "@/lib/utils";
+import { cn } from "@/Utils";
 import { onMounted, ref, watch } from "vue";
 
 const emit = defineEmits(['update:modelValue'])

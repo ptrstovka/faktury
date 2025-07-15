@@ -13,7 +13,7 @@
 import { type SelectOption } from '@stacktrace/ui'
 import type { SelectRootEmits, SelectRootProps } from 'reka-ui'
 import { useForwardProps } from 'reka-ui'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/Components/Select'
 import { computed, type HTMLAttributes } from "vue";
 import { useVModel } from "@vueuse/core";
 

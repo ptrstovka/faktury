@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { computed } from 'vue'
 import { provideTabsContext, tabsListVariants } from '.'
 

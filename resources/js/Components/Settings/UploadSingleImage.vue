@@ -32,10 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import { Dropzone } from "@/components/ui/dropzone"
-import { FormControl } from "@/components/ui/form"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils.ts";
+import { Dropzone } from "@/Components/Dropzone"
+import { FormControl } from "@/Components/Form"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Components/Tooltip"
+import { cn } from "@/Utils.ts";
 import { useForm } from "@inertiajs/vue3"
 import { XCircleIcon } from "lucide-vue-next"
 

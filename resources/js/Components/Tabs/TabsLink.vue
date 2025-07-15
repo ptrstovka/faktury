@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Link, type InertiaLinkProps } from '@inertiajs/vue3'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { computed } from 'vue'
 import { useActiveLink } from '@stacktrace/ui'
 import { injectTabsContext, tabsListItemVariants } from '.'

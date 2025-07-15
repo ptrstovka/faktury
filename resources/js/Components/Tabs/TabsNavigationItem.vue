@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { type NavigationItem, NavigationButton } from '@stacktrace/ui'
 import { type HTMLAttributes } from 'vue'
 import { injectTabsContext, tabsListItemVariants } from '.'

@@ -58,12 +58,12 @@
 </template>
 
 <script setup lang="ts">
-import { FormControl } from '@/components/ui/form'
+import { FormControl } from '@/Components/Form'
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/Components/Button';
+import { Checkbox } from '@/Components/Checkbox';
+import { Input } from '@/Components/Input';
+import { Label } from '@/Components/Label';
 import AuthBase from '@/Layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 

@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
+import { cn } from "@/Utils";
+import { Label } from "@/Components/Label";
 import { Checkbox } from ".";
 import { useId } from "reka-ui";
 

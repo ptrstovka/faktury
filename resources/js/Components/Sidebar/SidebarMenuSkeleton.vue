@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import { computed, type HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
-import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/Utils'
+import { Skeleton } from '@/Components/Skeleton'
 
 const props = defineProps<{
   showIcon?: boolean

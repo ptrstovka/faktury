@@ -56,11 +56,11 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
-import { FormControl } from '@/components/ui/form'
+import { FormControl } from '@/Components/Form'
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/Components/Button';
+import { Input } from '@/Components/Input';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsLayout from '@/Layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/Types';

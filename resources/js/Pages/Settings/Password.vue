@@ -54,15 +54,15 @@
 </template>
 
 <script setup lang="ts">
-import { FormControl } from '@/components/ui/form'
+import { FormControl } from '@/Components/Form'
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SettingsLayout from '@/Layouts/settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/Components/Button';
+import { Input } from '@/Components/Input';
 import { type BreadcrumbItem } from '@/Types';
 
 const breadcrumbItems: BreadcrumbItem[] = [

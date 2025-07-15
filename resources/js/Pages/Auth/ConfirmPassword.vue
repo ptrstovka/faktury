@@ -27,9 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { FormControl } from '@/components/ui/form'
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { FormControl } from '@/Components/Form'
+import { Button } from '@/Components/Button';
+import { Input } from '@/Components/Input';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 

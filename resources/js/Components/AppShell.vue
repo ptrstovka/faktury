@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/Components/Sidebar';
 import { usePage } from '@inertiajs/vue3';
 
 interface Props {

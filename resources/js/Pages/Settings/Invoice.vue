@@ -60,11 +60,11 @@ import HeadingSmall from '@/components/HeadingSmall.vue'
 import { type BreadcrumbItem } from '@/Types'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SettingsLayout from '@/Layouts/settings/Layout.vue'
-import { FormControl, FormSelect } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { FormControl, FormSelect } from '@/Components/Form'
+import { Input } from '@/Components/Input'
+import { Textarea } from '@/Components/Textarea'
 import { type SelectOption } from '@stacktrace/ui'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/Components/Button'
 import UploadSingleImage from "@/components/settings/UploadSingleImage.vue";
 
 const breadcrumbItems: BreadcrumbItem[] = [

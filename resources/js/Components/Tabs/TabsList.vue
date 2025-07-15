@@ -18,7 +18,7 @@
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import { TabsList, type TabsListProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { injectTabsContext, tabsListVariants } from '.'
 
 const props = defineProps<TabsListProps & { class?: HTMLAttributes['class'] }>()

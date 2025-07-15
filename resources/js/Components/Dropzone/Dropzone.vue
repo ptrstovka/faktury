@@ -18,12 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/Utils'
+import { Button } from '@/Components/Button'
 import { UploadIcon } from 'lucide-vue-next'
 import { useDropZone } from '@vueuse/core'
 import { computed, ref } from "vue";
-import { Spinner } from '@/components/ui/spinner'
+import { Spinner } from '@/Components/Spinner'
 
 const emit = defineEmits<{
   (e: 'files', file: Array<File>): void

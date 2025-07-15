@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/Components/Avatar';
 import { useInitials } from '@/Composables/useInitials';
 import type { User } from '@/Types';
 import { computed } from 'vue';

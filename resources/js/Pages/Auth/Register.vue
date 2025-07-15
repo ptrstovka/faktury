@@ -50,10 +50,10 @@
 </template>
 
 <script setup lang="ts">
-import { FormControl } from '@/components/ui/form'
+import { FormControl } from '@/Components/Form'
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/Components/Button';
+import { Input } from '@/Components/Input';
 import AuthBase from '@/Layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 

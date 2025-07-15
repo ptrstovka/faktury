@@ -43,9 +43,9 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // Components
-import { FormControl } from '@/components/ui/form'
+import { FormControl } from '@/Components/Form'
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/Components/Button';
 import {
   Dialog,
   DialogClose,
@@ -55,8 +55,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from '@/Components/Dialog';
+import { Input } from '@/Components/Input';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 

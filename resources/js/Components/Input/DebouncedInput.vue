@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useAttrs, watch } from 'vue'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { useDebounceFn } from '@vueuse/core'
 import { Input } from './'
 

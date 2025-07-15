@@ -40,7 +40,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuCheckboxItem,
   DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
+} from '@/Components/DropdownMenu';
 import type { User } from '@/Types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';

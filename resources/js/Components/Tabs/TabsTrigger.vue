@@ -18,7 +18,7 @@
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import { TabsTrigger, type TabsTriggerProps, useForwardProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { injectTabsContext, tabsListItemVariants } from '.'
 
 const context = injectTabsContext()

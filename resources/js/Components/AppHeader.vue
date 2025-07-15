@@ -90,15 +90,15 @@
 import AppLogo from '@/components/AppLogo.vue'
 import AppLogoIcon from '@/components/AppLogoIcon.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Button } from '@/Components/Button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/Components/DropdownMenu'
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
   navigationMenuTriggerStyle
-} from '@/components/ui/navigation-menu'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+} from '@/Components/NavigationMenu'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/Components/Sheet'
 import UserMenuContent from '@/components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'

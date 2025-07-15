@@ -40,10 +40,10 @@
 </template>
 
 <script setup lang="ts" generic="V extends string | number">
-import { Button } from '@/components/ui/button'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { Button } from '@/Components/Button'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/Components/Command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/Components/Popover'
+import { cn } from '@/Utils'
 import { ChevronDownIcon, CheckIcon } from 'lucide-vue-next'
 import { useVModel } from '@vueuse/core'
 import { computed, ref, type Ref } from 'vue'

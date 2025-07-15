@@ -7,7 +7,7 @@ import {
   type NavigationMenuLinkProps,
   useForwardPropsEmits,
 } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Utils'
 import { Link } from '@inertiajs/vue3'
 
 const props = defineProps<NavigationMenuLinkProps & { class?: HTMLAttributes['class'] }>()

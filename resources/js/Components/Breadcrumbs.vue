@@ -26,7 +26,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator
-} from '@/components/ui/breadcrumb';
+} from '@/Components/Breadcrumb';
 import { Link } from '@inertiajs/vue3';
 
 interface BreadcrumbItemType {

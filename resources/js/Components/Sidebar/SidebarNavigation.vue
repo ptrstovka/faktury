@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/Components/Collapsible'
 import { computed } from 'vue'
 import SidebarMenuItem from './SidebarMenuItem.vue'
 import SidebarGroup from './SidebarGroup.vue'

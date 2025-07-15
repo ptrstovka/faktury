@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { SidebarInset } from '@/components/ui/sidebar';
+import { SidebarInset } from '@/Components/Sidebar';
 import { computed } from 'vue';
 
 interface Props {

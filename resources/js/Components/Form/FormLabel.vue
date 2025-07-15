@@ -13,8 +13,8 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from 'vue'
 import type { LabelProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
-import { Label } from '@/components/ui/label'
+import { cn } from '@/Utils'
+import { Label } from '@/Components/Label'
 
 const props = defineProps<LabelProps & {
   class?: HTMLAttributes['class']
