@@ -44,7 +44,7 @@ import { ref } from 'vue';
 
 // Components
 import { FormControl } from '@/Components/Form'
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { Button } from '@/Components/Button';
 import {
   Dialog,

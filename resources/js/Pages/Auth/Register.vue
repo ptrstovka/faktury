@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { FormControl } from '@/Components/Form'
-import TextLink from '@/components/TextLink.vue';
+import TextLink from '@/Components/TextLink.vue';
 import { Button } from '@/Components/Button';
 import { Input } from '@/Components/Input';
 import AuthBase from '@/Layouts/AuthLayout.vue';

@@ -56,16 +56,16 @@
 
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
-import HeadingSmall from '@/components/HeadingSmall.vue'
+import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { type BreadcrumbItem } from '@/Types'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import SettingsLayout from '@/Layouts/settings/Layout.vue'
+import SettingsLayout from '@/Layouts/Settings/Layout.vue'
 import { FormControl, FormSelect } from '@/Components/Form'
 import { Input } from '@/Components/Input'
 import { Textarea } from '@/Components/Textarea'
 import { type SelectOption } from '@stacktrace/ui'
 import { Button } from '@/Components/Button'
-import UploadSingleImage from "@/components/settings/UploadSingleImage.vue";
+import UploadSingleImage from "@/Components/Settings/UploadSingleImage.vue";
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {

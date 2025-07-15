@@ -35,7 +35,7 @@
 import { Dropzone } from "@/Components/Dropzone"
 import { FormControl } from "@/Components/Form"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Components/Tooltip"
-import { cn } from "@/Utils.ts";
+import { cn } from "@/Utils";
 import { useForm } from "@inertiajs/vue3"
 import { XCircleIcon } from "lucide-vue-next"
 

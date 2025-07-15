@@ -87,9 +87,9 @@
 </template>
 
 <script setup lang="ts">
-import AppLogo from '@/components/AppLogo.vue'
-import AppLogoIcon from '@/components/AppLogoIcon.vue'
-import Breadcrumbs from '@/components/Breadcrumbs.vue'
+import AppLogo from '@/Components/AppLogo.vue'
+import AppLogoIcon from '@/Components/AppLogoIcon.vue'
+import Breadcrumbs from '@/Components/Breadcrumbs.vue'
 import { Button } from '@/Components/Button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/Components/DropdownMenu'
 import {
@@ -99,7 +99,7 @@ import {
   navigationMenuTriggerStyle
 } from '@/Components/NavigationMenu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/Components/Sheet'
-import UserMenuContent from '@/components/UserMenuContent.vue'
+import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";

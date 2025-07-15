@@ -56,11 +56,11 @@
 <script setup lang="ts">
 import { FormControl } from '@/Components/Form'
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsLayout from '@/Layouts/settings/Layout.vue';
+import SettingsLayout from '@/Layouts/Settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { Button } from '@/Components/Button';
 import { Input } from '@/Components/Input';
 import { type BreadcrumbItem } from '@/Types';

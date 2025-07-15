@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import TextLink from '@/components/TextLink.vue';
+import TextLink from '@/Components/TextLink.vue';
 import { Button } from '@/Components/Button';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';

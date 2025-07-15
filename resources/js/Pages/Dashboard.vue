@@ -25,7 +25,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/Types';
 import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import PlaceholderPattern from '../Components/PlaceholderPattern.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {

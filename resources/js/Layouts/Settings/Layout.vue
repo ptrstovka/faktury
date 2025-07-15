@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import Heading from "@/components/Heading.vue";
+import Heading from "@/Components/Heading.vue";
 import { Separator } from "@/Components/Separator";
 import { TabsNavigation } from "@/Components/Tabs";
 </script>

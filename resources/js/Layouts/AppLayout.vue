@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import AppLayout from '@/Layouts/app/AppHeaderLayout.vue';
+import AppLayout from '@/Layouts/App/AppHeaderLayout.vue';
 import type { BreadcrumbItemType } from '@/Types';
 
 interface Props {

@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppLogoIcon from '@/Components/AppLogoIcon.vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/Card';
 import { Link } from '@inertiajs/vue3';
 

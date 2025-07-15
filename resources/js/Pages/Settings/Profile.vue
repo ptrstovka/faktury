@@ -57,12 +57,12 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import { FormControl } from '@/Components/Form'
-import DeleteUser from '@/components/DeleteUser.vue';
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import DeleteUser from '@/Components/DeleteUser.vue';
+import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { Button } from '@/Components/Button';
 import { Input } from '@/Components/Input';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SettingsLayout from '@/Layouts/settings/Layout.vue';
+import SettingsLayout from '@/Layouts/Settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/Types';
 
 interface Props {
