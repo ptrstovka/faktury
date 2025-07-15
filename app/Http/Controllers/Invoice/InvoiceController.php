@@ -15,12 +15,12 @@ class InvoiceController
 {
     public function index()
     {
-        return Inertia::render('invoices/InvoiceList');
+        return Inertia::render('Invoices/InvoiceList');
     }
 
     public function show(Invoice $invoice)
     {
-        return Inertia::render('invoices/InvoiceDetail');
+        return Inertia::render('Invoices/InvoiceDetail');
     }
 
     public function store()

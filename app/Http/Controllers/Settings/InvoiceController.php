@@ -17,7 +17,7 @@ class InvoiceController
     {
         $account = Accounts::current();
 
-        return Inertia::render('settings/Invoice', [
+        return Inertia::render('Settings/Invoice', [
             'vatEnabled' => $account->vat_enabled,
             'numberingFormat' => $account->invoice_numbering_format,
             'defaultVatRate' => $account->default_vat_rate,

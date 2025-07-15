@@ -18,7 +18,7 @@ class AccountController
     {
         $account = Accounts::current();
 
-        return Inertia::render('settings/Account', [
+        return Inertia::render('Settings/Account', [
             'id' => $account->id,
             'countries' => Country::options(),
             'businessName' => $account->company->business_name,
