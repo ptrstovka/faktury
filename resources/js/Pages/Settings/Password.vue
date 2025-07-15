@@ -55,15 +55,15 @@
 
 <script setup lang="ts">
 import { FormControl } from '@/components/ui/form'
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import SettingsLayout from '@/Layouts/settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem } from '@/Types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {

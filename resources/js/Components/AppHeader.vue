@@ -100,7 +100,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import UserMenuContent from '@/components/UserMenuContent.vue'
-import type { BreadcrumbItem } from '@/types'
+import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
 import { LayoutGridIcon, MenuIcon, SearchIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'

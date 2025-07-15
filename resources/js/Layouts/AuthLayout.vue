@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import AuthLayout from '@/layouts/auth/AuthCardLayout.vue';
+import AuthLayout from '@/Layouts/auth/AuthCardLayout.vue';
 
 defineProps<{
   title?: string;

@@ -54,7 +54,7 @@ import { FormControl } from '@/components/ui/form'
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import AuthBase from '@/layouts/AuthLayout.vue';
+import AuthBase from '@/Layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const form = useForm({

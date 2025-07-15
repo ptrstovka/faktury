@@ -105,9 +105,9 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
 import HeadingSmall from '@/components/HeadingSmall.vue'
-import { type BreadcrumbItem } from '@/types'
-import AppLayout from '@/layouts/AppLayout.vue'
-import SettingsLayout from '@/layouts/settings/Layout.vue'
+import { type BreadcrumbItem } from '@/Types'
+import AppLayout from '@/Layouts/AppLayout.vue'
+import SettingsLayout from '@/Layouts/settings/Layout.vue'
 import { FormControl, FormSelect } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'

@@ -41,7 +41,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
-import type { User } from '@/types';
+import type { User } from '@/Types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
 

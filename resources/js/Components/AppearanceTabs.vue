@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAppearance } from '@/composables/useAppearance';
+import { useAppearance } from '@/Composables/useAppearance';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
 
 const {appearance, updateAppearance} = useAppearance();
