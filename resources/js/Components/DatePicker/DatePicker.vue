@@ -1,11 +1,11 @@
 <template>
-  <Popover>
+  <Popover v-model:open="open">
     <PopoverTrigger as-child>
       <Button
         plain
         variant="outline"
         :class="cn(
-          'w-full justify-start text-left font-normal',
+          'w-full justify-start text-left font-normal form-element',
           !date && 'text-muted-foreground',
           $attrs.class || ''
         )"
@@ -15,7 +15,7 @@
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0" :to="to">
-      <Calendar v-model="date" initial-focus locale="sk" />
+      <Calendar v-model="date" initial-focus locale="sk" @update:model-value="onSelected" />
     </PopoverContent>
   </Popover>
 </template>
@@ -40,6 +40,7 @@ const props = defineProps<{
   modelValue?: string | null | undefined
   placeholder?: string | null | undefined
   to?: string | HTMLElement
+  closeOnSelect?: boolean
 }>()
 
 const df = new DateFormatter('sk-SK', {
@@ -47,6 +48,8 @@ const df = new DateFormatter('sk-SK', {
 })
 
 const date = ref(props.modelValue ? parseDate(props.modelValue) : undefined) as Ref<DateValue | undefined>
+
+const open = ref(false)
 
 watch(date, newDate => {
   const updatedValue = newDate?.toString() || undefined
@@ -64,4 +67,10 @@ watch(computed(() => props.modelValue), newModelValue => {
     date.value = updatedDate ? (parseDate(updatedDate) as DateValue) : undefined
   }
 })
+
+const onSelected = () => {
+  if (props.closeOnSelect) {
+    open.value = false
+  }
+}
 </script>

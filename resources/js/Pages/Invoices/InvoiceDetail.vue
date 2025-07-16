@@ -24,16 +24,34 @@
         </div>
 
         <div class="grid grid-cols-3 gap-4">
-          <FormControl label="Dátum vystavenia" :error="form.errors.issued_at">
-            <DatePicker v-model="form.issued_at" />
+          <FormControl label="Dátum vystavenia" :error="form.errors.issued_at" hide-error>
+            <FormInlineError>
+              <DatePicker
+                v-model="form.issued_at"
+                @update:model-value="form.clearErrors('issued_at')"
+                close-on-select
+              />
+            </FormInlineError>
           </FormControl>
 
-          <FormControl label="Dátum dodania" :error="form.errors.supplied_at">
-            <DatePicker v-model="form.supplied_at" />
+          <FormControl label="Dátum dodania" :error="form.errors.supplied_at" hide-error>
+            <FormInlineError>
+              <DatePicker
+                v-model="form.supplied_at"
+                @update:model-value="form.clearErrors('supplied_at')"
+                close-on-select
+              />
+            </FormInlineError>
           </FormControl>
 
-          <FormControl label="Dátum splatnosti" :error="form.errors.payment_due_to">
-            <DatePicker v-model="form.payment_due_to" />
+          <FormControl label="Dátum splatnosti" :error="form.errors.payment_due_to" hide-error>
+            <FormInlineError>
+              <DatePicker
+                v-model="form.payment_due_to"
+                @update:model-value="form.clearErrors('payment_due_to')"
+                close-on-select
+              />
+            </FormInlineError>
           </FormControl>
         </div>
       </div>
@@ -227,7 +245,7 @@
         <div class="flex flex-col gap-6">
           <p class="font-bold text-lg">Platba</p>
 
-          <FormControl label="Spôsob platby" :error="form.errors.payment_due_to">
+          <FormControl label="Spôsob platby" :error="form.errors.payment_method">
             <FormSelect :options="paymentMethods" v-model="form.payment_method" />
           </FormControl>
 
@@ -280,7 +298,7 @@
 import { Button } from "@/Components/Button";
 import { CheckboxControl } from "@/Components/Checkbox";
 import { DatePicker } from "@/Components/DatePicker";
-import { FormControl, FormSelect } from "@/Components/Form";
+import { FormControl, FormInlineError, FormSelect } from "@/Components/Form";
 import { Input } from "@/Components/Input";
 import { Textarea } from "@/Components/Textarea";
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -289,7 +307,7 @@ import type { SelectOption } from "@stacktrace/ui";
 import { createInvoiceLine, InvoiceLineArrayInput } from '@/Components/InvoiceLineInput'
 import { useMagicKeys } from "@vueuse/core";
 import { PlusIcon } from "lucide-vue-next";
-import { watch } from "vue";
+import { nextTick, watch } from "vue";
 import { toast } from "vue-sonner";
 
 interface Company {
@@ -407,14 +425,39 @@ const form = useForm(() => ({
   lines: [] as Array<any>, // Array<InvoiceLine>
 }))
 const save = () =>{
-  // TODO: Check či sa daju uložiť zmeny
+  // TODO: Check či sa možu uložiť zmeny, keďže mam tu skratku cmd + s na to
 
   form.patch(route('invoices.update', props.id), {
+    preserveScroll: true,
     onSuccess: () => {
       toast.success('Zmeny boli uložené.')
     },
     onError: errors => {
       console.log(errors)
+      toast.error('Niektoré polia sa nepodarilo uložiť.', {
+        style: {
+          background: 'var(--destructive)',
+          color: 'var(--destructive-foreground)',
+        },
+      })
+
+      nextTick(() => {
+        const firstElementWithError = document.querySelector('.has-error')
+        if (firstElementWithError) {
+          const rect = firstElementWithError.getBoundingClientRect()
+          const isVisible = rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+
+          if (! isVisible) {
+            window.scrollTo({
+              top: rect.top + window.pageYOffset - 80,
+              behavior: 'smooth',
+            })
+          }
+        }
+      })
     }
   })
 }

@@ -17,12 +17,20 @@
       <slot />
     </div>
     <FormDescription v-if="help">{{ help }}</FormDescription>
-    <FormMessage v-if="error" :message="error" />
+    <FormMessage v-if="error && hideError !== true" :message="error" />
   </FormItem>
 </template>
 
 <script setup lang="ts">
-import { FormItem, FormLabel, FormMessage, FormDescription } from './'
+import { computed } from "vue";
+import {
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+  type FormControlContext,
+  provideFormControlContext
+} from "./";
 
 const props = withDefaults(defineProps<{
   variant?: 'vertical' | 'horizontal'
@@ -31,7 +39,14 @@ const props = withDefaults(defineProps<{
   help?: string | null | undefined
   error?: string | null | undefined
   required?: boolean
+  hideError?: boolean
 }>(), {
   variant: 'vertical',
 })
+
+const context = computed<FormControlContext>(() => ({
+  error: props.error,
+}))
+
+provideFormControlContext(context)
 </script>
