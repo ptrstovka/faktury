@@ -2,8 +2,17 @@
   <Head title="Faktúra" />
 
   <AppLayout class="pb-16">
-    <div class="flex justify-end">
-      <Button :disabled="!form.isDirty" @click="save">Uložiť</Button>
+
+    <div class="flex flex-row justify-between items-center border-b py-4 mb-4">
+      <div class="">
+        <p class="text-2xl font-medium text-muted-foreground">Nová faktúra</p>
+      </div>
+
+      <div class="flex gap-2">
+        <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
+        <Button :processing="form.processing" @click="save" variant="outline" size="sm">Uložiť</Button>
+        <Button @click="save" size="sm">Vystaviť</Button>
+      </div>
     </div>
 
     <div class="space-y-12">
@@ -81,16 +90,18 @@
             <Textarea v-model="form.supplier_additional_info" />
           </FormControl>
 
-          <FormControl label="E-Mail" :error="form.errors.supplier_email">
-            <Input v-model="form.supplier_email" />
-          </FormControl>
+          <div class="grid grid-cols-2 gap-4">
+            <FormControl label="E-Mail" :error="form.errors.supplier_email">
+              <Input v-model="form.supplier_email" />
+            </FormControl>
+
+            <FormControl label="Tel. číslo" :error="form.errors.supplier_phone_number">
+              <Input v-model="form.supplier_phone_number" />
+            </FormControl>
+          </div>
 
           <FormControl label="Webová stránka" :error="form.errors.supplier_website">
             <Input v-model="form.supplier_website" />
-          </FormControl>
-
-          <FormControl label="Tel. číslo" :error="form.errors.supplier_phone_number">
-            <Input v-model="form.supplier_phone_number" />
           </FormControl>
         </div>
 
@@ -144,6 +155,16 @@
           >
             <Textarea v-model="form.customer_additional_info" />
           </FormControl>
+
+          <div class="grid grid-cols-2 gap-4">
+            <FormControl label="E-Mail" :error="form.errors.customer_email">
+              <Input v-model="form.customer_email" />
+            </FormControl>
+
+            <FormControl label="Tel. číslo" :error="form.errors.customer_phone_number">
+              <Input v-model="form.customer_phone_number" />
+            </FormControl>
+          </div>
         </div>
       </div>
 
@@ -266,7 +287,10 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, useForm } from '@inertiajs/vue3'
 import type { SelectOption } from "@stacktrace/ui";
 import { createInvoiceLine, InvoiceLineArrayInput } from '@/Components/InvoiceLineInput'
+import { useMagicKeys } from "@vueuse/core";
 import { PlusIcon } from "lucide-vue-next";
+import { watch } from "vue";
+import { toast } from "vue-sonner";
 
 interface Company {
   businessName: string | null
@@ -383,7 +407,16 @@ const form = useForm(() => ({
   lines: [] as Array<any>, // Array<InvoiceLine>
 }))
 const save = () =>{
+  // TODO: Check či sa daju uložiť zmeny
 
+  form.patch(route('invoices.update', props.id), {
+    onSuccess: () => {
+      toast.success('Zmeny boli uložené.')
+    },
+    onError: errors => {
+      console.log(errors)
+    }
+  })
 }
 
 const addLine = () => {
@@ -391,4 +424,19 @@ const addLine = () => {
   newLines.push(createInvoiceLine())
   form.lines = newLines
 }
+
+const { Meta_S, Ctrl_S } = useMagicKeys({
+  passive: false,
+  onEventFired(e) {
+    if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault()
+    }
+  },
+})
+
+watch([Meta_S, Ctrl_S], (v) => {
+  if (v[0] || v[1]) {
+    save()
+  }
+})
 </script>

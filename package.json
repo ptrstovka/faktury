@@ -43,6 +43,7 @@
     "ziggy-js": "^2.4.2"
   },
   "dependencies": {
-    "currency.js": "^2.0.4"
+    "currency.js": "^2.0.4",
+    "vue-sonner": "^2.0.1"
   }
 }

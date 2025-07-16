@@ -11,6 +11,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use StackTrace\Ui\SelectOption;
 
@@ -130,6 +131,69 @@ class InvoiceController
 
     public function update(Request $request, Invoice $invoice)
     {
+        // TODO: zamknutu fakturu neni možne editovať
+
+        $request->validate([
+            'issued_at' => ['required', 'string', 'date_format:Y-m-d'],
+            'supplied_at' => ['required', 'string', 'date_format:Y-m-d'],
+            'payment_due_to' => ['required', 'string', 'date_format:Y-m-d'],
+            'public_invoice_number' => ['nullable', 'string', 'max:191'],
+
+            'supplier_business_name' => ['nullable', 'string', 'max:191'],
+            'supplier_business_id' => ['nullable', 'string', 'max:191'],
+            'supplier_vat_id' => ['nullable', 'string', 'max:191'],
+            'supplier_eu_vat_id' => ['nullable', 'string', 'max:191'],
+            'supplier_email' => ['nullable', 'string', 'max:191', 'email'],
+            'supplier_phone_number' => ['nullable', 'string', 'max:191'],
+            'supplier_website' => ['nullable', 'string', 'max:191'],
+            'supplier_additional_info' => ['nullable', 'string', 'max:500'],
+            'supplier_address_line_one' => ['nullable', 'string', 'max:191'],
+            'supplier_address_line_two' => ['nullable', 'string', 'max:191'],
+            'supplier_address_line_three' => ['nullable', 'string', 'max:191'],
+            'supplier_address_city' => ['nullable', 'string', 'max:191'],
+            'supplier_address_postal_code' => ['nullable', 'string', 'max:191'],
+            'supplier_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
+
+            'customer_business_name' => ['nullable', 'string', 'max:191'],
+            'customer_business_id' => ['nullable', 'string', 'max:191'],
+            'customer_vat_id' => ['nullable', 'string', 'max:191'],
+            'customer_eu_vat_id' => ['nullable', 'string', 'max:191'],
+            'customer_email' => ['nullable', 'string', 'max:191', 'email'],
+            'customer_phone_number' => ['nullable', 'string', 'max:191'],
+            'customer_website' => ['nullable', 'string', 'max:191'],
+            'customer_additional_info' => ['nullable', 'string', 'max:500'],
+            'customer_address_line_one' => ['nullable', 'string', 'max:191'],
+            'customer_address_line_two' => ['nullable', 'string', 'max:191'],
+            'customer_address_line_three' => ['nullable', 'string', 'max:191'],
+            'customer_address_city' => ['nullable', 'string', 'max:191'],
+            'customer_address_postal_code' => ['nullable', 'string', 'max:191'],
+            'customer_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
+
+            // TODO: pridať podporu šablony
+            'template' => ['required', 'string', Rule::in(['default']), 'max:191'],
+            'footer_note' => ['nullable', 'string', 'max:1000'],
+            'issued_by' => ['nullable', 'string', 'max:191'],
+            'issued_by_email' => ['nullable', 'string', 'max:191', 'email'],
+            'issued_by_phone_number' => ['nullable', 'string', 'max:191'],
+            'issued_by_website' => ['nullable', 'string', 'max:191'],
+
+            'payment_method' => ['required', 'string', 'max:191', Rule::enum(PaymentMethod::class)],
+            'bank_name' => ['nullable', 'string', 'max:191'],
+            'bank_address' => ['nullable', 'string', 'max:191'],
+            'bank_bic' => ['nullable', 'string', 'max:191'],
+            'bank_account_number' => ['nullable', 'string', 'max:191'],
+            'bank_account_iban' => ['nullable', 'string', 'max:191'],
+            'variable_symbol' => ['nullable', 'string', 'max:191'],
+            'specific_symbol' => ['nullable', 'string', 'max:191'],
+            'constant_symbol' => ['nullable', 'string', 'max:191'],
+            'show_pay_by_square' => ['boolean'],
+
+            'vat_reverse_charge' => ['boolean'],
+            'vat_enabled' => ['boolean'],
+
+            // 'lines' => [],
+        ]);
+
         return back();
     }
 }

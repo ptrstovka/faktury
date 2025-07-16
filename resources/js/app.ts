@@ -6,12 +6,17 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './Composables/useAppearance';
+import RootLayout from "@/Layouts/RootLayout.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
-  resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
+  resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue'))
+    .then(page => {
+      page.default.layout = page.default.layout || RootLayout
+      return page
+    }),
   setup({el, App, props, plugin}) {
     createApp({render: () => h(App, props)})
       .use(plugin)

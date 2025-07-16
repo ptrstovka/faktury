@@ -128,6 +128,7 @@ const navigation = useNavigation([
   {
     title: 'Faktúry',
     action: { route: 'invoices' },
+    active: { route: 'invoices*' },
     icon: FileTextIcon,
   },
 ])
