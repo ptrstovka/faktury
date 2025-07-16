@@ -38,7 +38,7 @@ class InvoiceController
         $request->validate([
             'numbering_format' => ['required', 'string', 'max:191'],
             'default_vat_rate' => ['required', 'numeric', 'max:99', 'min:0'],
-            'due_days' => ['required', 'numeric', 'max:365', 'min:0'],
+            'due_days' => ['required', 'numeric', 'max:365', 'min:1'],
             'footer_note' => ['nullable', 'string', 'max:500'],
             // TODO: pridať šablóny
             'template' => ['required', 'string', Rule::in(['default'])],

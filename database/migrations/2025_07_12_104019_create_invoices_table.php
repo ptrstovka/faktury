@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('public_invoice_number')->nullable();
             $table->integer('invoice_number')->nullable();
             $table->string('payment_method');
-            $table->string('payment_identifier')->nullable();
+            $table->string('variable_symbol')->nullable();
+            $table->string('specific_symbol')->nullable();
+            $table->string('constant_symbol')->nullable();
             $table->string('currency');
             $table->unsignedBigInteger('total_vat_inclusive')->nullable();
             $table->unsignedBigInteger('total_vat_exclusive')->nullable();
@@ -36,6 +38,9 @@ return new class extends Migration
             $table->text('footer_note')->nullable();
             $table->boolean('vat_reverse_charge');
             $table->boolean('show_pay_by_square');
+            $table->date('issued_at')->nullable();
+            $table->date('supplied_at')->nullable();
+            $table->date('payment_due_to')->nullable();
             $table->timestamps();
         });
     }

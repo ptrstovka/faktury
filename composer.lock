@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a12e58eb8e453c9534fbe00065bd363",
+    "content-hash": "f182085a80eb6beb7ef35550a475472e",
     "packages": [
         {
             "name": "brick/math",
@@ -3341,16 +3341,16 @@
         },
         {
             "name": "stacktrace/ui",
-            "version": "v0.5.0",
+            "version": "v0.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stacktracelabs/ui.git",
-                "reference": "12e9ffc72b830bb4c28956582f343c6cef7ccf26"
+                "reference": "b6300b9e9e6902fe3c9b51030ff9eb0414b3775e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stacktracelabs/ui/zipball/12e9ffc72b830bb4c28956582f343c6cef7ccf26",
-                "reference": "12e9ffc72b830bb4c28956582f343c6cef7ccf26",
+                "url": "https://api.github.com/repos/stacktracelabs/ui/zipball/b6300b9e9e6902fe3c9b51030ff9eb0414b3775e",
+                "reference": "b6300b9e9e6902fe3c9b51030ff9eb0414b3775e",
                 "shasum": ""
             },
             "require": {
@@ -3382,9 +3382,9 @@
             "description": "Component library for Laravel, Vue and Inertia.js based on shadcn-vue.",
             "support": {
                 "issues": "https://github.com/stacktracelabs/ui/issues",
-                "source": "https://github.com/stacktracelabs/ui/tree/v0.5.0"
+                "source": "https://github.com/stacktracelabs/ui/tree/v0.5.2"
             },
-            "time": "2025-07-15T14:24:30+00:00"
+            "time": "2025-07-15T15:16:32+00:00"
         },
         {
             "name": "symfony/clock",
