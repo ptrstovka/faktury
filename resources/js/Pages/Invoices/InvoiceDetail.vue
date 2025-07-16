@@ -6,8 +6,14 @@
       <Button :disabled="!form.isDirty" @click="save">Uložiť</Button>
     </div>
 
-    <div class="space-y-6">
-      <div class="grid grid-cols-2 gap-6">
+    <div class="space-y-12">
+      <div class="grid grid-cols-2 gap-12">
+        <div class="grid grid-cols-2">
+          <FormControl label="Číslo faktúry" :error="form.errors.public_invoice_number">
+            <Input v-model="form.public_invoice_number" placeholder="automaticky" />
+          </FormControl>
+        </div>
+
         <div class="grid grid-cols-3 gap-4">
           <FormControl label="Dátum vystavenia" :error="form.errors.issued_at">
             <DatePicker v-model="form.issued_at" />
@@ -23,7 +29,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-6">
+      <div class="grid grid-cols-2 gap-12">
         <div class="flex flex-col gap-6">
           <p class="font-bold text-lg">Dodávateľ</p>
 
@@ -141,9 +147,39 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-6">
+      <div>
+        <p class="font-bold text-lg">Položky</p>
+
+        <div v-if="form.lines.length === 0" class="border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center">
+          <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
+
+          <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Pridať položku" />
+        </div>
+
+        <template v-else>
+          <InvoiceLineArrayInput
+            v-model="form.lines"
+            :separator="thousandsSeparator"
+            :decimal="decimalSeparator"
+            :quantity-precision="quantityPrecision"
+            :price-precision="pricePrecision"
+            :show-vat="form.vat_enabled"
+          />
+
+          <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
+        </template>
+      </div>
+
+      <div class="grid grid-cols-2 gap-12">
         <div class="flex flex-col gap-6">
           <p class="font-bold text-lg">Nastavenia dokladu</p>
+
+          <FormControl label="DPH" :error="form.errors.vat_enabled || form.errors.vat_reverse_charge">
+            <div class="flex flex-col gap-2">
+              <CheckboxControl v-model="form.vat_enabled">Zapnúť DPH</CheckboxControl>
+              <CheckboxControl v-if="form.vat_enabled" v-model="form.vat_reverse_charge">Prenesenie daňovej povinnosti</CheckboxControl>
+            </div>
+          </FormControl>
 
           <FormControl label="Vystavil" :error="form.errors.issued_by || form.errors.issued_by_email || form.errors.issued_by_website || form.errors.issued_by_phone_number">
             <div class="flex flex-col gap-2">
@@ -229,6 +265,8 @@ import { Textarea } from "@/Components/Textarea";
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, useForm } from '@inertiajs/vue3'
 import type { SelectOption } from "@stacktrace/ui";
+import { createInvoiceLine, InvoiceLineArrayInput } from '@/Components/InvoiceLineInput'
+import { PlusIcon } from "lucide-vue-next";
 
 interface Company {
   businessName: string | null
@@ -249,6 +287,7 @@ interface Company {
 
 const props = defineProps<{
   id: string
+  publicInvoiceNumber: string | null
   supplier: Company
   customer: Company
   bankName: string | null
@@ -277,12 +316,18 @@ const props = defineProps<{
   countries: Array<SelectOption>
   templates: Array<SelectOption>
   paymentMethods: Array<SelectOption<'cash' | 'bank-transfer'>>
+
+  thousandsSeparator: string
+  decimalSeparator: string
+  quantityPrecision: number
+  pricePrecision: number
 }>()
 
 const form = useForm(() => ({
   issued_at: props.issuedAt || '',
   supplied_at: props.suppliedAt || '',
   payment_due_to: props.paymentDueTo || '',
+  public_invoice_number: props.publicInvoiceNumber || '',
 
   supplier_business_name: props.supplier.businessName || '',
   supplier_business_id: props.supplier.businessId || '',
@@ -334,8 +379,16 @@ const form = useForm(() => ({
 
   vat_reverse_charge: props.vatReverseCharge,
   vat_enabled: props.vatEnabled,
+
+  lines: [] as Array<any>, // Array<InvoiceLine>
 }))
 const save = () =>{
 
+}
+
+const addLine = () => {
+  const newLines = form.lines.map(it => ({ ...it }))
+  newLines.push(createInvoiceLine())
+  form.lines = newLines
 }
 </script>

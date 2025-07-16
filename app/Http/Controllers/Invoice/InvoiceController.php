@@ -42,6 +42,7 @@ class InvoiceController
 
         return Inertia::render('Invoices/InvoiceDetail', [
             'id' => $invoice->uuid,
+            'publicInvoiceNumber' => $invoice->public_invoice_number,
             'supplier' => $toCompany($invoice->supplier),
             'customer' => $toCompany($invoice->customer),
             'bankName' => $invoice->supplier->bank_name,
@@ -71,6 +72,15 @@ class InvoiceController
             'paymentMethods' => PaymentMethod::options(),
             // TODO: pridať šablóny
             'templates' => [new SelectOption('Predvolená', 'default')],
+
+            // TODO: konfigurovateľne
+            'thousandsSeparator' => '',
+            // TODO: konfigurovateľne
+            'decimalSeparator' => ',',
+            // TODO: konfigurovateľne
+            'quantityPrecision' => 4,
+            // TODO: konfigurovateľne
+            'pricePrecision' => 2,
         ]);
     }
 

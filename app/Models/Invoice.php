@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $constant_symbol
  * @property boolean $show_pay_by_square
  * @property boolean $vat_reverse_charge
+ * @property string|null $public_invoice_number
  */
 class Invoice extends Model
 {
@@ -37,6 +38,7 @@ class Invoice extends Model
             'payment_method' => PaymentMethod::class,
             'show_pay_by_square' => 'boolean',
             'vat_reverse_charge' => 'boolean',
+            'vat_enabled' => 'boolean',
         ];
     }
 

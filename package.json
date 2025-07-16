@@ -41,5 +41,8 @@
     "vue": "^3.5.17",
     "vue-tsc": "^2.2.12",
     "ziggy-js": "^2.4.2"
+  },
+  "dependencies": {
+    "currency.js": "^2.0.4"
   }
 }
