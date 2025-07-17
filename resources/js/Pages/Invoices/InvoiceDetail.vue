@@ -299,30 +299,35 @@
         <div>
           <p class="font-bold text-lg mb-6">Položky</p>
 
-          <div v-if="form.lines.length === 0" class="border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center">
-            <template v-if="locked">
-              <p class="text-sm font-medium">Táto faktúra neobsahuje žiadne položky.</p>
-            </template>
-            <template v-else>
-              <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
+          <FormControl v-if="form.lines.length === 0" :error="form.errors.lines">
+            <div :class="cn('border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center', { 'border-destructive': !!form.errors.lines })">
+              <template v-if="locked">
+                <p class="text-sm font-medium">Táto faktúra neobsahuje žiadne položky.</p>
+              </template>
+              <template v-else>
+                <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
 
-              <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Pridať položku" />
-            </template>
-          </div>
+                <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Pridať položku" />
+              </template>
+            </div>
+          </FormControl>
 
           <template v-else>
-            <InvoiceLineArrayInput
-              v-model="form.lines"
-              :separator="thousandsSeparator"
-              :decimal="decimalSeparator"
-              :quantity-precision="quantityPrecision"
-              :price-precision="pricePrecision"
-              :show-vat="form.vat_enabled"
-              :errors="lineErrors"
-              @clear-error="clearLineError($event[0], $event[1])"
-              @removed="clearLineErrors"
-              :disabled="locked"
-            />
+            <FormControl :error="form.errors.lines">
+              <InvoiceLineArrayInput
+                v-model="form.lines"
+                :separator="thousandsSeparator"
+                :decimal="decimalSeparator"
+                :quantity-precision="quantityPrecision"
+                :price-precision="pricePrecision"
+                :show-vat="form.vat_enabled"
+                :errors="lineErrors"
+                @clear-error="clearLineError($event[0], $event[1])"
+                @removed="clearLineErrors"
+                :disabled="locked"
+                :class="{ 'border-destructive': !!form.errors.lines }"
+              />
+            </FormControl>
 
             <Button v-if="! locked" class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
           </template>
@@ -504,6 +509,7 @@ import { FormControl, FormInlineError, FormSelect } from "@/Components/Form";
 import { Input } from "@/Components/Input";
 import { Textarea } from "@/Components/Textarea";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { cn } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3";
 import type { SelectOption } from "@stacktrace/ui";
 import {
@@ -685,9 +691,9 @@ const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(
 );
 
 const save = () => {
-  if (props.locked || !form.isDirty) {
-    return
-  }
+  // if (props.locked || !form.isDirty) {
+  //   return
+  // }
 
   form.patch(route("invoices.update", props.id), {
     preserveScroll: true,

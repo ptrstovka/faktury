@@ -16,8 +16,7 @@ class UpdateInvoiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        /** @var Invoice $invoice */
-        $invoice = $this->route('invoice');
+        $invoice = $this->invoice();
 
         if (! Gate::allows('update', $invoice)) {
             return false;
@@ -28,15 +27,25 @@ class UpdateInvoiceRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Get the invoice which is being edited.
+     */
+    public function invoice(): Invoice
+    {
+        return $this->route('invoice');
+    }
+
     public function rules(): array
     {
+        $issued = ! $this->invoice()->draft;
+
         return [
             'issued_at' => ['required', 'string', 'date_format:Y-m-d'],
             'supplied_at' => ['required', 'string', 'date_format:Y-m-d'],
             'payment_due_to' => ['required', 'string', 'date_format:Y-m-d'],
-            'public_invoice_number' => ['nullable', 'string', 'max:191'],
+            'public_invoice_number' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
 
-            'supplier_business_name' => ['nullable', 'string', 'max:191'],
+            'supplier_business_name' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
             'supplier_business_id' => ['nullable', 'string', 'max:191'],
             'supplier_vat_id' => ['nullable', 'string', 'max:191'],
             'supplier_eu_vat_id' => ['nullable', 'string', 'max:191'],
@@ -44,14 +53,14 @@ class UpdateInvoiceRequest extends FormRequest
             'supplier_phone_number' => ['nullable', 'string', 'max:191'],
             'supplier_website' => ['nullable', 'string', 'max:191'],
             'supplier_additional_info' => ['nullable', 'string', 'max:500'],
-            'supplier_address_line_one' => ['nullable', 'string', 'max:191'],
+            'supplier_address_line_one' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
             'supplier_address_line_two' => ['nullable', 'string', 'max:191'],
             'supplier_address_line_three' => ['nullable', 'string', 'max:191'],
-            'supplier_address_city' => ['nullable', 'string', 'max:191'],
-            'supplier_address_postal_code' => ['nullable', 'string', 'max:191'],
-            'supplier_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
+            'supplier_address_city' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
+            'supplier_address_postal_code' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
+            'supplier_address_country' => [$issued ? 'required' : 'nullable', 'string', 'max:2', Rule::enum(Country::class)],
 
-            'customer_business_name' => ['nullable', 'string', 'max:191'],
+            'customer_business_name' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
             'customer_business_id' => ['nullable', 'string', 'max:191'],
             'customer_vat_id' => ['nullable', 'string', 'max:191'],
             'customer_eu_vat_id' => ['nullable', 'string', 'max:191'],
@@ -59,12 +68,12 @@ class UpdateInvoiceRequest extends FormRequest
             'customer_phone_number' => ['nullable', 'string', 'max:191'],
             'customer_website' => ['nullable', 'string', 'max:191'],
             'customer_additional_info' => ['nullable', 'string', 'max:500'],
-            'customer_address_line_one' => ['nullable', 'string', 'max:191'],
+            'customer_address_line_one' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
             'customer_address_line_two' => ['nullable', 'string', 'max:191'],
             'customer_address_line_three' => ['nullable', 'string', 'max:191'],
-            'customer_address_city' => ['nullable', 'string', 'max:191'],
-            'customer_address_postal_code' => ['nullable', 'string', 'max:191'],
-            'customer_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
+            'customer_address_city' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
+            'customer_address_postal_code' => [$issued ? 'required' : 'nullable', 'string', 'max:191'],
+            'customer_address_country' => [$issued ? 'required' : 'nullable', 'string', 'max:2', Rule::enum(Country::class)],
 
             // TODO: pridať podporu šablony
             'template' => ['required', 'string', Rule::in(['default']), 'max:191'],
@@ -88,7 +97,7 @@ class UpdateInvoiceRequest extends FormRequest
             'vat_reverse_charge' => ['boolean'],
             'vat_enabled' => ['boolean'],
 
-            'lines' => ['array', 'max:100'],
+            'lines' => ['array', 'max:100', $issued ? 'min:1' : 'min:0'],
             'lines.*.title' => ['nullable', 'string', 'max:500'],
             'lines.*.description' => ['nullable', 'string', 'max:1000'],
             'lines.*.quantity' => ['nullable', 'numeric'],

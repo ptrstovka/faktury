@@ -1,5 +1,5 @@
 <template>
-  <div v-if="lines.value.length > 0" class="border border-dashed border-input rounded-md overflow-hidden divide-y divide-dashed divide-input">
+  <div v-if="lines.value.length > 0" :class="cn('border border-dashed border-input rounded-md overflow-hidden divide-y divide-dashed divide-input', $attrs.class || '')">
     <div v-for="(line, idx) in lines.value" class="flex py-3 even:bg-muted/30">
       <div class="w-10 shrink-0 flex flex-col items-center pt-2">
         <span class="font-bold">{{ idx + 1 }}</span>
@@ -45,6 +45,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/Components/DropdownMenu";
+import { cn } from "@/Utils";
 import { reactive, watch } from "vue";
 import type { InvoiceLine } from ".";
 import { InvoiceLineInput, isEqual } from '.'
