@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property \App\Models\Upload|null $signature
@@ -22,6 +24,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property boolean $show_pay_by_square
  * @property boolean $vat_reverse_charge
  * @property string|null $public_invoice_number
+ * @property string $currency
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $lines
+ * @property \App\Models\Account $account
  */
 class Invoice extends Model
 {
@@ -65,5 +70,20 @@ class Invoice extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function lines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    /**
+     * Get lines sorted by a position attribute.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine>
+     */
+    public function getSortedLines(): Collection
+    {
+        return $this->lines->sortBy('position')->values();
     }
 }

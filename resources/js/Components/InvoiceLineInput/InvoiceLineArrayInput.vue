@@ -22,7 +22,9 @@
         :decimal="decimal"
         :separator="separator"
         :show-vat="showVat"
+        :errors="errors ? errors[idx] : undefined"
         class="flex-1"
+        @clear-error="emit('clearError', [$event, idx])"
       />
 
       <div class="w-10 shrink-0 flex flex-col items-center pt-6">
@@ -47,7 +49,7 @@ import type { InvoiceLine } from ".";
 import { InvoiceLineInput, isEqual } from '.'
 import { GripVerticalIcon, EllipsisVerticalIcon } from 'lucide-vue-next'
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'clearError', 'removed'])
 
 const props = withDefaults(defineProps<{
   modelValue: Array<InvoiceLine>
@@ -56,6 +58,7 @@ const props = withDefaults(defineProps<{
   decimal?: string
   separator?: string
   showVat?: boolean
+  errors?: Array<Partial<Record<keyof InvoiceLine, string>>>
 }>(), {
   pricePrecision: 2,
   quantityPrecision: 4,
@@ -76,6 +79,7 @@ const lines = reactive<{
 
 const remove = (index: number) => {
   lines.value.splice(index, 1)
+  emit('removed')
 }
 
 const areEqual = (a: Array<InvoiceLine>, b: Array<InvoiceLine>) => {

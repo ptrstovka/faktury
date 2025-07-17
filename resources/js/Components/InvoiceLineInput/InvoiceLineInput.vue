@@ -1,84 +1,116 @@
 <template>
   <div class="gap-2 flex flex-col">
     <div class="flex flex-row gap-2">
-      <Input
-        placeholder="Názov"
-        v-model="title"
-      />
+      <FormControl :error="errors?.title" class="w-full" hide-error>
+        <FormInlineError>
+          <Input
+            placeholder="Názov"
+            v-model="title"
+            @update:model-value="emit('clearError', 'title')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <NumberInput
-        :decimal="decimal"
-        :separator="separator"
-        placeholder="Počet"
-        v-model="quantityInput"
-        :max-precision="quantityPrecision"
-        @input="onQuantityChanged"
-        @blur="onBlur"
-        class="w-24 min-w-auto"
-      />
+      <FormControl class="w-24 shrink-0" :error="errors?.quantity" hide-error>
+        <FormInlineError>
+          <NumberInput
+            :decimal="decimal"
+            :separator="separator"
+            placeholder="Počet"
+            v-model="quantityInput"
+            :max-precision="quantityPrecision"
+            @input="onQuantityChanged"
+            @blur="onBlur"
+            @update:model-value="emit('clearError', 'quantity')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <Input
-        placeholder="MJ"
-        v-model="unit"
-        class="w-16 min-w-auto"
-      />
+      <FormControl class="w-16 shrink-0" :error="errors?.unit" hide-error>
+        <FormInlineError>
+          <Input
+            placeholder="MJ"
+            v-model="unit"
+            @update:model-value="emit('clearError', 'unit')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <MoneyInput
-        :decimal="decimal"
-        :separator="separator"
-        :precision="pricePrecision"
-        v-model="unitPriceVatExclInput"
-        :placeholder="showVat ? 'Jed. cena bez DPH' : 'Jed. cena'"
-        @input="onUnitPriceVatExclusiveChanged"
-        @blur="onBlur"
-        class="w-32 min-w-auto"
-      />
+      <FormControl class="w-32 shrink-0" :error="errors?.unitPrice" hide-error>
+        <FormInlineError>
+          <MoneyInput
+            :decimal="decimal"
+            :separator="separator"
+            :precision="pricePrecision"
+            v-model="unitPriceVatExclInput"
+            :placeholder="showVat ? 'Jed. cena bez DPH' : 'Jed. cena'"
+            @input="onUnitPriceVatExclusiveChanged"
+            @blur="onBlur"
+            @update:model-value="emit('clearError', 'unitPrice')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <NumberInput
-        v-if="showVat"
-        :decimal="decimal"
-        :separator="separator"
-        placeholder="DPH %"
-        v-model="vatRateInput"
-        :max-precision="2"
-        @input="onVatRateChanged"
-        @blur="onBlur"
-        class="w-24 min-w-auto"
-      />
+      <FormControl v-if="showVat" class="w-24 shrink-0" :error="errors?.vat" hide-error>
+        <FormInlineError>
+          <NumberInput
+            :decimal="decimal"
+            :separator="separator"
+            placeholder="DPH %"
+            v-model="vatRateInput"
+            :max-precision="2"
+            @input="onVatRateChanged"
+            @blur="onBlur"
+            @update:model-value="emit('clearError', 'vat')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <MoneyInput
-        v-if="showVat"
-        :decimal="decimal"
-        :separator="separator"
-        :precision="pricePrecision"
-        placeholder="Spolu s DPH"
-        v-model="totalVatInclusiveInput"
-        @input="onTotalVatInclusiveChanged"
-        @blur="onBlur"
-        class="w-32 min-w-auto"
-      />
+      <FormControl v-if="showVat" class="w-32 shrink-0" :error="errors?.totalVatInclusive" hide-error>
+        <FormInlineError>
+          <MoneyInput
+            :decimal="decimal"
+            :separator="separator"
+            :precision="pricePrecision"
+            placeholder="Spolu s DPH"
+            v-model="totalVatInclusiveInput"
+            @input="onTotalVatInclusiveChanged"
+            @blur="onBlur"
+            @update:model-value="emit('clearError', 'totalVatInclusive')"
+          />
+        </FormInlineError>
+      </FormControl>
 
-      <MoneyInput
-        v-else
-        :decimal="decimal"
-        :separator="separator"
-        :precision="pricePrecision"
-        placeholder="Spolu"
-        v-model="totalVatExclusiveInput"
-        @input="onTotalVatExclusiveChanged"
-        @blur="onBlur"
-        class="w-32 min-w-auto"
-      />
+      <FormControl v-else class="w-32 shrink-0" :error="errors?.totalVatExclusive" hide-error>
+        <FormInlineError>
+          <MoneyInput
+            :decimal="decimal"
+            :separator="separator"
+            :precision="pricePrecision"
+            placeholder="Spolu"
+            v-model="totalVatExclusiveInput"
+            @input="onTotalVatExclusiveChanged"
+            @blur="onBlur"
+            @update:model-value="emit('clearError', 'totalVatExclusive')"
+          />
+        </FormInlineError>
+      </FormControl>
     </div>
 
-    <Input
-      placeholder="Popis"
-      v-model="description"
-    />
+    <FormControl :error="errors?.description" hide-error>
+      <FormInlineError>
+        <Input
+          placeholder="Popis"
+          v-model="description"
+          @update:model-value="emit('clearError', 'description')"
+        />
+      </FormInlineError>
+    </FormControl>
   </div>
 </template>
 
 <script setup lang="ts">
+import { FormInlineError, FormControl } from "@/Components/Form";
 import { Input } from "@/Components/Input";
 import { createMoneyFromMinor } from "@/Utils";
 import { nextTick, ref, watch } from "vue";
@@ -88,7 +120,7 @@ import { isEqual } from '.'
 
 import type { InvoiceLine } from ".";
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'clearError'])
 
 const props = withDefaults(defineProps<{
   modelValue: InvoiceLine
@@ -97,6 +129,7 @@ const props = withDefaults(defineProps<{
   decimal?: string
   separator?: string
   showVat?: boolean
+  errors?: Partial<Record<keyof InvoiceLine, string>>
 }>(), {
   pricePrecision: 2,
   quantityPrecision: 4,
@@ -110,10 +143,10 @@ const description = ref<string>(props.modelValue.description)
 const unit = ref<string>(props.modelValue.unit)
 
 const quantityInput = ref<number | null>(props.modelValue.quantity)
-const unitPriceVatExclInput = ref<number | null>(null)
-const vatRateInput = ref<number | null>(null)
-const totalVatExclusiveInput = ref<number | null>(null)
-const totalVatInclusiveInput = ref<number | null>(null)
+const unitPriceVatExclInput = ref<number | null>(props.modelValue.unitPrice)
+const vatRateInput = ref<number | null>(props.modelValue.vat)
+const totalVatExclusiveInput = ref<number | null>(props.modelValue.totalVatExclusive)
+const totalVatInclusiveInput = ref<number | null>(props.modelValue.totalVatInclusive)
 
 const createValue: () => InvoiceLine = () => ({
   title: title.value || '',

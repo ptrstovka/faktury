@@ -255,7 +255,7 @@
         </div>
 
         <div>
-          <p class="font-bold text-lg">Položky</p>
+          <p class="font-bold text-lg mb-6">Položky</p>
 
           <div v-if="form.lines.length === 0" class="border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center">
             <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
@@ -271,6 +271,9 @@
               :quantity-precision="quantityPrecision"
               :price-precision="pricePrecision"
               :show-vat="form.vat_enabled"
+              :errors="lineErrors"
+              @clear-error="clearLineError($event[0], $event[1])"
+              @removed="clearLineErrors"
             />
 
             <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
@@ -437,10 +440,10 @@ import { Textarea } from "@/Components/Textarea";
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, useForm } from '@inertiajs/vue3'
 import type { SelectOption } from "@stacktrace/ui";
-import { createInvoiceLine, InvoiceLineArrayInput } from '@/Components/InvoiceLineInput'
+import { createInvoiceLine, type InvoiceLine, InvoiceLineArrayInput } from "@/Components/InvoiceLineInput";
 import { useMagicKeys } from "@vueuse/core";
 import { PlusIcon } from "lucide-vue-next";
-import { nextTick, watch } from "vue";
+import { computed, nextTick, watch } from "vue";
 import { toast } from "vue-sonner";
 
 interface Company {
@@ -487,6 +490,7 @@ const props = defineProps<{
   constantSymbol: string | null
   showPayBySquare: boolean
   vatReverseCharge: boolean
+  lines: Array<InvoiceLine>
 
   countries: Array<SelectOption>
   templates: Array<SelectOption>
@@ -496,6 +500,7 @@ const props = defineProps<{
   decimalSeparator: string
   quantityPrecision: number
   pricePrecision: number
+  defaultVatRate: number
 }>()
 
 const form = useForm(() => ({
@@ -555,8 +560,41 @@ const form = useForm(() => ({
   vat_reverse_charge: props.vatReverseCharge,
   vat_enabled: props.vatEnabled,
 
-  lines: [] as Array<any>, // Array<InvoiceLine>
+  lines: props.lines.map(line => ({ ...line })) as Array<any>, // Array<InvoiceLine>
 }))
+
+const clearLineErrors = () => {
+  Object.keys(form.errors).forEach(key => {
+    if (key.startsWith(`lines.`)) {
+      form.clearErrors(key as any)
+    }
+  })
+}
+
+const clearLineError = (key: keyof InvoiceLine, index: number) => {
+  const field = `lines.${index}.${key}`
+  form.clearErrors(field as any)
+}
+
+const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(() => {
+  const formErrors = form.errors as Record<string, string>
+
+  return form.lines.map((_, idx) => {
+    const errors: Partial<Record<keyof InvoiceLine, string>> = {}
+
+    Object.keys(formErrors).forEach(key => {
+      if (key.startsWith(`lines.${idx}.`)) {
+        const lineError = formErrors[key]
+        const attribute = key.replace(`lines.${idx}.`, '').split('.')[0] as keyof InvoiceLine
+
+        errors[attribute] = lineError
+      }
+    })
+
+    return errors
+  })
+})
+
 const save = () =>{
   // TODO: Check či sa možu uložiť zmeny, keďže mam tu skratku cmd + s na to
 
@@ -565,8 +603,7 @@ const save = () =>{
     onSuccess: () => {
       toast.success('Zmeny boli uložené.')
     },
-    onError: errors => {
-      console.log(errors)
+    onError: () => {
       toast.error('Niektoré polia sa nepodarilo uložiť.', {
         style: {
           background: 'var(--destructive)',
@@ -597,8 +634,11 @@ const save = () =>{
 
 const addLine = () => {
   const newLines = form.lines.map(it => ({ ...it }))
-  newLines.push(createInvoiceLine())
+  const emptyLine = createInvoiceLine()
+  emptyLine.vat = props.defaultVatRate
+  newLines.push(emptyLine)
   form.lines = newLines
+  clearLineErrors()
 }
 
 const { Meta_S, Ctrl_S } = useMagicKeys({

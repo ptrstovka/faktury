@@ -10,7 +10,10 @@ use App\Facades\Accounts;
 use App\Models\Address;
 use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\InvoiceLine;
+use Brick\Money\Money;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -25,6 +28,8 @@ class InvoiceController
 
     public function show(Invoice $invoice)
     {
+        $account = $invoice->account;
+
         $toCompany = fn (Company $company) => [
             'businessName' => $company->business_name,
             'businessId' => $company->business_id,
@@ -69,6 +74,16 @@ class InvoiceController
             'constantSymbol' => $invoice->constant_symbol,
             'showPayBySquare' => $invoice->show_pay_by_square,
             'vatReverseCharge' => $invoice->vat_reverse_charge,
+            'lines' => $invoice->getSortedLines()->map(fn (InvoiceLine $line) => [
+                'title' => $line->title,
+                'description' => $line->description,
+                'quantity' => $line->quantity,
+                'unit' => $line->unit,
+                'unitPrice' => $line->unit_price_vat_exclusive?->getMinorAmount(),
+                'vat' => $line->vat_rate,
+                'totalVatExclusive' => $line->total_price_vat_exclusive?->getMinorAmount(),
+                'totalVatInclusive' => $line->total_price_vat_inclusive?->getMinorAmount(),
+            ]),
 
             'countries' => Country::options(),
             'paymentMethods' => PaymentMethod::options(),
@@ -83,6 +98,7 @@ class InvoiceController
             'quantityPrecision' => 4,
             // TODO: konfigurovateľne
             'pricePrecision' => 2,
+            'defaultVatRate' => $account->default_vat_rate,
         ]);
     }
 
@@ -192,7 +208,24 @@ class InvoiceController
             'vat_reverse_charge' => ['boolean'],
             'vat_enabled' => ['boolean'],
 
-            // 'lines' => [],
+            'lines' => ['array', 'max:100'],
+            'lines.*.title' => ['nullable', 'string', 'max:500'],
+            'lines.*.description' => ['nullable', 'string', 'max:1000'],
+            'lines.*.quantity' => ['nullable', 'numeric'],
+            'lines.*.unit' => ['nullable', 'string', 'max:191'],
+            'lines.*.unitPrice' => ['nullable', 'integer'],
+            'lines.*.vat' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'lines.*.totalVatExclusive' => ['nullable', 'integer'],
+            'lines.*.totalVatInclusive' => ['nullable', 'integer'],
+        ], [], [
+            'lines.*.title' => 'title',
+            'lines.*.description' => 'description',
+            'lines.*.quantity' => 'quantity',
+            'lines.*.unit' => 'unit',
+            'lines.*.unitPrice' => 'unitPrice',
+            'lines.*.vat' => 'vat',
+            'lines.*.totalVatExclusive' => 'totalVatExclusive',
+            'lines.*.totalVatInclusive' => 'totalVatInclusive',
         ]);
 
         $invoice->fill([
@@ -266,6 +299,26 @@ class InvoiceController
             'additional_info' => $request->input('customer_additional_info'),
         ]);
         $invoice->customer->save();
+
+        $invoice->lines()->delete();
+        $request->collect('lines')->each(function (array $line, int $idx) use ($invoice) {
+            $unitPrice = Arr::get($line, 'unitPrice');
+            $totalVatInclusive = Arr::get($line, 'totalVatInclusive');
+            $totalVatExclusive = Arr::get($line, 'totalVatExclusive');
+
+            $invoice->lines()->create([
+                'position' => $idx + 1,
+                'title' => Arr::get($line, 'title'),
+                'description' => Arr::get($line, 'description'),
+                'unit' => Arr::get($line, 'unit'),
+                'quantity' => Arr::get($line, 'quantity'),
+                'vat_rate' => Arr::get($line, 'vat'),
+                'unit_price_vat_exclusive' => is_numeric($unitPrice) ? Money::ofMinor($unitPrice, $invoice->currency) : null,
+                'total_price_vat_inclusive' => is_numeric($totalVatInclusive) ? Money::ofMinor($totalVatInclusive, $invoice->currency) : null,
+                'total_price_vat_exclusive' => is_numeric($totalVatExclusive) ? Money::ofMinor($totalVatExclusive, $invoice->currency) : null,
+                'currency' => $invoice->currency,
+            ]);
+        });
 
         return back();
     }
