@@ -7,6 +7,8 @@
             placeholder="Názov"
             v-model="title"
             @update:model-value="emit('clearError', 'title')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -22,6 +24,8 @@
             @input="onQuantityChanged"
             @blur="onBlur"
             @update:model-value="emit('clearError', 'quantity')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -32,6 +36,8 @@
             placeholder="MJ"
             v-model="unit"
             @update:model-value="emit('clearError', 'unit')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -47,6 +53,8 @@
             @input="onUnitPriceVatExclusiveChanged"
             @blur="onBlur"
             @update:model-value="emit('clearError', 'unitPrice')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -62,6 +70,8 @@
             @input="onVatRateChanged"
             @blur="onBlur"
             @update:model-value="emit('clearError', 'vat')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -77,6 +87,8 @@
             @input="onTotalVatInclusiveChanged"
             @blur="onBlur"
             @update:model-value="emit('clearError', 'totalVatInclusive')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -92,6 +104,8 @@
             @input="onTotalVatExclusiveChanged"
             @blur="onBlur"
             @update:model-value="emit('clearError', 'totalVatExclusive')"
+            :disabled="disabled"
+            class="disabled:opacity-100"
           />
         </FormInlineError>
       </FormControl>
@@ -103,6 +117,8 @@
           placeholder="Popis"
           v-model="description"
           @update:model-value="emit('clearError', 'description')"
+          :disabled="disabled"
+          class="disabled:opacity-100"
         />
       </FormInlineError>
     </FormControl>
@@ -130,6 +146,7 @@ const props = withDefaults(defineProps<{
   separator?: string
   showVat?: boolean
   errors?: Partial<Record<keyof InvoiceLine, string>>
+  disabled?: boolean
 }>(), {
   pricePrecision: 2,
   quantityPrecision: 4,

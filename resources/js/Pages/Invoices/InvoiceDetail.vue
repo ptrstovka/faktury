@@ -23,9 +23,8 @@
           <template v-else>
             <template v-if="locked">
               <Button size="sm" label="Stiahnuť" :icon="FileDownIcon" />
-
               <Button variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
-
+              <Button variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                   <Button class="px-2" size="sm" variant="outline" :icon="EllipsisIcon" />
@@ -42,9 +41,9 @@
               </DropdownMenu>
             </template>
             <template v-else>
-              <Button :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
+              <Button :disabled="!form.isDirty" :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť zmeny" :icon="SaveIcon" />
 
-              <Button @click="lockInvoice" size="sm" label="Zamknúť úpravy" :icon="KeySquareIcon" />
+              <Button :processing="lockInvoiceForm.processing" @click="lockInvoice" size="sm" label="Zamknúť úpravy" :icon="KeySquareIcon" />
             </template>
           </template>
         </div>
@@ -57,8 +56,10 @@
               <FormInlineError>
                 <Input
                   v-model="form.public_invoice_number"
-                  placeholder="automaticky"
+                  :placeholder="draft ? 'automaticky' : undefined"
                   @update:model-value="form.clearErrors('public_invoice_number')"
+                  :disabled="locked"
+                  class="disabled:opacity-100"
                 />
               </FormInlineError>
             </FormControl>
@@ -71,6 +72,8 @@
                   v-model="form.issued_at"
                   @update:model-value="form.clearErrors('issued_at')"
                   close-on-select
+                  :disabled="locked"
+                  class="disabled:opacity-100"
                 />
               </FormInlineError>
             </FormControl>
@@ -81,6 +84,8 @@
                   v-model="form.supplied_at"
                   @update:model-value="form.clearErrors('supplied_at')"
                   close-on-select
+                  :disabled="locked"
+                  class="disabled:opacity-100"
                 />
               </FormInlineError>
             </FormControl>
@@ -91,6 +96,8 @@
                   v-model="form.payment_due_to"
                   @update:model-value="form.clearErrors('payment_due_to')"
                   close-on-select
+                  :disabled="locked"
+                  class="disabled:opacity-100"
                 />
               </FormInlineError>
             </FormControl>
@@ -103,20 +110,20 @@
 
             <FormControl label="Obchodné meno" :error="form.errors.supplier_business_name" hide-error>
               <FormInlineError>
-                <Input v-model="form.supplier_business_name" @update:model-value="form.clearErrors('supplier_business_name')" />
+                <Input v-model="form.supplier_business_name" @update:model-value="form.clearErrors('supplier_business_name')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <FormControl label="Adresa" :error="form.errors.supplier_address_line_one || form.errors.supplier_address_line_two || form.errors.supplier_address_line_three" hide-error>
               <div class="flex flex-col gap-2">
                 <FormInlineError :error="form.errors.supplier_address_line_one || null">
-                  <Input v-model="form.supplier_address_line_one" @update:model-value="form.clearErrors('supplier_address_line_one')" />
+                  <Input v-model="form.supplier_address_line_one" @update:model-value="form.clearErrors('supplier_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.supplier_address_line_two || null">
-                  <Input v-model="form.supplier_address_line_two" @update:model-value="form.clearErrors('supplier_address_line_two')" />
+                  <Input v-model="form.supplier_address_line_two" @update:model-value="form.clearErrors('supplier_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.supplier_address_line_three || null">
-                  <Input v-model="form.supplier_address_line_three" @update:model-value="form.clearErrors('supplier_address_line_three')" />
+                  <Input v-model="form.supplier_address_line_three" @update:model-value="form.clearErrors('supplier_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </div>
             </FormControl>
@@ -124,39 +131,39 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="PSČ" :error="form.errors.supplier_address_postal_code" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_address_postal_code" @update:model-value="form.clearErrors('supplier_address_postal_code')" />
+                  <Input v-model="form.supplier_address_postal_code" @update:model-value="form.clearErrors('supplier_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Mesto" :error="form.errors.supplier_address_city" class="col-span-2" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_address_city" @update:model-value="form.clearErrors('supplier_address_city')" />
+                  <Input v-model="form.supplier_address_city" @update:model-value="form.clearErrors('supplier_address_city')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <FormControl label="Krajina" :error="form.errors.supplier_address_country" hide-error>
               <FormInlineError>
-                <FormSelect :options="countries" v-model="form.supplier_address_country" @update:model-value="form.clearErrors('supplier_address_country')" />
+                <FormSelect :options="countries" v-model="form.supplier_address_country" @update:model-value="form.clearErrors('supplier_address_country')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="IČO" :error="form.errors.supplier_business_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_business_id" @update:model-value="form.clearErrors('supplier_business_id')" />
+                  <Input v-model="form.supplier_business_id" @update:model-value="form.clearErrors('supplier_business_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="DIČ" :error="form.errors.supplier_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_vat_id" @update:model-value="form.clearErrors('supplier_vat_id')" />
+                  <Input v-model="form.supplier_vat_id" @update:model-value="form.clearErrors('supplier_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IČDPH" :error="form.errors.supplier_eu_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_eu_vat_id" @update:model-value="form.clearErrors('supplier_eu_vat_id')" />
+                  <Input v-model="form.supplier_eu_vat_id" @update:model-value="form.clearErrors('supplier_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -168,27 +175,27 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.supplier_additional_info" @update:model-value="form.clearErrors('supplier_additional_info')" />
+                <Textarea v-model="form.supplier_additional_info" @update:model-value="form.clearErrors('supplier_additional_info')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-2 gap-4">
               <FormControl label="E-Mail" :error="form.errors.supplier_email" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_email" @update:model-value="form.clearErrors('supplier_email')" />
+                  <Input v-model="form.supplier_email" @update:model-value="form.clearErrors('supplier_email')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Tel. číslo" :error="form.errors.supplier_phone_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_phone_number" @update:model-value="form.clearErrors('supplier_phone_number')" />
+                  <Input v-model="form.supplier_phone_number" @update:model-value="form.clearErrors('supplier_phone_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <FormControl label="Webová stránka" :error="form.errors.supplier_website" hide-error>
               <FormInlineError>
-                <Input v-model="form.supplier_website" @update:model-value="form.clearErrors('supplier_website')" />
+                <Input v-model="form.supplier_website" @update:model-value="form.clearErrors('supplier_website')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
           </div>
@@ -198,20 +205,20 @@
 
             <FormControl label="Obchodné meno" :error="form.errors.customer_business_name" hide-error>
               <FormInlineError>
-                <Input v-model="form.customer_business_name" @update:model-value="form.clearErrors('customer_business_name')" />
+                <Input v-model="form.customer_business_name" @update:model-value="form.clearErrors('customer_business_name')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <FormControl label="Adresa" :error="form.errors.customer_address_line_one || form.errors.customer_address_line_two || form.errors.customer_address_line_three" hide-error>
               <div class="flex flex-col gap-2">
                 <FormInlineError :error="form.errors.customer_address_line_one || null">
-                  <Input v-model="form.customer_address_line_one" @update:model-value="form.clearErrors('customer_address_line_one')" />
+                  <Input v-model="form.customer_address_line_one" @update:model-value="form.clearErrors('customer_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.customer_address_line_two || null">
-                  <Input v-model="form.customer_address_line_two" @update:model-value="form.clearErrors('customer_address_line_two')" />
+                  <Input v-model="form.customer_address_line_two" @update:model-value="form.clearErrors('customer_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.customer_address_line_three || null">
-                  <Input v-model="form.customer_address_line_three" @update:model-value="form.clearErrors('customer_address_line_three')" />
+                  <Input v-model="form.customer_address_line_three" @update:model-value="form.clearErrors('customer_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </div>
             </FormControl>
@@ -219,39 +226,39 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="PSČ" :error="form.errors.customer_address_postal_code" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_address_postal_code" @update:model-value="form.clearErrors('customer_address_postal_code')" />
+                  <Input v-model="form.customer_address_postal_code" @update:model-value="form.clearErrors('customer_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Mesto" :error="form.errors.customer_address_city" class="col-span-2" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_address_city" @update:model-value="form.clearErrors('customer_address_city')" />
+                  <Input v-model="form.customer_address_city" @update:model-value="form.clearErrors('customer_address_city')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <FormControl label="Krajina" :error="form.errors.customer_address_country" hide-error>
               <FormInlineError>
-                <FormSelect :options="countries" v-model="form.customer_address_country" @update:model-value="form.clearErrors('customer_address_country')" />
+                <FormSelect :options="countries" v-model="form.customer_address_country" @update:model-value="form.clearErrors('customer_address_country')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="IČO" :error="form.errors.customer_business_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_business_id" @update:model-value="form.clearErrors('customer_business_id')" />
+                  <Input v-model="form.customer_business_id" @update:model-value="form.clearErrors('customer_business_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="DIČ" :error="form.errors.customer_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_vat_id" @update:model-value="form.clearErrors('customer_vat_id')" />
+                  <Input v-model="form.customer_vat_id" @update:model-value="form.clearErrors('customer_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IČDPH" :error="form.errors.customer_eu_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_eu_vat_id" @update:model-value="form.clearErrors('customer_eu_vat_id')" />
+                  <Input v-model="form.customer_eu_vat_id" @update:model-value="form.clearErrors('customer_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -263,27 +270,27 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.customer_additional_info" @update:model-value="form.clearErrors('customer_additional_info')" />
+                <Textarea v-model="form.customer_additional_info" @update:model-value="form.clearErrors('customer_additional_info')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-2 gap-4">
               <FormControl label="E-Mail" :error="form.errors.customer_email" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_email" @update:model-value="form.clearErrors('customer_email')" />
+                  <Input v-model="form.customer_email" @update:model-value="form.clearErrors('customer_email')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Tel. číslo" :error="form.errors.customer_phone_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_phone_number" @update:model-value="form.clearErrors('customer_phone_number')" />
+                  <Input v-model="form.customer_phone_number" @update:model-value="form.clearErrors('customer_phone_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <!--<FormControl label="Webová stránka" :error="form.errors.customer_website" hide-error>-->
             <!--  <FormInlineError>-->
-            <!--    <Input v-model="form.customer_website" @update:model-value="form.clearErrors('customer_website')" />-->
+            <!--    <Input v-model="form.customer_website" @update:model-value="form.clearErrors('customer_website')" :disabled="locked" class="disabled:opacity-100" />-->
             <!--  </FormInlineError>-->
             <!--</FormControl>-->
           </div>
@@ -293,9 +300,14 @@
           <p class="font-bold text-lg mb-6">Položky</p>
 
           <div v-if="form.lines.length === 0" class="border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center">
-            <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
+            <template v-if="locked">
+              <p class="text-sm font-medium">Táto faktúra neobsahuje žiadne položky.</p>
+            </template>
+            <template v-else>
+              <p class="text-sm font-medium">Zatiaľ neboli pridané žiadne položky.</p>
 
-            <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Pridať položku" />
+              <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Pridať položku" />
+            </template>
           </div>
 
           <template v-else>
@@ -309,9 +321,10 @@
               :errors="lineErrors"
               @clear-error="clearLineError($event[0], $event[1])"
               @removed="clearLineErrors"
+              :disabled="locked"
             />
 
-            <Button class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
+            <Button v-if="! locked" class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
           </template>
         </div>
 
@@ -325,6 +338,7 @@
                   v-model="form.vat_enabled"
                   :error="form.errors.vat_enabled"
                   @update:model-value="form.clearErrors('vat_enabled')"
+                  :disabled="locked"
                 >Zapnúť DPH</CheckboxControl>
 
                 <CheckboxControl
@@ -332,6 +346,7 @@
                   v-model="form.vat_reverse_charge"
                   :error="form.errors.vat_reverse_charge"
                   @update:model-value="form.clearErrors('vat_reverse_charge')"
+                  :disabled="locked"
                 >Prenesenie daňovej povinnosti</CheckboxControl>
               </div>
             </FormControl>
@@ -343,6 +358,8 @@
                     placeholder="Meno a priezvisko"
                     v-model="form.issued_by"
                     @update:model-value="form.clearErrors('issued_by')"
+                    :disabled="locked"
+                    class="disabled:opacity-100"
                   />
                 </FormInlineError>
 
@@ -351,6 +368,8 @@
                     placeholder="Tel. číslo"
                     v-model="form.issued_by_phone_number"
                     @update:model-value="form.clearErrors('issued_by_phone_number')"
+                    :disabled="locked"
+                    class="disabled:opacity-100"
                   />
                 </FormInlineError>
 
@@ -359,6 +378,8 @@
                     placeholder="E-Mail"
                     v-model="form.issued_by_email"
                     @update:model-value="form.clearErrors('issued_by_email')"
+                    :disabled="locked"
+                    class="disabled:opacity-100"
                   />
                 </FormInlineError>
 
@@ -367,6 +388,8 @@
                     placeholder="Webová stránka"
                     v-model="form.issued_by_website"
                     @update:model-value="form.clearErrors('issued_by_website')"
+                    :disabled="locked"
+                    class="disabled:opacity-100"
                   />
                 </FormInlineError>
               </div>
@@ -374,7 +397,7 @@
 
             <FormControl label="Šablóna" :error="form.errors.template" hide-error>
               <FormInlineError>
-                <FormSelect :options="templates" v-model="form.template" @update:model-value="form.clearErrors('template')" />
+                <FormSelect :options="templates" v-model="form.template" @update:model-value="form.clearErrors('template')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
@@ -385,7 +408,7 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.footer_note" @update:model-value="form.clearErrors('footer_note')" />
+                <Textarea v-model="form.footer_note" @update:model-value="form.clearErrors('footer_note')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
           </div>
@@ -395,57 +418,57 @@
 
             <FormControl label="Spôsob platby" :error="form.errors.payment_method" hide-error>
               <FormInlineError>
-                <FormSelect :options="paymentMethods" v-model="form.payment_method" @update:model-value="form.clearErrors('payment_method')" />
+                <FormSelect :options="paymentMethods" v-model="form.payment_method" @update:model-value="form.clearErrors('payment_method')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <template v-if="form.payment_method === 'bank-transfer'">
               <FormControl label="Názov banky" :error="form.errors.bank_name" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_name" @update:model-value="form.clearErrors('bank_name')" />
+                  <Input v-model="form.bank_name" @update:model-value="form.clearErrors('bank_name')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Adresa banky" :error="form.errors.bank_address" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_address" @update:model-value="form.clearErrors('bank_address')" />
+                  <Input v-model="form.bank_address" @update:model-value="form.clearErrors('bank_address')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="BIC" :error="form.errors.bank_bic" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_bic" @update:model-value="form.clearErrors('bank_bic')" />
+                  <Input v-model="form.bank_bic" @update:model-value="form.clearErrors('bank_bic')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Číslo účtu" :error="form.errors.bank_account_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_account_number" @update:model-value="form.clearErrors('bank_account_number')" />
+                  <Input v-model="form.bank_account_number" @update:model-value="form.clearErrors('bank_account_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IBAN" :error="form.errors.bank_account_iban" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_account_iban" @update:model-value="form.clearErrors('bank_account_iban')" />
+                  <Input v-model="form.bank_account_iban" @update:model-value="form.clearErrors('bank_account_iban')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <div class="grid grid-cols-3 gap-4">
                 <FormControl label="Variabilný symbol" :error="form.errors.variable_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.variable_symbol" placeholder="automaticky" @update:model-value="form.clearErrors('variable_symbol')" />
+                    <Input v-model="form.variable_symbol" :placeholder="draft ? 'automaticky' : undefined" @update:model-value="form.clearErrors('variable_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
 
                 <FormControl label="Špecifický symbol" :error="form.errors.specific_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.specific_symbol" @update:model-value="form.clearErrors('specific_symbol')" />
+                    <Input v-model="form.specific_symbol" @update:model-value="form.clearErrors('specific_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
 
                 <FormControl label="Konštantný symbol" :error="form.errors.constant_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.constant_symbol" @update:model-value="form.clearErrors('constant_symbol')" />
+                    <Input v-model="form.constant_symbol" @update:model-value="form.clearErrors('constant_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
               </div>
@@ -455,6 +478,7 @@
                   v-model="form.show_pay_by_square"
                   :error="form.errors.show_pay_by_square"
                   @update:model-value="form.clearErrors('show_pay_by_square')"
+                  :disabled="locked"
                 >Zobraziť QR kód Pay By Square</CheckboxControl>
               </FormControl>
             </template>
@@ -499,6 +523,7 @@ import {
   LockOpenIcon,
   KeySquareIcon,
   Trash2Icon,
+  BanknoteIcon,
 } from "lucide-vue-next";
 import { computed, nextTick, watch } from "vue";
 import { toast } from "vue-sonner";
@@ -660,8 +685,8 @@ const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(
 );
 
 const save = () => {
-  if (props.locked) {
-    return;
+  if (props.locked || !form.isDirty) {
+    return
   }
 
   form.patch(route("invoices.update", props.id), {
@@ -684,10 +709,8 @@ const save = () => {
           const isVisible =
             rect.top >= 0 &&
             rect.left >= 0 &&
-            rect.bottom <=
-              (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <=
-              (window.innerWidth || document.documentElement.clientWidth);
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth);
 
           if (!isVisible) {
             window.scrollTo({
@@ -735,11 +758,9 @@ const issueInvoice = () => {
   });
 };
 
+const lockInvoiceForm = useForm({})
 const lockInvoice = () => {
-  router.post(
-    route("invoices.lock.store", props.id),
-    {},
-    {
+  lockInvoiceForm.post(route("invoices.lock.store", props.id), {
       preserveScroll: true,
       onSuccess: () => {
         toast.success("Faktúra bola uzamknutá");

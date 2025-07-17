@@ -4,6 +4,7 @@
       <Button
         plain
         variant="outline"
+        :disabled="disabled"
         :class="cn(
           'w-full justify-start text-left font-normal form-element',
           !date && 'text-muted-foreground',
@@ -41,6 +42,7 @@ const props = defineProps<{
   placeholder?: string | null | undefined
   to?: string | HTMLElement
   closeOnSelect?: boolean
+  disabled?: boolean
 }>()
 
 const df = new DateFormatter('sk-SK', {

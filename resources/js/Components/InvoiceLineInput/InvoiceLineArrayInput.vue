@@ -5,7 +5,7 @@
         <span class="font-bold">{{ idx + 1 }}</span>
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="ghost" class="mt-3.5 p-2 h-auto text-muted-foreground">
+            <Button :disabled="disabled" variant="ghost" class="mt-3.5 p-2 h-auto text-muted-foreground">
               <EllipsisVerticalIcon class="size-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -25,10 +25,11 @@
         :errors="errors ? errors[idx] : undefined"
         class="flex-1"
         @clear-error="emit('clearError', [$event, idx])"
+        :disabled="disabled"
       />
 
       <div class="w-10 shrink-0 flex flex-col items-center pt-6">
-        <Button variant="ghost" class="p-2 h-auto text-muted-foreground cursor-move disabled:hover:bg-transparent" :disabled="lines.value.length <= 1">
+        <Button variant="ghost" class="p-2 h-auto text-muted-foreground cursor-move disabled:hover:bg-transparent" :disabled="disabled || lines.value.length <= 1">
           <GripVerticalIcon class="size-4" />
         </Button>
       </div>
@@ -59,6 +60,7 @@ const props = withDefaults(defineProps<{
   separator?: string
   showVat?: boolean
   errors?: Array<Partial<Record<keyof InvoiceLine, string>>>
+  disabled?: boolean
 }>(), {
   pricePrecision: 2,
   quantityPrecision: 4,

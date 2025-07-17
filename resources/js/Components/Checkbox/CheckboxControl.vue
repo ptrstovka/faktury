@@ -5,6 +5,7 @@
       :value="value"
       :indeterminate="indeterminate"
       :id="id"
+      :disabled="disabled"
       :class="{ 'checked:bg-destructive border-destructive': !!error }"
     />
 
@@ -42,6 +43,7 @@ const props = defineProps<{
   value?: any
   indeterminate?: boolean
   error?: string | null | undefined
+  disabled?: boolean
 }>()
 
 const checked = useVModel(props, 'modelValue', emit)
