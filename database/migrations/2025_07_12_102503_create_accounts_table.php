@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('default_vat_rate');
             $table->integer('invoice_due_days');
             $table->string('invoice_numbering_format');
+            $table->string('invoice_variable_symbol_format');
             $table->string('invoice_payment_method');
             $table->text('invoice_footer_note')->nullable();
             $table->string('invoice_template');

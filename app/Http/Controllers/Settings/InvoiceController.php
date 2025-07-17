@@ -29,6 +29,7 @@ class InvoiceController
         return Inertia::render('Settings/Invoice', [
             'vatEnabled' => $account->vat_enabled,
             'numberingFormat' => $account->invoice_numbering_format,
+            'variableSymbolFormat' => $account->invoice_variable_symbol_format,
             'nextNumber' => $invoiceNumberSequence ? $invoiceNumberSequence->next_number : 1,
             'defaultVatRate' => $account->default_vat_rate,
             'dueDays' => $account->invoice_due_days,
@@ -47,6 +48,7 @@ class InvoiceController
     {
         $request->validate([
             'numbering_format' => ['required', 'string', 'max:191'],
+            'variable_symbol_format' => ['required', 'string', 'max:10'],
             'default_vat_rate' => ['required', 'numeric', 'max:99', 'min:0'],
             'due_days' => ['required', 'numeric', 'max:365', 'min:1'],
             'footer_note' => ['nullable', 'string', 'max:500'],
@@ -60,6 +62,7 @@ class InvoiceController
 
         $account->update([
             'invoice_numbering_format' => $request->input('numbering_format'),
+            'invoice_variable_symbol_format' => $request->input('variable_symbol_format'),
             'default_vat_rate' => $request->input('default_vat_rate'),
             'invoice_due_days' => $request->input('due_days'),
             'invoice_footer_note' => $request->input('footer_note'),

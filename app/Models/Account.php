@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \App\Models\Company $company
  * @property boolean $vat_enabled
  * @property string $invoice_numbering_format
+ * @property string $invoice_variable_symbol_format
  * @property float $default_vat_rate
  * @property int $invoice_due_days
  * @property \App\Enums\PaymentMethod $invoice_payment_method

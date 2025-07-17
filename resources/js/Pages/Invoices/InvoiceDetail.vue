@@ -16,8 +16,8 @@
         <div class="flex gap-2">
           <template v-if="draft">
             <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
-            <Button :processing="isSaving" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
-            <Button :processing="isIssuing" @click="issueInvoice" size="sm" label="Vystaviť" />
+            <Button :processing="isSaving" @click="save" variant="outline" size="sm" label="Uložiť koncept" :icon="SaveIcon" />
+            <Button :processing="isIssuing" @click="issueInvoice" size="sm" label="Vystaviť" :icon="ClipboardCheckIcon" />
           </template>
 
           <template v-else>
@@ -535,6 +535,7 @@ import {
   KeySquareIcon,
   Trash2Icon,
   BanknoteIcon,
+  ClipboardCheckIcon,
 } from "lucide-vue-next";
 import { computed, nextTick, ref, watch } from "vue";
 import { toast } from "vue-sonner";

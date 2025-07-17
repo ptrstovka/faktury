@@ -37,6 +37,16 @@ class IssueInvoiceController
                 $invoice->public_invoice_number = $formatter->formatNumber($sequence->next_number);
             }
 
+            // If the invoice does not have variable symbol, we generate a new one.
+            if (! $invoice->variable_symbol) {
+                $variableSymbolFormatter = new NumberSequenceFormatter(
+                    format: $invoice->account->invoice_variable_symbol_format,
+                    date: $invoice->issued_at,
+                );
+
+                $invoice->variable_symbol = $variableSymbolFormatter->formatNumber($sequence->next_number);
+            }
+
             // The sequence needs to be always incremented.
             $sequence->incrementNextNumber();
 

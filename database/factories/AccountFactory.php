@@ -17,6 +17,7 @@ class AccountFactory extends Factory
             'default_vat_rate' => 23,
             'invoice_due_days' => 14,
             'invoice_numbering_format' => 'RRRRMMCCCC',
+            'invoice_variable_symbol_format' => 'RRRRMMCCCC',
             'invoice_payment_method' => PaymentMethod::BankTransfer,
             'invoice_footer_note' => fake()->sentence,
             'invoice_template' => 'default',

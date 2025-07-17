@@ -7,8 +7,12 @@
         <HeadingSmall title="Predvolené nastavenia faktúr" description="Prispôsobte si predvolené možnosti použité pri tvorbe nových faktúr"/>
 
         <form @submit.prevent="save" class="space-y-6">
-          <FormControl label="Číselný formát" :error="form.errors.numbering_format">
+          <FormControl label="Formát čísla faktúry" :error="form.errors.numbering_format">
             <Input v-model="form.numbering_format" class="max-w-sm" />
+          </FormControl>
+
+          <FormControl label="Formát variabilného symbolu" :error="form.errors.variable_symbol_format">
+            <Input v-model="form.variable_symbol_format" class="max-w-sm" />
           </FormControl>
 
           <FormControl label="Nasledujúce poradové číslo" :error="form.errors.next_number">
@@ -64,7 +68,7 @@ import HeadingSmall from '@/Components/HeadingSmall.vue'
 import { type BreadcrumbItem } from '@/Types'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SettingsLayout from '@/Layouts/Settings/Layout.vue'
-import { FormControl, FormSelect } from '@/Components/Form'
+import { FormControl, FormSelect } from "@/Components/Form";
 import { Input } from '@/Components/Input'
 import { Textarea } from '@/Components/Textarea'
 import { type SelectOption } from '@stacktrace/ui'
@@ -81,6 +85,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const props = defineProps<{
   vatEnabled: boolean
   numberingFormat: string
+  variableSymbolFormat: string
   defaultVatRate: number
   dueDays: number
   footerNote: string | null
@@ -95,6 +100,7 @@ const props = defineProps<{
 
 const form = useForm(() => ({
   numbering_format: props.numberingFormat,
+  variable_symbol_format: props.variableSymbolFormat,
   default_vat_rate: props.defaultVatRate,
   due_days: props.dueDays,
   footer_note: props.footerNote || '',
