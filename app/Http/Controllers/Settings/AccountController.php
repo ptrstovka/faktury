@@ -34,7 +34,7 @@ class AccountController
             'addressLineThree' => $account->company->address?->line_three,
             'addressCity' => $account->company->address?->city,
             'addressPostalCode' => $account->company->address?->postal_code,
-            'addressCountryCode' => $account->company->address?->country_code?->value,
+            'addressCountry' => $account->company->address?->country?->value,
             'bankName' => $account->company->bank_name,
             'bankBic' => $account->company->bank_bic,
             'bankAddress' => $account->company->bank_address,
@@ -56,7 +56,7 @@ class AccountController
             'address_line_three' => ['nullable', 'string', 'max:191'],
             'address_city' => ['nullable', 'string', 'max:191'],
             'address_postal_code' => ['nullable', 'string', 'max:191'],
-            'address_country_code' => ['nullable', 'string', Rule::enum(Country::class)],
+            'address_country' => ['nullable', 'string', Rule::enum(Country::class)],
             'website' => ['nullable', 'string', 'max:500'],
             'email' => ['nullable', 'string', 'email', 'max:191'],
             'phone_number' => ['nullable', 'string', 'max:191'],
@@ -76,7 +76,7 @@ class AccountController
                 'line_three' => $request->input('address_line_three'),
                 'city' => $request->input('address_city'),
                 'postal_code' => $request->input('address_postal_code'),
-                'country_code' => $request->enum('address_country_code', Country::class),
+                'country' => $request->enum('address_country', Country::class),
             ]);
             $address->save();
 

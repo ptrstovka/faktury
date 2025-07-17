@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
                             'line_one' => 'Rastislavova 2151',
                             'postal_code' => '093 02',
                             'city' => 'Hencovce',
-                            'country_code' => 'sk',
+                            'country' => 'sk',
                         ])
                     )
                     ->create([
@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
                             'line_one' => 'Rastislavova 2151',
                             'postal_code' => '093 02',
                             'city' => 'Hencovce',
-                            'country_code' => 'sk',
+                            'country' => 'sk',
                         ])
                     )
                     ->create([

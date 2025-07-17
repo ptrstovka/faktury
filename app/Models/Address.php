@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $line_three
  * @property string|null $postal_code
  * @property string|null $city
- * @property Country|null $country_code
+ * @property Country|null $country
  */
 class Address extends Model
 {
@@ -24,7 +24,7 @@ class Address extends Model
     protected function casts(): array
     {
         return [
-            'country_code' => Country::class,
+            'country' => Country::class,
         ];
     }
 }

@@ -47,8 +47,8 @@
             </FormControl>
           </div>
 
-          <FormControl label="Krajina" :error="general.errors.address_country_code">
-            <FormSelect v-model="general.address_country_code" :options="countries" />
+          <FormControl label="Krajina" :error="general.errors.address_country">
+            <FormSelect v-model="general.address_country" :options="countries" />
           </FormControl>
 
           <FormControl label="Doplňujúce informácie" :error="general.errors.additional_info">
@@ -134,7 +134,7 @@ const props = defineProps<{
   addressLineThree: string | null
   addressCity: string | null
   addressPostalCode: string | null
-  addressCountryCode: string | null
+  addressCountry: string | null
   website: string | null
   email: string | null
   additionalInfo: string | null
@@ -157,7 +157,7 @@ const general = useForm(() => ({
   address_line_three: props.addressLineThree || '',
   address_city: props.addressCity || '',
   address_postal_code: props.addressPostalCode || '',
-  address_country_code: props.addressCountryCode || '',
+  address_country: props.addressCountry || '',
   website: props.website || '',
   email: props.email || '',
   phone_number: props.phoneNumber || '',

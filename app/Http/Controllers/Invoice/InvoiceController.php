@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Invoice;
 use App\Enums\Country;
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
+use App\Models\Address;
 use App\Models\Company;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class InvoiceController
             'addressLineThree' => $company->address?->line_three,
             'addressCity' => $company->address?->city,
             'addressPostalCode' => $company->address?->postal_code,
-            'addressCountry' => $company->address?->country_code?->value,
+            'addressCountry' => $company->address?->country?->value,
         ];
 
         return Inertia::render('Invoices/InvoiceDetail', [
@@ -57,10 +58,10 @@ class InvoiceController
             'vatEnabled' => $invoice->vat_enabled,
             'locale' => $invoice->locale,
             'template' => $invoice->template,
-            'footer_note' => $invoice->footer_note,
+            'footerNote' => $invoice->footer_note,
             'issuedBy' => $invoice->issued_by,
             'issuedByEmail' => $invoice->issued_by_email,
-            'issuedByPhone_number' => $invoice->issued_by_phone_number,
+            'issuedByPhoneNumber' => $invoice->issued_by_phone_number,
             'issuedByWebsite' => $invoice->issued_by_website,
             'paymentMethod' => $invoice->payment_method,
             'variableSymbol' => $invoice->variable_symbol,
@@ -193,6 +194,78 @@ class InvoiceController
 
             // 'lines' => [],
         ]);
+
+        $invoice->fill([
+            'issued_at' => $request->date('issued_at', 'Y-m-d'),
+            'supplied_at' => $request->date('supplied_at', 'Y-m-d'),
+            'payment_due_to' => $request->date('payment_due_to', 'Y-m-d'),
+            'public_invoice_number' => $request->input('public_invoice_number'),
+            'template' => $request->input('template'),
+            'footer_note' => $request->input('footer_note'),
+            'issued_by' => $request->input('issued_by'),
+            'issued_by_email' => $request->input('issued_by_email'),
+            'issued_by_phone_number' => $request->input('issued_by_phone_number'),
+            'issued_by_website' => $request->input('issued_by_website'),
+            'vat_reverse_charge' => $request->boolean('vat_reverse_charge'),
+            'vat_enabled' => $request->boolean('vat_enabled'),
+            'payment_method' => $request->enum('payment_method', PaymentMethod::class),
+            'variable_symbol' => $request->input('variable_symbol'),
+            'specific_symbol' => $request->input('specific_symbol'),
+            'constant_symbol' => $request->input('constant_symbol'),
+            'show_pay_by_square' => $request->boolean('show_pay_by_square'),
+        ]);
+        $invoice->save();
+
+        $supplierAddress = $invoice->supplier->address ?: new Address;
+        $supplierAddress->fill([
+            'line_one' => $request->input('supplier_address_line_one'),
+            'line_two' => $request->input('supplier_address_line_two'),
+            'line_three' => $request->input('supplier_address_line_three'),
+            'city' => $request->input('supplier_address_city'),
+            'postal_code' => $request->input('supplier_address_postal_code'),
+            'country' => $request->enum('supplier_address_country', Country::class),
+        ]);
+        $supplierAddress->save();
+        $invoice->supplier->address()->associate($supplierAddress);
+        $invoice->supplier->fill([
+            'business_name' => $request->input('supplier_business_name'),
+            'business_id' => $request->input('supplier_business_id'),
+            'vat_id' => $request->input('supplier_vat_id'),
+            'eu_vat_id' => $request->input('supplier_eu_vat_id'),
+            'email' => $request->input('supplier_email'),
+            'phone_number' => $request->input('supplier_phone_number'),
+            'website' => $request->input('supplier_website'),
+            'additional_info' => $request->input('supplier_additional_info'),
+            'bank_name' => $request->input('bank_name'),
+            'bank_address' => $request->input('bank_address'),
+            'bank_bic' => $request->input('bank_bic'),
+            'bank_account_number' => $request->input('bank_account_number'),
+            'bank_account_iban' => $request->input('bank_account_iban'),
+        ]);
+        $invoice->supplier->save();
+
+        $customerAddress = $invoice->customer->address ?: new Address;
+        $customerAddress->fill([
+            'line_one' => $request->input('customer_address_line_one'),
+            'line_two' => $request->input('customer_address_line_two'),
+            'line_three' => $request->input('customer_address_line_three'),
+            'city' => $request->input('customer_address_city'),
+            'postal_code' => $request->input('customer_address_postal_code'),
+            'country' => $request->enum('customer_address_country', Country::class),
+        ]);
+        $customerAddress->save();
+        $invoice->customer->address()->associate($customerAddress);
+        $invoice->customer->fill([
+            'business_name' => $request->input('customer_business_name'),
+            'business_id' => $request->input('customer_business_id'),
+            'vat_id' => $request->input('customer_vat_id'),
+            'eu_vat_id' => $request->input('customer_eu_vat_id'),
+            'email' => $request->input('customer_email'),
+            'phone_number' => $request->input('customer_phone_number'),
+            'website' => $request->input('customer_website'),
+            'additional_info' => $request->input('customer_additional_info'),
+        ]);
+        $invoice->customer->save();
 
         return back();
     }

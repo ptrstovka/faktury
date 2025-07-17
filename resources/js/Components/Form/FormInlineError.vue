@@ -6,7 +6,7 @@
 
     <TooltipProvider v-if="failure">
       <Tooltip>
-        <TooltipTrigger class="absolute right-2 top-1/2 -translate-y-1/2">
+        <TooltipTrigger class="absolute right-2.5 top-1/2 -translate-y-1/2 bg-background">
           <CircleAlertIcon class="size-4 text-destructive" />
         </TooltipTrigger>
         <TooltipContent class="text-destructive-foreground bg-destructive" hide-arrow>
@@ -31,5 +31,11 @@ const props = defineProps<{
 
 const context = injectFormControlContext()
 
-const failure = computed(() => props.error || context.value?.error)
+const failure = computed(() => {
+  if (props.error !== undefined) {
+    return props.error
+  }
+
+  return context.value?.error
+})
 </script>
