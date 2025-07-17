@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
+use App\NumberSequenceFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -17,9 +18,18 @@ class InvoiceController
     {
         $account = Accounts::current();
 
+        /** @var \App\Models\NumberSequence|null $invoiceNumberSequence */
+        $invoiceNumberSequence = $account
+            ->numberSequences()
+            ->firstWhere(
+                'sequence_token',
+                (new NumberSequenceFormatter($account->invoice_numbering_format, now()))->formatSequenceToken()
+            );
+
         return Inertia::render('Settings/Invoice', [
             'vatEnabled' => $account->vat_enabled,
             'numberingFormat' => $account->invoice_numbering_format,
+            'nextNumber' => $invoiceNumberSequence ? $invoiceNumberSequence->next_number : 1,
             'defaultVatRate' => $account->default_vat_rate,
             'dueDays' => $account->invoice_due_days,
             'footerNote' => $account->invoice_footer_note,
@@ -43,6 +53,7 @@ class InvoiceController
             // TODO: pridať šablóny
             'template' => ['required', 'string', Rule::in(['default'])],
             'payment_method' => ['required', 'string', Rule::enum(PaymentMethod::class)],
+            'next_number' => ['required', 'numeric', 'min:1'],
         ]);
 
         $account = Accounts::current();
@@ -55,6 +66,28 @@ class InvoiceController
             'invoice_template' => $request->input('template'),
             'invoice_payment_method' => $request->enum('payment_method', PaymentMethod::class),
         ]);
+
+        $formatter = new NumberSequenceFormatter($account->invoice_numbering_format, now());
+        $sequenceToken = $formatter->formatSequenceToken();
+
+        /** @var \App\Models\NumberSequence|null $invoiceNumberSequence */
+        $invoiceNumberSequence = $account->numberSequences()->firstWhere('sequence_token', $sequenceToken);
+
+        $nextNumber = $request->integer('next_number');
+
+        $currentNumber = $invoiceNumberSequence ? $invoiceNumberSequence->next_number : 1;
+        if ($currentNumber != $nextNumber) {
+            if ($invoiceNumberSequence) {
+                $invoiceNumberSequence->next_number = $nextNumber;
+                $invoiceNumberSequence->save();
+            } else {
+                $account->numberSequences()->create([
+                    'format' => $formatter->getFormat(),
+                    'next_number' => $nextNumber,
+                    'sequence_token' => $sequenceToken,
+                ]);
+            }
+        }
 
         return back();
     }

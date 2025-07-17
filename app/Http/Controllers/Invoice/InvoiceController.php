@@ -147,6 +147,11 @@ class InvoiceController
 
             $invoice->save();
 
+            $invoice->lines()->create([
+                'position' => 1,
+                'vat_rate' => $account->vat_enabled ? $account->default_vat_rate : null,
+            ]);
+
             return $invoice;
         });
 

@@ -11,6 +11,10 @@
             <Input v-model="form.numbering_format" class="max-w-sm" />
           </FormControl>
 
+          <FormControl label="Nasledujúce poradové číslo" :error="form.errors.next_number">
+            <Input v-model="form.next_number" class="max-w-36" />
+          </FormControl>
+
           <FormControl label="Počet dní splatnosti" :error="form.errors.due_days">
             <Input v-model="form.due_days" class="max-w-36" />
           </FormControl>
@@ -86,6 +90,7 @@ const props = defineProps<{
   paymentMethods: Array<SelectOption>
   signatureFileUrl: string | null
   logoFileUrl: string | null
+  nextNumber: number
 }>()
 
 const form = useForm(() => ({
@@ -95,6 +100,7 @@ const form = useForm(() => ({
   footer_note: props.footerNote || '',
   template: props.template,
   payment_method: props.paymentMethod,
+  next_number: props.nextNumber,
 }))
 const save = () => {
   form.patch(route('invoices.settings.update'), { preserveScroll: true })
