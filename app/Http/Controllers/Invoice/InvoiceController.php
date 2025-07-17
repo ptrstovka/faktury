@@ -157,7 +157,7 @@ class InvoiceController
     {
         // TODO: zamknutu fakturu neni možne editovať
 
-        DB::transaction(fn () => $request->fulfill($invoice));
+        DB::transaction(fn () => $request->saveInvoice($invoice));
 
         return back();
     }

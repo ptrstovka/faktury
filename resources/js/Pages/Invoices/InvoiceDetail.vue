@@ -16,8 +16,8 @@
         <div class="flex gap-2">
           <template v-if="draft">
             <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
-            <Button :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
-            <Button :processing="issueForm.processing" @click="issueInvoice" size="sm" label="Vystaviť" />
+            <Button :processing="isSaving" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
+            <Button :processing="isIssuing" @click="issueInvoice" size="sm" label="Vystaviť" />
           </template>
 
           <template v-else>
@@ -41,7 +41,7 @@
               </DropdownMenu>
             </template>
             <template v-else>
-              <Button :disabled="!form.isDirty" :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť zmeny" :icon="SaveIcon" />
+              <Button :disabled="!form.isDirty" :processing="isSaving" @click="save" variant="outline" size="sm" label="Uložiť zmeny" :icon="SaveIcon" />
 
               <Button :processing="lockInvoiceForm.processing" @click="lockInvoice" size="sm" label="Zamknúť úpravy" :icon="KeySquareIcon" />
             </template>
@@ -55,6 +55,7 @@
             <FormControl label="Číslo faktúry" :error="form.errors.public_invoice_number" hide-error>
               <FormInlineError>
                 <Input
+                  autocomplete="off"
                   v-model="form.public_invoice_number"
                   :placeholder="draft ? 'automaticky' : undefined"
                   @update:model-value="form.clearErrors('public_invoice_number')"
@@ -110,20 +111,20 @@
 
             <FormControl label="Obchodné meno" :error="form.errors.supplier_business_name" hide-error>
               <FormInlineError>
-                <Input v-model="form.supplier_business_name" @update:model-value="form.clearErrors('supplier_business_name')" :disabled="locked" class="disabled:opacity-100" />
+                <Input autocomplete="off" v-model="form.supplier_business_name" @update:model-value="form.clearErrors('supplier_business_name')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <FormControl label="Adresa" :error="form.errors.supplier_address_line_one || form.errors.supplier_address_line_two || form.errors.supplier_address_line_three" hide-error>
               <div class="flex flex-col gap-2">
                 <FormInlineError :error="form.errors.supplier_address_line_one || null">
-                  <Input v-model="form.supplier_address_line_one" @update:model-value="form.clearErrors('supplier_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_address_line_one" @update:model-value="form.clearErrors('supplier_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.supplier_address_line_two || null">
-                  <Input v-model="form.supplier_address_line_two" @update:model-value="form.clearErrors('supplier_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_address_line_two" @update:model-value="form.clearErrors('supplier_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.supplier_address_line_three || null">
-                  <Input v-model="form.supplier_address_line_three" @update:model-value="form.clearErrors('supplier_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_address_line_three" @update:model-value="form.clearErrors('supplier_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </div>
             </FormControl>
@@ -131,13 +132,13 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="PSČ" :error="form.errors.supplier_address_postal_code" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_address_postal_code" @update:model-value="form.clearErrors('supplier_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_address_postal_code" @update:model-value="form.clearErrors('supplier_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Mesto" :error="form.errors.supplier_address_city" class="col-span-2" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_address_city" @update:model-value="form.clearErrors('supplier_address_city')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_address_city" @update:model-value="form.clearErrors('supplier_address_city')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -151,19 +152,19 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="IČO" :error="form.errors.supplier_business_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_business_id" @update:model-value="form.clearErrors('supplier_business_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_business_id" @update:model-value="form.clearErrors('supplier_business_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="DIČ" :error="form.errors.supplier_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_vat_id" @update:model-value="form.clearErrors('supplier_vat_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_vat_id" @update:model-value="form.clearErrors('supplier_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IČDPH" :error="form.errors.supplier_eu_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_eu_vat_id" @update:model-value="form.clearErrors('supplier_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_eu_vat_id" @update:model-value="form.clearErrors('supplier_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -175,27 +176,27 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.supplier_additional_info" @update:model-value="form.clearErrors('supplier_additional_info')" :disabled="locked" class="disabled:opacity-100" />
+                <Textarea autocomplete="off" v-model="form.supplier_additional_info" @update:model-value="form.clearErrors('supplier_additional_info')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-2 gap-4">
               <FormControl label="E-Mail" :error="form.errors.supplier_email" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_email" @update:model-value="form.clearErrors('supplier_email')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_email" @update:model-value="form.clearErrors('supplier_email')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Tel. číslo" :error="form.errors.supplier_phone_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.supplier_phone_number" @update:model-value="form.clearErrors('supplier_phone_number')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.supplier_phone_number" @update:model-value="form.clearErrors('supplier_phone_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <FormControl label="Webová stránka" :error="form.errors.supplier_website" hide-error>
               <FormInlineError>
-                <Input v-model="form.supplier_website" @update:model-value="form.clearErrors('supplier_website')" :disabled="locked" class="disabled:opacity-100" />
+                <Input autocomplete="off" v-model="form.supplier_website" @update:model-value="form.clearErrors('supplier_website')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
           </div>
@@ -205,20 +206,20 @@
 
             <FormControl label="Obchodné meno" :error="form.errors.customer_business_name" hide-error>
               <FormInlineError>
-                <Input v-model="form.customer_business_name" @update:model-value="form.clearErrors('customer_business_name')" :disabled="locked" class="disabled:opacity-100" />
+                <Input autocomplete="off" v-model="form.customer_business_name" @update:model-value="form.clearErrors('customer_business_name')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <FormControl label="Adresa" :error="form.errors.customer_address_line_one || form.errors.customer_address_line_two || form.errors.customer_address_line_three" hide-error>
               <div class="flex flex-col gap-2">
                 <FormInlineError :error="form.errors.customer_address_line_one || null">
-                  <Input v-model="form.customer_address_line_one" @update:model-value="form.clearErrors('customer_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_address_line_one" @update:model-value="form.clearErrors('customer_address_line_one')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.customer_address_line_two || null">
-                  <Input v-model="form.customer_address_line_two" @update:model-value="form.clearErrors('customer_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_address_line_two" @update:model-value="form.clearErrors('customer_address_line_two')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
                 <FormInlineError :error="form.errors.customer_address_line_three || null">
-                  <Input v-model="form.customer_address_line_three" @update:model-value="form.clearErrors('customer_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_address_line_three" @update:model-value="form.clearErrors('customer_address_line_three')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </div>
             </FormControl>
@@ -226,13 +227,13 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="PSČ" :error="form.errors.customer_address_postal_code" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_address_postal_code" @update:model-value="form.clearErrors('customer_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_address_postal_code" @update:model-value="form.clearErrors('customer_address_postal_code')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Mesto" :error="form.errors.customer_address_city" class="col-span-2" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_address_city" @update:model-value="form.clearErrors('customer_address_city')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_address_city" @update:model-value="form.clearErrors('customer_address_city')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -246,19 +247,19 @@
             <div class="grid grid-cols-3 gap-4">
               <FormControl label="IČO" :error="form.errors.customer_business_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_business_id" @update:model-value="form.clearErrors('customer_business_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_business_id" @update:model-value="form.clearErrors('customer_business_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="DIČ" :error="form.errors.customer_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_vat_id" @update:model-value="form.clearErrors('customer_vat_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_vat_id" @update:model-value="form.clearErrors('customer_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IČDPH" :error="form.errors.customer_eu_vat_id" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_eu_vat_id" @update:model-value="form.clearErrors('customer_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_eu_vat_id" @update:model-value="form.clearErrors('customer_eu_vat_id')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
@@ -270,27 +271,27 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.customer_additional_info" @update:model-value="form.clearErrors('customer_additional_info')" :disabled="locked" class="disabled:opacity-100" />
+                <Textarea autocomplete="off" v-model="form.customer_additional_info" @update:model-value="form.clearErrors('customer_additional_info')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
 
             <div class="grid grid-cols-2 gap-4">
               <FormControl label="E-Mail" :error="form.errors.customer_email" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_email" @update:model-value="form.clearErrors('customer_email')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_email" @update:model-value="form.clearErrors('customer_email')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Tel. číslo" :error="form.errors.customer_phone_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.customer_phone_number" @update:model-value="form.clearErrors('customer_phone_number')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.customer_phone_number" @update:model-value="form.clearErrors('customer_phone_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
             </div>
 
             <!--<FormControl label="Webová stránka" :error="form.errors.customer_website" hide-error>-->
             <!--  <FormInlineError>-->
-            <!--    <Input v-model="form.customer_website" @update:model-value="form.clearErrors('customer_website')" :disabled="locked" class="disabled:opacity-100" />-->
+            <!--    <Input autocomplete="off" v-model="form.customer_website" @update:model-value="form.clearErrors('customer_website')" :disabled="locked" class="disabled:opacity-100" />-->
             <!--  </FormInlineError>-->
             <!--</FormControl>-->
           </div>
@@ -329,7 +330,7 @@
               />
             </FormControl>
 
-            <Button v-if="! locked" class="mt-4" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
+            <Button v-if="! locked" class="mt-4" size="sm" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
           </template>
         </div>
 
@@ -365,6 +366,7 @@
                     @update:model-value="form.clearErrors('issued_by')"
                     :disabled="locked"
                     class="disabled:opacity-100"
+                    autocomplete="off"
                   />
                 </FormInlineError>
 
@@ -375,6 +377,7 @@
                     @update:model-value="form.clearErrors('issued_by_phone_number')"
                     :disabled="locked"
                     class="disabled:opacity-100"
+                    autocomplete="off"
                   />
                 </FormInlineError>
 
@@ -385,6 +388,7 @@
                     @update:model-value="form.clearErrors('issued_by_email')"
                     :disabled="locked"
                     class="disabled:opacity-100"
+                    autocomplete="off"
                   />
                 </FormInlineError>
 
@@ -395,6 +399,7 @@
                     @update:model-value="form.clearErrors('issued_by_website')"
                     :disabled="locked"
                     class="disabled:opacity-100"
+                    autocomplete="off"
                   />
                 </FormInlineError>
               </div>
@@ -413,7 +418,7 @@
               hide-error
             >
               <FormInlineError>
-                <Textarea v-model="form.footer_note" @update:model-value="form.clearErrors('footer_note')" :disabled="locked" class="disabled:opacity-100" />
+                <Textarea autocomplete="off" v-model="form.footer_note" @update:model-value="form.clearErrors('footer_note')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
           </div>
@@ -430,50 +435,50 @@
             <template v-if="form.payment_method === 'bank-transfer'">
               <FormControl label="Názov banky" :error="form.errors.bank_name" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_name" @update:model-value="form.clearErrors('bank_name')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.bank_name" @update:model-value="form.clearErrors('bank_name')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Adresa banky" :error="form.errors.bank_address" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_address" @update:model-value="form.clearErrors('bank_address')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.bank_address" @update:model-value="form.clearErrors('bank_address')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="BIC" :error="form.errors.bank_bic" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_bic" @update:model-value="form.clearErrors('bank_bic')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.bank_bic" @update:model-value="form.clearErrors('bank_bic')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="Číslo účtu" :error="form.errors.bank_account_number" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_account_number" @update:model-value="form.clearErrors('bank_account_number')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.bank_account_number" @update:model-value="form.clearErrors('bank_account_number')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <FormControl label="IBAN" :error="form.errors.bank_account_iban" hide-error>
                 <FormInlineError>
-                  <Input v-model="form.bank_account_iban" @update:model-value="form.clearErrors('bank_account_iban')" :disabled="locked" class="disabled:opacity-100" />
+                  <Input autocomplete="off" v-model="form.bank_account_iban" @update:model-value="form.clearErrors('bank_account_iban')" :disabled="locked" class="disabled:opacity-100" />
                 </FormInlineError>
               </FormControl>
 
               <div class="grid grid-cols-3 gap-4">
                 <FormControl label="Variabilný symbol" :error="form.errors.variable_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.variable_symbol" :placeholder="draft ? 'automaticky' : undefined" @update:model-value="form.clearErrors('variable_symbol')" :disabled="locked" class="disabled:opacity-100" />
+                    <Input autocomplete="off" v-model="form.variable_symbol" :placeholder="draft ? 'automaticky' : undefined" @update:model-value="form.clearErrors('variable_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
 
                 <FormControl label="Špecifický symbol" :error="form.errors.specific_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.specific_symbol" @update:model-value="form.clearErrors('specific_symbol')" :disabled="locked" class="disabled:opacity-100" />
+                    <Input autocomplete="off" v-model="form.specific_symbol" @update:model-value="form.clearErrors('specific_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
 
                 <FormControl label="Konštantný symbol" :error="form.errors.constant_symbol" hide-error>
                   <FormInlineError>
-                    <Input v-model="form.constant_symbol" @update:model-value="form.clearErrors('constant_symbol')" :disabled="locked" class="disabled:opacity-100" />
+                    <Input autocomplete="off" v-model="form.constant_symbol" @update:model-value="form.clearErrors('constant_symbol')" :disabled="locked" class="disabled:opacity-100" />
                   </FormInlineError>
                 </FormControl>
               </div>
@@ -531,7 +536,7 @@ import {
   Trash2Icon,
   BanknoteIcon,
 } from "lucide-vue-next";
-import { computed, nextTick, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { toast } from "vue-sonner";
 
 interface Company {
@@ -593,6 +598,9 @@ const props = defineProps<{
   pricePrecision: number;
   defaultVatRate: number;
 }>();
+
+const isSaving = ref(false)
+const isIssuing = ref(false)
 
 const form = useForm(() => ({
   issued_at: props.issuedAt || "",
@@ -660,6 +668,7 @@ const clearLineErrors = () => {
       form.clearErrors(key as any);
     }
   });
+  form.clearErrors('lines');
 };
 
 const clearLineError = (key: keyof InvoiceLine, index: number) => {
@@ -690,42 +699,51 @@ const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(
   },
 );
 
+const notifyAboutSaveFailure = (message: string) => {
+  toast.error(message, {
+    style: {
+      background: "var(--destructive)",
+      color: "var(--destructive-foreground)",
+    },
+  });
+
+  nextTick(() => {
+    const firstElementWithError = document.querySelector(".has-error");
+    if (firstElementWithError) {
+      const rect = firstElementWithError.getBoundingClientRect();
+      const isVisible =
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+
+      if (!isVisible) {
+        window.scrollTo({
+          top: rect.top + window.pageYOffset - 80,
+          behavior: "smooth",
+        });
+      }
+    }
+  });
+}
+
 const save = () => {
-  // if (props.locked || !form.isDirty) {
-  //   return
-  // }
+  if (props.locked) {
+    return
+  }
+
+  isSaving.value = true
 
   form.patch(route("invoices.update", props.id), {
     preserveScroll: true,
     onSuccess: () => {
       toast.success("Zmeny boli uložené.");
     },
+    onFinish: () => {
+      isSaving.value = false
+    },
     onError: () => {
-      toast.error("Niektoré polia sa nepodarilo uložiť.", {
-        style: {
-          background: "var(--destructive)",
-          color: "var(--destructive-foreground)",
-        },
-      });
-
-      nextTick(() => {
-        const firstElementWithError = document.querySelector(".has-error");
-        if (firstElementWithError) {
-          const rect = firstElementWithError.getBoundingClientRect();
-          const isVisible =
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-
-          if (!isVisible) {
-            window.scrollTo({
-              top: rect.top + window.pageYOffset - 80,
-              behavior: "smooth",
-            });
-          }
-        }
-      });
+      notifyAboutSaveFailure('Niektoré polia sa nepodarilo uložiť.')
     },
   });
 };
@@ -754,14 +772,22 @@ watch([Meta_S, Ctrl_S], (v) => {
   }
 });
 
-const issueForm = useForm({});
 const issueInvoice = () => {
-  issueForm.post(route("invoices.issue", props.id), {
+  isIssuing.value = true
+
+  form.post(route("invoices.issue", props.id), {
     preserveScroll: true,
     onSuccess: () => {
       toast.success("Faktúra bola vystavená");
+      form.reset()
     },
-  });
+    onFinish: () => {
+      isIssuing.value = false
+    },
+    onError: () => {
+      notifyAboutSaveFailure('Faktúru sa nepodarilo vystaviť.')
+    },
+  })
 };
 
 const lockInvoiceForm = useForm({})

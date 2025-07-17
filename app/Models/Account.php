@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $invoice_template
  * @property \App\Models\Upload|null $invoiceSignature
  * @property \App\Models\Upload|null $invoiceLogo
+ * @property int $next_invoice_number
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  */
 class Account extends Model
 {
@@ -54,5 +57,10 @@ class Account extends Model
     public function invoiceLogo(): BelongsTo
     {
         return $this->belongsTo(Upload::class);
+    }
+
+    public function numberSequences(): HasMany
+    {
+        return $this->hasMany(NumberSequence::class);
     }
 }

@@ -119,7 +119,7 @@ class UpdateInvoiceRequest extends FormRequest
             'lines.*.description' => ['nullable', 'string', 'max:1000'],
             'lines.*.quantity' => ['nullable', 'numeric'],
             'lines.*.unit' => ['nullable', 'string', 'max:191'],
-            'lines.*.unitPrice' => ['nullable', 'integer'],
+            'lines.*.unitPrice' => [$strict && $vatEnabled ? 'required' : 'nullable', 'integer'],
             'lines.*.vat' => [$strict && $vatEnabled ? 'required' : 'nullable', 'numeric', 'min:0', 'max:100'],
             'lines.*.totalVatExclusive' => ['nullable', 'integer'],
             'lines.*.totalVatInclusive' => [$strict && $vatEnabled ? 'required' : 'nullable', 'integer'],
@@ -140,7 +140,7 @@ class UpdateInvoiceRequest extends FormRequest
         ];
     }
 
-    public function fulfill(Invoice $invoice): void
+    public function saveInvoice(Invoice $invoice): Invoice
     {
         $invoice->fill([
             'issued_at' => $this->date('issued_at', 'Y-m-d'),
@@ -233,5 +233,7 @@ class UpdateInvoiceRequest extends FormRequest
                 'currency' => $invoice->currency,
             ]);
         });
+
+        return $invoice;
     }
 }
