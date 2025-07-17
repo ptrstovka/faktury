@@ -7,15 +7,12 @@ namespace App\Http\Controllers\Invoice;
 use App\Enums\Country;
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
-use App\Models\Address;
+use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
-use Brick\Money\Money;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use StackTrace\Ui\SelectOption;
 
@@ -23,11 +20,15 @@ class InvoiceController
 {
     public function index()
     {
+        Gate::authorize('viewAny', Invoice::class);
+
         return Inertia::render('Invoices/InvoiceList');
     }
 
     public function show(Invoice $invoice)
     {
+        Gate::authorize('view', $invoice);
+
         $account = $invoice->account;
 
         $toCompany = fn (Company $company) => [
@@ -49,6 +50,9 @@ class InvoiceController
 
         return Inertia::render('Invoices/InvoiceDetail', [
             'id' => $invoice->uuid,
+            'draft' => $invoice->draft,
+            'locked' => $invoice->locked,
+            'sent' => $invoice->sent,
             'publicInvoiceNumber' => $invoice->public_invoice_number,
             'supplier' => $toCompany($invoice->supplier),
             'customer' => $toCompany($invoice->customer),
@@ -104,6 +108,8 @@ class InvoiceController
 
     public function store()
     {
+        Gate::authorize('create', Invoice::class);
+
         $account = Accounts::current();
 
         $invoice = DB::transaction(function () use ($account) {
@@ -111,6 +117,7 @@ class InvoiceController
                 'draft' => true,
                 'sent' => false,
                 'paid' => false,
+                'locked' => false,
                 'payment_method' => $account->invoice_payment_method,
                 // TODO: make configurable
                 'currency' => 'EUR',
@@ -146,179 +153,11 @@ class InvoiceController
         return to_route('invoices.show', $invoice);
     }
 
-    public function update(Request $request, Invoice $invoice)
+    public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
         // TODO: zamknutu fakturu neni možne editovať
 
-        $request->validate([
-            'issued_at' => ['required', 'string', 'date_format:Y-m-d'],
-            'supplied_at' => ['required', 'string', 'date_format:Y-m-d'],
-            'payment_due_to' => ['required', 'string', 'date_format:Y-m-d'],
-            'public_invoice_number' => ['nullable', 'string', 'max:191'],
-
-            'supplier_business_name' => ['nullable', 'string', 'max:191'],
-            'supplier_business_id' => ['nullable', 'string', 'max:191'],
-            'supplier_vat_id' => ['nullable', 'string', 'max:191'],
-            'supplier_eu_vat_id' => ['nullable', 'string', 'max:191'],
-            'supplier_email' => ['nullable', 'string', 'max:191', 'email'],
-            'supplier_phone_number' => ['nullable', 'string', 'max:191'],
-            'supplier_website' => ['nullable', 'string', 'max:191'],
-            'supplier_additional_info' => ['nullable', 'string', 'max:500'],
-            'supplier_address_line_one' => ['nullable', 'string', 'max:191'],
-            'supplier_address_line_two' => ['nullable', 'string', 'max:191'],
-            'supplier_address_line_three' => ['nullable', 'string', 'max:191'],
-            'supplier_address_city' => ['nullable', 'string', 'max:191'],
-            'supplier_address_postal_code' => ['nullable', 'string', 'max:191'],
-            'supplier_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
-
-            'customer_business_name' => ['nullable', 'string', 'max:191'],
-            'customer_business_id' => ['nullable', 'string', 'max:191'],
-            'customer_vat_id' => ['nullable', 'string', 'max:191'],
-            'customer_eu_vat_id' => ['nullable', 'string', 'max:191'],
-            'customer_email' => ['nullable', 'string', 'max:191', 'email'],
-            'customer_phone_number' => ['nullable', 'string', 'max:191'],
-            'customer_website' => ['nullable', 'string', 'max:191'],
-            'customer_additional_info' => ['nullable', 'string', 'max:500'],
-            'customer_address_line_one' => ['nullable', 'string', 'max:191'],
-            'customer_address_line_two' => ['nullable', 'string', 'max:191'],
-            'customer_address_line_three' => ['nullable', 'string', 'max:191'],
-            'customer_address_city' => ['nullable', 'string', 'max:191'],
-            'customer_address_postal_code' => ['nullable', 'string', 'max:191'],
-            'customer_address_country' => ['nullable', 'string', 'max:2', Rule::enum(Country::class)],
-
-            // TODO: pridať podporu šablony
-            'template' => ['required', 'string', Rule::in(['default']), 'max:191'],
-            'footer_note' => ['nullable', 'string', 'max:1000'],
-            'issued_by' => ['nullable', 'string', 'max:191'],
-            'issued_by_email' => ['nullable', 'string', 'max:191', 'email'],
-            'issued_by_phone_number' => ['nullable', 'string', 'max:191'],
-            'issued_by_website' => ['nullable', 'string', 'max:191'],
-
-            'payment_method' => ['required', 'string', 'max:191', Rule::enum(PaymentMethod::class)],
-            'bank_name' => ['nullable', 'string', 'max:191'],
-            'bank_address' => ['nullable', 'string', 'max:191'],
-            'bank_bic' => ['nullable', 'string', 'max:191'],
-            'bank_account_number' => ['nullable', 'string', 'max:191'],
-            'bank_account_iban' => ['nullable', 'string', 'max:191'],
-            'variable_symbol' => ['nullable', 'string', 'max:191'],
-            'specific_symbol' => ['nullable', 'string', 'max:191'],
-            'constant_symbol' => ['nullable', 'string', 'max:191'],
-            'show_pay_by_square' => ['boolean'],
-
-            'vat_reverse_charge' => ['boolean'],
-            'vat_enabled' => ['boolean'],
-
-            'lines' => ['array', 'max:100'],
-            'lines.*.title' => ['nullable', 'string', 'max:500'],
-            'lines.*.description' => ['nullable', 'string', 'max:1000'],
-            'lines.*.quantity' => ['nullable', 'numeric'],
-            'lines.*.unit' => ['nullable', 'string', 'max:191'],
-            'lines.*.unitPrice' => ['nullable', 'integer'],
-            'lines.*.vat' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'lines.*.totalVatExclusive' => ['nullable', 'integer'],
-            'lines.*.totalVatInclusive' => ['nullable', 'integer'],
-        ], [], [
-            'lines.*.title' => 'title',
-            'lines.*.description' => 'description',
-            'lines.*.quantity' => 'quantity',
-            'lines.*.unit' => 'unit',
-            'lines.*.unitPrice' => 'unitPrice',
-            'lines.*.vat' => 'vat',
-            'lines.*.totalVatExclusive' => 'totalVatExclusive',
-            'lines.*.totalVatInclusive' => 'totalVatInclusive',
-        ]);
-
-        $invoice->fill([
-            'issued_at' => $request->date('issued_at', 'Y-m-d'),
-            'supplied_at' => $request->date('supplied_at', 'Y-m-d'),
-            'payment_due_to' => $request->date('payment_due_to', 'Y-m-d'),
-            'public_invoice_number' => $request->input('public_invoice_number'),
-            'template' => $request->input('template'),
-            'footer_note' => $request->input('footer_note'),
-            'issued_by' => $request->input('issued_by'),
-            'issued_by_email' => $request->input('issued_by_email'),
-            'issued_by_phone_number' => $request->input('issued_by_phone_number'),
-            'issued_by_website' => $request->input('issued_by_website'),
-            'vat_reverse_charge' => $request->boolean('vat_reverse_charge'),
-            'vat_enabled' => $request->boolean('vat_enabled'),
-            'payment_method' => $request->enum('payment_method', PaymentMethod::class),
-            'variable_symbol' => $request->input('variable_symbol'),
-            'specific_symbol' => $request->input('specific_symbol'),
-            'constant_symbol' => $request->input('constant_symbol'),
-            'show_pay_by_square' => $request->boolean('show_pay_by_square'),
-        ]);
-        $invoice->save();
-
-        $supplierAddress = $invoice->supplier->address ?: new Address;
-        $supplierAddress->fill([
-            'line_one' => $request->input('supplier_address_line_one'),
-            'line_two' => $request->input('supplier_address_line_two'),
-            'line_three' => $request->input('supplier_address_line_three'),
-            'city' => $request->input('supplier_address_city'),
-            'postal_code' => $request->input('supplier_address_postal_code'),
-            'country' => $request->enum('supplier_address_country', Country::class),
-        ]);
-        $supplierAddress->save();
-        $invoice->supplier->address()->associate($supplierAddress);
-        $invoice->supplier->fill([
-            'business_name' => $request->input('supplier_business_name'),
-            'business_id' => $request->input('supplier_business_id'),
-            'vat_id' => $request->input('supplier_vat_id'),
-            'eu_vat_id' => $request->input('supplier_eu_vat_id'),
-            'email' => $request->input('supplier_email'),
-            'phone_number' => $request->input('supplier_phone_number'),
-            'website' => $request->input('supplier_website'),
-            'additional_info' => $request->input('supplier_additional_info'),
-            'bank_name' => $request->input('bank_name'),
-            'bank_address' => $request->input('bank_address'),
-            'bank_bic' => $request->input('bank_bic'),
-            'bank_account_number' => $request->input('bank_account_number'),
-            'bank_account_iban' => $request->input('bank_account_iban'),
-        ]);
-        $invoice->supplier->save();
-
-        $customerAddress = $invoice->customer->address ?: new Address;
-        $customerAddress->fill([
-            'line_one' => $request->input('customer_address_line_one'),
-            'line_two' => $request->input('customer_address_line_two'),
-            'line_three' => $request->input('customer_address_line_three'),
-            'city' => $request->input('customer_address_city'),
-            'postal_code' => $request->input('customer_address_postal_code'),
-            'country' => $request->enum('customer_address_country', Country::class),
-        ]);
-        $customerAddress->save();
-        $invoice->customer->address()->associate($customerAddress);
-        $invoice->customer->fill([
-            'business_name' => $request->input('customer_business_name'),
-            'business_id' => $request->input('customer_business_id'),
-            'vat_id' => $request->input('customer_vat_id'),
-            'eu_vat_id' => $request->input('customer_eu_vat_id'),
-            'email' => $request->input('customer_email'),
-            'phone_number' => $request->input('customer_phone_number'),
-            'website' => $request->input('customer_website'),
-            'additional_info' => $request->input('customer_additional_info'),
-        ]);
-        $invoice->customer->save();
-
-        $invoice->lines()->delete();
-        $request->collect('lines')->each(function (array $line, int $idx) use ($invoice) {
-            $unitPrice = Arr::get($line, 'unitPrice');
-            $totalVatInclusive = Arr::get($line, 'totalVatInclusive');
-            $totalVatExclusive = Arr::get($line, 'totalVatExclusive');
-
-            $invoice->lines()->create([
-                'position' => $idx + 1,
-                'title' => Arr::get($line, 'title'),
-                'description' => Arr::get($line, 'description'),
-                'unit' => Arr::get($line, 'unit'),
-                'quantity' => Arr::get($line, 'quantity'),
-                'vat_rate' => Arr::get($line, 'vat'),
-                'unit_price_vat_exclusive' => is_numeric($unitPrice) ? Money::ofMinor($unitPrice, $invoice->currency) : null,
-                'total_price_vat_inclusive' => is_numeric($totalVatInclusive) ? Money::ofMinor($totalVatInclusive, $invoice->currency) : null,
-                'total_price_vat_exclusive' => is_numeric($totalVatExclusive) ? Money::ofMinor($totalVatExclusive, $invoice->currency) : null,
-                'currency' => $invoice->currency,
-            ]);
-        });
+        DB::transaction(fn () => $request->fulfill($invoice));
 
         return back();
     }

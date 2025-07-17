@@ -5,13 +5,48 @@
     <div class="px-4">
       <div class="flex flex-row justify-between items-center border-b py-4 mb-4">
         <div class="">
-          <p class="text-2xl font-medium text-muted-foreground">Nová faktúra</p>
+          <p class="text-2xl font-medium text-muted-foreground" v-if="draft">Nová faktúra</p>
+          <div class="inline-flex items-center gap-2" v-else>
+            <p class="text-2xl font-medium">Faktúra {{ publicInvoiceNumber }}</p>
+            <LockIcon v-if="locked" class="size-4 text-yellow-400" />
+            <LockOpenIcon v-else class="size-4 text-destructive" />
+          </div>
         </div>
 
         <div class="flex gap-2">
-          <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
-          <Button :processing="form.processing" @click="save" variant="outline" size="sm">Uložiť</Button>
-          <Button @click="save" size="sm">Vystaviť</Button>
+          <template v-if="draft">
+            <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
+            <Button :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
+            <Button :processing="issueForm.processing" @click="issueInvoice" size="sm" label="Vystaviť" />
+          </template>
+
+          <template v-else>
+            <template v-if="locked">
+              <Button size="sm" label="Stiahnuť" :icon="FileDownIcon" />
+
+              <Button variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button class="px-2" size="sm" variant="outline" :icon="EllipsisIcon" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="min-w-48" align="end">
+                  <DropdownMenuItem @select="unlockInvoice">
+                    <FileLockIcon /> Odomknúť úpravy
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive">
+                    <Trash2Icon /> Odstrániť
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </template>
+            <template v-else>
+              <Button :processing="form.processing" @click="save" variant="outline" size="sm" label="Uložiť" :icon="SaveIcon" />
+
+              <Button @click="lockInvoice" size="sm" label="Zamknúť úpravy" :icon="KeySquareIcon" />
+            </template>
+          </template>
         </div>
       </div>
 
@@ -434,225 +469,291 @@
 import { Button } from "@/Components/Button";
 import { CheckboxControl } from "@/Components/Checkbox";
 import { DatePicker } from "@/Components/DatePicker";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/Components/DropdownMenu";
 import { FormControl, FormInlineError, FormSelect } from "@/Components/Form";
 import { Input } from "@/Components/Input";
 import { Textarea } from "@/Components/Textarea";
-import AppLayout from '@/Layouts/AppLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import AppLayout from "@/Layouts/AppLayout.vue";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import type { SelectOption } from "@stacktrace/ui";
-import { createInvoiceLine, type InvoiceLine, InvoiceLineArrayInput } from "@/Components/InvoiceLineInput";
+import {
+  createInvoiceLine,
+  type InvoiceLine,
+  InvoiceLineArrayInput,
+} from "@/Components/InvoiceLineInput";
 import { useMagicKeys } from "@vueuse/core";
-import { PlusIcon } from "lucide-vue-next";
+import {
+  PlusIcon,
+  SaveIcon,
+  SendIcon,
+  FileDownIcon,
+  FileLockIcon,
+  EllipsisIcon,
+  LockIcon,
+  LockOpenIcon,
+  KeySquareIcon,
+  Trash2Icon,
+} from "lucide-vue-next";
 import { computed, nextTick, watch } from "vue";
 import { toast } from "vue-sonner";
 
 interface Company {
-  businessName: string | null
-  businessId: string | null
-  vatId: string | null
-  euVatId: string | null
-  email: string | null
-  phoneNumber: string | null
-  website: string | null
-  additionalInfo: string | null
-  addressLineOne: string | null
-  addressLineTwo: string | null
-  addressLineThree: string | null
-  addressCity: string | null
-  addressPostalCode: string | null
-  addressCountry: string | null
+  businessName: string | null;
+  businessId: string | null;
+  vatId: string | null;
+  euVatId: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  website: string | null;
+  additionalInfo: string | null;
+  addressLineOne: string | null;
+  addressLineTwo: string | null;
+  addressLineThree: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string | null;
 }
 
 const props = defineProps<{
-  id: string
-  publicInvoiceNumber: string | null
-  supplier: Company
-  customer: Company
-  bankName: string | null
-  bankAddress: string | null
-  bankBic: string | null
-  bankAccountNumber: string | null
-  bankAccountIban: string | null
-  issuedAt: string | null
-  suppliedAt: string | null
-  paymentDueTo: string | null
-  vatEnabled: boolean
-  locale: string
-  template: string
-  footerNote: string | null
-  issuedBy: string | null
-  issuedByEmail: string | null
-  issuedByPhoneNumber: string | null
-  issuedByWebsite: string | null
-  paymentMethod: string
-  variableSymbol: string | null
-  specificSymbol: string | null
-  constantSymbol: string | null
-  showPayBySquare: boolean
-  vatReverseCharge: boolean
-  lines: Array<InvoiceLine>
+  id: string;
+  draft: boolean;
+  locked: boolean;
+  sent: boolean;
+  publicInvoiceNumber: string | null;
+  supplier: Company;
+  customer: Company;
+  bankName: string | null;
+  bankAddress: string | null;
+  bankBic: string | null;
+  bankAccountNumber: string | null;
+  bankAccountIban: string | null;
+  issuedAt: string | null;
+  suppliedAt: string | null;
+  paymentDueTo: string | null;
+  vatEnabled: boolean;
+  locale: string;
+  template: string;
+  footerNote: string | null;
+  issuedBy: string | null;
+  issuedByEmail: string | null;
+  issuedByPhoneNumber: string | null;
+  issuedByWebsite: string | null;
+  paymentMethod: string;
+  variableSymbol: string | null;
+  specificSymbol: string | null;
+  constantSymbol: string | null;
+  showPayBySquare: boolean;
+  vatReverseCharge: boolean;
+  lines: Array<InvoiceLine>;
 
-  countries: Array<SelectOption>
-  templates: Array<SelectOption>
-  paymentMethods: Array<SelectOption<'cash' | 'bank-transfer'>>
+  countries: Array<SelectOption>;
+  templates: Array<SelectOption>;
+  paymentMethods: Array<SelectOption<"cash" | "bank-transfer">>;
 
-  thousandsSeparator: string
-  decimalSeparator: string
-  quantityPrecision: number
-  pricePrecision: number
-  defaultVatRate: number
-}>()
+  thousandsSeparator: string;
+  decimalSeparator: string;
+  quantityPrecision: number;
+  pricePrecision: number;
+  defaultVatRate: number;
+}>();
 
 const form = useForm(() => ({
-  issued_at: props.issuedAt || '',
-  supplied_at: props.suppliedAt || '',
-  payment_due_to: props.paymentDueTo || '',
-  public_invoice_number: props.publicInvoiceNumber || '',
+  issued_at: props.issuedAt || "",
+  supplied_at: props.suppliedAt || "",
+  payment_due_to: props.paymentDueTo || "",
+  public_invoice_number: props.publicInvoiceNumber || "",
 
-  supplier_business_name: props.supplier.businessName || '',
-  supplier_business_id: props.supplier.businessId || '',
-  supplier_vat_id: props.supplier.vatId || '',
-  supplier_eu_vat_id: props.supplier.euVatId || '',
-  supplier_email: props.supplier.email || '',
-  supplier_phone_number: props.supplier.phoneNumber || '',
-  supplier_website: props.supplier.website || '',
-  supplier_additional_info: props.supplier.additionalInfo || '',
-  supplier_address_line_one: props.supplier.addressLineOne || '',
-  supplier_address_line_two: props.supplier.addressLineTwo || '',
-  supplier_address_line_three: props.supplier.addressLineThree || '',
-  supplier_address_city: props.supplier.addressCity || '',
-  supplier_address_postal_code: props.supplier.addressPostalCode || '',
-  supplier_address_country: props.supplier.addressCountry || '',
+  supplier_business_name: props.supplier.businessName || "",
+  supplier_business_id: props.supplier.businessId || "",
+  supplier_vat_id: props.supplier.vatId || "",
+  supplier_eu_vat_id: props.supplier.euVatId || "",
+  supplier_email: props.supplier.email || "",
+  supplier_phone_number: props.supplier.phoneNumber || "",
+  supplier_website: props.supplier.website || "",
+  supplier_additional_info: props.supplier.additionalInfo || "",
+  supplier_address_line_one: props.supplier.addressLineOne || "",
+  supplier_address_line_two: props.supplier.addressLineTwo || "",
+  supplier_address_line_three: props.supplier.addressLineThree || "",
+  supplier_address_city: props.supplier.addressCity || "",
+  supplier_address_postal_code: props.supplier.addressPostalCode || "",
+  supplier_address_country: props.supplier.addressCountry || "",
 
-  customer_business_name: props.customer.businessName || '',
-  customer_business_id: props.customer.businessId || '',
-  customer_vat_id: props.customer.vatId || '',
-  customer_eu_vat_id: props.customer.euVatId || '',
-  customer_email: props.customer.email || '',
-  customer_phone_number: props.customer.phoneNumber || '',
-  customer_website: props.customer.website || '',
-  customer_additional_info: props.customer.additionalInfo || '',
-  customer_address_line_one: props.customer.addressLineOne || '',
-  customer_address_line_two: props.customer.addressLineTwo || '',
-  customer_address_line_three: props.customer.addressLineThree || '',
-  customer_address_city: props.customer.addressCity || '',
-  customer_address_postal_code: props.customer.addressPostalCode || '',
-  customer_address_country: props.customer.addressCountry || '',
+  customer_business_name: props.customer.businessName || "",
+  customer_business_id: props.customer.businessId || "",
+  customer_vat_id: props.customer.vatId || "",
+  customer_eu_vat_id: props.customer.euVatId || "",
+  customer_email: props.customer.email || "",
+  customer_phone_number: props.customer.phoneNumber || "",
+  customer_website: props.customer.website || "",
+  customer_additional_info: props.customer.additionalInfo || "",
+  customer_address_line_one: props.customer.addressLineOne || "",
+  customer_address_line_two: props.customer.addressLineTwo || "",
+  customer_address_line_three: props.customer.addressLineThree || "",
+  customer_address_city: props.customer.addressCity || "",
+  customer_address_postal_code: props.customer.addressPostalCode || "",
+  customer_address_country: props.customer.addressCountry || "",
 
   template: props.template,
-  footer_note: props.footerNote || '',
-  issued_by: props.issuedBy || '',
-  issued_by_email: props.issuedByEmail || '',
-  issued_by_phone_number: props.issuedByPhoneNumber || '',
-  issued_by_website: props.issuedByWebsite || '',
+  footer_note: props.footerNote || "",
+  issued_by: props.issuedBy || "",
+  issued_by_email: props.issuedByEmail || "",
+  issued_by_phone_number: props.issuedByPhoneNumber || "",
+  issued_by_website: props.issuedByWebsite || "",
 
   payment_method: props.paymentMethod,
-  bank_name: props.bankName || '',
-  bank_address: props.bankAddress || '',
-  bank_bic: props.bankBic || '',
-  bank_account_number: props.bankAccountNumber || '',
-  bank_account_iban: props.bankAccountIban || '',
-  variable_symbol: props.variableSymbol || '',
-  specific_symbol: props.specificSymbol || '',
-  constant_symbol: props.constantSymbol || '',
+  bank_name: props.bankName || "",
+  bank_address: props.bankAddress || "",
+  bank_bic: props.bankBic || "",
+  bank_account_number: props.bankAccountNumber || "",
+  bank_account_iban: props.bankAccountIban || "",
+  variable_symbol: props.variableSymbol || "",
+  specific_symbol: props.specificSymbol || "",
+  constant_symbol: props.constantSymbol || "",
   show_pay_by_square: props.showPayBySquare,
 
   vat_reverse_charge: props.vatReverseCharge,
   vat_enabled: props.vatEnabled,
 
-  lines: props.lines.map(line => ({ ...line })) as Array<any>, // Array<InvoiceLine>
-}))
+  lines: props.lines.map((line) => ({ ...line })) as Array<any>, // Array<InvoiceLine>
+}));
 
 const clearLineErrors = () => {
-  Object.keys(form.errors).forEach(key => {
+  Object.keys(form.errors).forEach((key) => {
     if (key.startsWith(`lines.`)) {
-      form.clearErrors(key as any)
+      form.clearErrors(key as any);
     }
-  })
-}
+  });
+};
 
 const clearLineError = (key: keyof InvoiceLine, index: number) => {
-  const field = `lines.${index}.${key}`
-  form.clearErrors(field as any)
-}
+  const field = `lines.${index}.${key}`;
+  form.clearErrors(field as any);
+};
 
-const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(() => {
-  const formErrors = form.errors as Record<string, string>
+const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(
+  () => {
+    const formErrors = form.errors as Record<string, string>;
 
-  return form.lines.map((_, idx) => {
-    const errors: Partial<Record<keyof InvoiceLine, string>> = {}
+    return form.lines.map((_, idx) => {
+      const errors: Partial<Record<keyof InvoiceLine, string>> = {};
 
-    Object.keys(formErrors).forEach(key => {
-      if (key.startsWith(`lines.${idx}.`)) {
-        const lineError = formErrors[key]
-        const attribute = key.replace(`lines.${idx}.`, '').split('.')[0] as keyof InvoiceLine
+      Object.keys(formErrors).forEach((key) => {
+        if (key.startsWith(`lines.${idx}.`)) {
+          const lineError = formErrors[key];
+          const attribute = key
+            .replace(`lines.${idx}.`, "")
+            .split(".")[0] as keyof InvoiceLine;
 
-        errors[attribute] = lineError
-      }
-    })
+          errors[attribute] = lineError;
+        }
+      });
 
-    return errors
-  })
-})
+      return errors;
+    });
+  },
+);
 
-const save = () =>{
-  // TODO: Check či sa možu uložiť zmeny, keďže mam tu skratku cmd + s na to
+const save = () => {
+  if (props.locked) {
+    return;
+  }
 
-  form.patch(route('invoices.update', props.id), {
+  form.patch(route("invoices.update", props.id), {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success('Zmeny boli uložené.')
+      toast.success("Zmeny boli uložené.");
     },
     onError: () => {
-      toast.error('Niektoré polia sa nepodarilo uložiť.', {
+      toast.error("Niektoré polia sa nepodarilo uložiť.", {
         style: {
-          background: 'var(--destructive)',
-          color: 'var(--destructive-foreground)',
+          background: "var(--destructive)",
+          color: "var(--destructive-foreground)",
         },
-      })
+      });
 
       nextTick(() => {
-        const firstElementWithError = document.querySelector('.has-error')
+        const firstElementWithError = document.querySelector(".has-error");
         if (firstElementWithError) {
-          const rect = firstElementWithError.getBoundingClientRect()
-          const isVisible = rect.top >= 0 &&
+          const rect = firstElementWithError.getBoundingClientRect();
+          const isVisible =
+            rect.top >= 0 &&
             rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            rect.bottom <=
+              (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <=
+              (window.innerWidth || document.documentElement.clientWidth);
 
-          if (! isVisible) {
+          if (!isVisible) {
             window.scrollTo({
               top: rect.top + window.pageYOffset - 80,
-              behavior: 'smooth',
-            })
+              behavior: "smooth",
+            });
           }
         }
-      })
-    }
-  })
-}
+      });
+    },
+  });
+};
 
 const addLine = () => {
-  const newLines = form.lines.map(it => ({ ...it }))
-  const emptyLine = createInvoiceLine()
-  emptyLine.vat = props.defaultVatRate
-  newLines.push(emptyLine)
-  form.lines = newLines
-  clearLineErrors()
-}
+  const newLines = form.lines.map((it) => ({ ...it }));
+  const emptyLine = createInvoiceLine();
+  emptyLine.vat = props.defaultVatRate;
+  newLines.push(emptyLine);
+  form.lines = newLines;
+  clearLineErrors();
+};
 
 const { Meta_S, Ctrl_S } = useMagicKeys({
   passive: false,
   onEventFired(e) {
-    if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
+    if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
     }
   },
-})
+});
 
 watch([Meta_S, Ctrl_S], (v) => {
   if (v[0] || v[1]) {
-    save()
+    save();
   }
-})
+});
+
+const issueForm = useForm({});
+const issueInvoice = () => {
+  issueForm.post(route("invoices.issue", props.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.success("Faktúra bola vystavená");
+    },
+  });
+};
+
+const lockInvoice = () => {
+  router.post(
+    route("invoices.lock.store", props.id),
+    {},
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.success("Faktúra bola uzamknutá");
+      },
+    },
+  );
+};
+
+const unlockInvoice = () => {
+  router.delete(route("invoices.lock.destroy", props.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.success("Faktúra bola odomknutá");
+    },
+  });
+};
 </script>

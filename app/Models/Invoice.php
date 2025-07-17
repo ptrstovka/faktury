@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use RuntimeException;
 
 /**
  * @property \App\Models\Upload|null $signature
@@ -27,6 +28,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $currency
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine> $lines
  * @property \App\Models\Account $account
+ * @property boolean $draft
+ * @property boolean $sent
+ * @property boolean $paid
+ * @property boolean $locked
+ * @property boolean $vat_enabled
+ * @property string $locale
+ * @property string $template
+ * @property string|null $footer_note
+ * @property string|null $issued_by
+ * @property string|null $issued_by_email
+ * @property string|null $issued_by_phone_number
+ * @property string|null $issued_by_website
  */
 class Invoice extends Model
 {
@@ -37,6 +50,10 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'draft' => 'boolean',
+            'sent' => 'boolean',
+            'paid' => 'boolean',
+            'locked' => 'boolean',
             'issued_at' => 'date',
             'supplied_at' => 'date',
             'payment_due_to' => 'date',
@@ -85,5 +102,45 @@ class Invoice extends Model
     public function getSortedLines(): Collection
     {
         return $this->lines->sortBy('position')->values();
+    }
+
+    /**
+     * Issue an invoice.
+     */
+    public function issue(): void
+    {
+        if (! $this->draft) {
+            throw new RuntimeException("The invoice is already issued");
+        }
+
+        // TODO: Generovat cislo faktury
+        // TODO: Generovat variabilny symbol
+
+        $this->draft = false;
+        $this->locked = true;
+
+        $this->save();
+    }
+
+    /**
+     * Add edit lock on the invoice.
+     */
+    public function lock(): void
+    {
+        if ($this->draft) {
+            throw new RuntimeException("The invoice draft cannot be locked");
+        }
+
+        $this->locked = true;
+        $this->save();
+    }
+
+    /**
+     * Remove edit lock from the invoice.
+     */
+    public function unlock(): void
+    {
+        $this->locked = false;
+        $this->save();
     }
 }

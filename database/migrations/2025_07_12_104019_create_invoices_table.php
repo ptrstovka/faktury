@@ -14,6 +14,7 @@ return new class extends Migration
             $table->boolean('draft');
             $table->boolean('sent');
             $table->boolean('paid');
+            $table->boolean('locked');
             $table->foreignId('account_id')->constrained('accounts');
             $table->foreignId('supplier_id')->constrained('companies');
             $table->foreignId('customer_id')->constrained('companies');
