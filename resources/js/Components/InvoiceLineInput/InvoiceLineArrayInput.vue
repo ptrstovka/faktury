@@ -9,8 +9,8 @@
               <EllipsisVerticalIcon class="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem @select="remove(idx)">Odstrániť</DropdownMenuItem>
+          <DropdownMenuContent align="start" class="min-w-48">
+            <DropdownMenuItem @select="remove(idx)" variant="destructive"><Trash2Icon /> Odstrániť</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -29,6 +29,7 @@
       />
 
       <div class="w-10 shrink-0 flex flex-col items-center pt-6">
+        <!-- TODO: pridať support pre drag and drop položiek -->
         <Button variant="ghost" class="p-2 h-auto text-muted-foreground cursor-move disabled:hover:bg-transparent" :disabled="disabled || lines.value.length <= 1">
           <GripVerticalIcon class="size-4" />
         </Button>
@@ -49,7 +50,7 @@ import { cn } from "@/Utils";
 import { reactive, watch } from "vue";
 import type { InvoiceLine } from ".";
 import { InvoiceLineInput, isEqual } from '.'
-import { GripVerticalIcon, EllipsisVerticalIcon } from 'lucide-vue-next'
+import { GripVerticalIcon, EllipsisVerticalIcon, Trash2Icon } from 'lucide-vue-next'
 
 const emit = defineEmits(['update:modelValue', 'clearError', 'removed'])
 
