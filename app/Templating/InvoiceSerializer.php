@@ -58,6 +58,10 @@ class InvoiceSerializer
                 'vat_enabled' => $invoice->vat_enabled,
                 'vat_reverse_charge' => $invoice->vat_reverse_charge,
 
+                'vat_amount' => ($vatAmount = $invoice->getVatAmount()) ? $this->money($vatAmount, $options->moneyFormattingLocale) : null,
+                'total_vat_inclusive' => $invoice->total_vat_inclusive ? $this->money($invoice->total_vat_inclusive, $options->moneyFormattingLocale) : null,
+                'total_vat_exclusive' => $invoice->total_vat_exclusive ? $this->money($invoice->total_vat_exclusive, $options->moneyFormattingLocale) : null,
+
                 'lines' => $invoice->getSortedLines()->map(fn (InvoiceLine $line) => [
                     'position' => $line->position,
                     'title' => $line->title,
@@ -67,8 +71,8 @@ class InvoiceSerializer
                     'unit_price_vat_exclusive' => $line->unit_price_vat_exclusive ? $this->money($line->unit_price_vat_exclusive, $options->moneyFormattingLocale) : null,
                     'vat_rate' => $line->vat_rate,
                     'vat_amount' => ($vatAmount = $line->getVatAmount()) && $invoice->vat_enabled ? $this->money($vatAmount, $options->moneyFormattingLocale) : null,
-                    'total_price_vat_exclusive' => $line->total_price_vat_exclusive ? $this->money($line->total_price_vat_exclusive, $options->moneyFormattingLocale) : null,
-                    'total_price_vat_inclusive' => $line->total_price_vat_inclusive ? $this->money($line->total_price_vat_inclusive, $options->moneyFormattingLocale) : null,
+                    'total_vat_exclusive' => $line->total_price_vat_exclusive ? $this->money($line->total_price_vat_exclusive, $options->moneyFormattingLocale) : null,
+                    'total_vat_inclusive' => $line->total_price_vat_inclusive ? $this->money($line->total_price_vat_inclusive, $options->moneyFormattingLocale) : null,
                 ]),
 
                 'vat_breakdown' => $invoice->getVatBreakdown()->map(fn (VatBreakdownLine $line) => [
@@ -80,6 +84,8 @@ class InvoiceSerializer
                 'logo' => $invoice->logo ? $this->image($invoice->logo) : null,
                 'signature' => $invoice->signature ? $this->image($invoice->signature) : null,
                 'pay_by_square' => $invoice->show_pay_by_square && ($pay = $invoice->getPayBySquare()) ? $this->payBySquare($pay) : null,
+
+                'total_to_pay' => ($toPay = $invoice->getAmountToPay()) ? $this->money($toPay, $options->moneyFormattingLocale) : null,
             ],
         ];
     }
@@ -108,7 +114,7 @@ class InvoiceSerializer
     {
         return [
             'formatted' => $money->formatTo($locale),
-            'value' => $money->getMinorAmount(),
+            'value' => $money->getMinorAmount()->toInt(),
             'currency' => [
                 'name' => $money->getCurrency()->getName(),
                 'code' => $money->getCurrency()->getCurrencyCode(),
