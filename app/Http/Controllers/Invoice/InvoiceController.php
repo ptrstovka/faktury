@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Support\VatBreakdownLine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -92,6 +93,14 @@ class InvoiceController
             ]),
             'logoUrl' => $invoice->logo?->url(),
             'signatureUrl' => $invoice->signature?->url(),
+            'vatAmount' => $invoice->getVatAmount()?->getMinorAmount(),
+            'vatBreakdown' => $invoice->getVatBreakdown()->map(fn (VatBreakdownLine $line) => [
+                'rate' => $line->rate,
+                'base' => $line->base->getMinorAmount(),
+                'total' => $line->total->getMinorAmount(),
+            ]),
+            'totalVatInclusive' => $invoice->total_vat_inclusive?->getMinorAmount(),
+            'totalVatExclusive' => $invoice->total_vat_exclusive?->getMinorAmount(),
 
             'countries' => Country::options(),
             'paymentMethods' => PaymentMethod::options(),

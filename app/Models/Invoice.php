@@ -6,7 +6,11 @@ use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
 use App\Models\Concerns\HasUuid;
 use App\NumberSequenceFormatter;
+use App\Support\MoneyUtils;
+use App\Support\VatBreakdownLine;
+use Brick\Math\BigNumber;
 use Brick\Money\Currency;
+use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -207,5 +211,59 @@ class Invoice extends Model
     public function getCurrency(): Currency
     {
         return Currency::of($this->currency);
+    }
+
+    /**
+     * Get total amount of VAT.
+     */
+    public function getVatAmount(): ?Money
+    {
+        if (! $this->vat_enabled) {
+            return null;
+        }
+
+        if ($this->total_vat_inclusive && $this->total_vat_exclusive) {
+            try {
+                return $this->total_vat_inclusive->minus($this->total_vat_exclusive);
+            } catch (MoneyMismatchException $e) {
+                throw new RuntimeException($e->getMessage(), previous: $e);
+            }
+        }
+
+        return Money::zero($this->currency);
+    }
+
+    /**
+     * Get the VAT breakdown.
+     *
+     * @return \Illuminate\Support\Collection<int, VatBreakdownLine>
+     */
+    public function getVatBreakdown(): Collection
+    {
+        if (! $this->vat_enabled) {
+            return collect();
+        }
+
+        return $this->lines
+            ->filter(fn (InvoiceLine $line) => $line->vat_rate !== null && $line->total_price_vat_exclusive !== null && $line->total_price_vat_inclusive !== null)
+            ->groupBy
+            ->vat_rate
+            /** @var Collection<int, \App\Models\InvoiceLine> $lines */
+            ->map(function (Collection $lines) {
+                try {
+                    $totalVatInclusive = MoneyUtils::sum($this->currency, ...$lines->map->total_price_vat_inclusive);
+                    $totalVatExclusive = MoneyUtils::sum($this->currency, ...$lines->map->total_price_vat_exclusive);
+
+                    return new VatBreakdownLine(
+                        rate: BigNumber::of($lines[0]->vat_rate),
+                        total: Money::max(Money::zero($this->currency), $totalVatInclusive->minus($totalVatExclusive)),
+                        base: Money::max(Money::zero($this->currency), $totalVatExclusive),
+                    );
+                } catch (MoneyMismatchException $e) {
+                    throw new RuntimeException($e->getMessage(), previous: $e);
+                }
+            })
+            ->values()
+            ->sortBy(fn (VatBreakdownLine $line) => $line->rate);
     }
 }

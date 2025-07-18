@@ -51,6 +51,14 @@ export interface InvoiceDetailProps {
   lines: Array<InvoiceLine>
   logoUrl: string | null
   signatureUrl: string | null
+  totalVatInclusive: number | null
+  totalVatExclusive: number | null
+  vatAmount: number | null
+  vatBreakdown: Array<{
+    rate: number
+    base: number
+    total: number
+  }>
 
   countries: Array<SelectOption>
   templates: Array<SelectOption>

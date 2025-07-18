@@ -3,12 +3,12 @@
     <tbody>
     <template v-for="item in vatBreakdown">
       <tr class="text-sm">
-        <td class="pb-0.5 text-right pr-4 text-muted-foreground">Základ DPH {{ item.vatRate }}%</td>
+        <td class="pb-0.5 text-right pr-4 text-muted-foreground">Základ DPH {{ item.rate }}%</td>
         <td class="tabular-nums pb-0.5 text-right font-medium">{{ formatMinorMoney(item.base) }}</td>
       </tr>
 
       <tr class="text-sm">
-        <td class="pb-2 text-right pr-4 text-muted-foreground">DPH {{ item.vatRate }}%</td>
+        <td class="pb-2 text-right pr-4 text-muted-foreground">DPH {{ item.rate }}%</td>
         <td class="tabular-nums pb-2 text-right font-medium">{{ formatMinorMoney(item.total) }}</td>
       </tr>
     </template>
