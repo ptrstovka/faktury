@@ -12,11 +12,16 @@ use Brick\Math\BigNumber;
 use Brick\Money\Currency;
 use Brick\Money\Exception\MoneyMismatchException;
 use Brick\Money\Money;
+use Bysqr\BankAccount;
+use Bysqr\Pay;
+use Bysqr\Payment;
+use Bysqr\PaymentOption;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
@@ -289,5 +294,53 @@ class Invoice extends Model
         }
 
         return $this->payment_due_to && $this->payment_due_to->isPast();
+    }
+
+    /**
+     * Get full amount of the invoice which needs to be paid.
+     */
+    public function getAmountToPay(): ?Money
+    {
+        if (! $this->vat_enabled) {
+            return $this->total_vat_exclusive;
+        }
+
+        if ($this->vat_reverse_charge) {
+            return $this->total_vat_exclusive;
+        }
+
+        return $this->total_vat_inclusive;
+    }
+
+    /**
+     * Get a Pay By Square Pay configuration.
+     */
+    public function getPayBySquare(): ?Pay
+    {
+        if (($amount = $this->getAmountToPay()) && ($iban = $this->supplier->bank_account_iban)) {
+            return new Pay(
+                payments: [
+                    new Payment(
+                        paymentOptions: PaymentOption::PAYMENT_ORDER,
+                        amount: $amount->getAmount()->toFloat(),
+                        currencyCode: $amount->getCurrency()->getCurrencyCode(),
+                        bankAccounts: [
+                            new BankAccount(
+                                iban: Str::replace(' ', '', $iban),
+                                bic: $this->supplier->bank_bic,
+                            )
+                        ],
+                        paymentDueDate: $this->payment_due_to?->format('Y-m-d'),
+                        variableSymbol: $this->variable_symbol,
+                        constantSymbol: $this->constant_symbol,
+                        specificSymbol: $this->specific_symbol,
+                        // TODO: Bug v bysqr
+                        // paymentNote: $this->public_invoice_number ? "Uhrada FA {$this->public_invoice_number}" : null,
+                    )
+                ]
+            );
+        }
+
+        return null;
     }
 }

@@ -34,6 +34,22 @@ class Upload extends Model
     }
 
     /**
+     * Get the file mime type.
+     */
+    public function mime(): string
+    {
+        return Storage::disk($this->disk)->mimeType($this->file_path);
+    }
+
+    /**
+     * Get the contents of the file.
+     */
+    public function contents(): ?string
+    {
+        return Storage::disk($this->disk)->get($this->file_path);
+    }
+
+    /**
      * Get the file URL.
      */
     public function url(): ?string

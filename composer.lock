@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a99c126077a437e0b182ab0344ca399f",
+    "content-hash": "242c30b2fa41a7e17fa0b062f43480f3",
     "packages": [
         {
             "name": "archtechx/enums",
@@ -175,6 +175,44 @@
                 }
             ],
             "time": "2025-03-05T13:00:01+00:00"
+        },
+        {
+            "name": "bysqr/bysqr",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bysqr/bysqr-php.git",
+                "reference": "234c88c4b70b8e1b9e816e4f8b2dc93658603c61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bysqr/bysqr-php/zipball/234c88c4b70b8e1b9e816e4f8b2dc93658603c61",
+                "reference": "234c88c4b70b8e1b9e816e4f8b2dc93658603c61",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "symfony/process": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^3.7",
+                "symfony/var-dumper": "^7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bysqr\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/bysqr/bysqr-php/issues",
+                "source": "https://github.com/bysqr/bysqr-php/tree/v0.0.1"
+            },
+            "time": "2025-07-10T07:53:30+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",

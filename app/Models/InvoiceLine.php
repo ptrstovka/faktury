@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Models\Concerns\HasUuid;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -39,5 +40,17 @@ class InvoiceLine extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /**
+     * Get the VAT amount of the line.
+     */
+    public function getVatAmount(): ?Money
+    {
+        if ($this->total_price_vat_exclusive && $this->total_price_vat_inclusive) {
+            return $this->total_price_vat_inclusive->minus($this->total_price_vat_exclusive);
+        }
+
+        return null;
     }
 }
