@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('companies');
             $table->string('public_invoice_number')->nullable();
             $table->integer('invoice_number')->nullable();
+            $table->foreignId('number_sequence_id')->nullable()->constrained('number_sequences');
             $table->string('payment_method');
             $table->string('variable_symbol')->nullable();
             $table->string('specific_symbol')->nullable();

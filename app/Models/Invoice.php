@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Models\Concerns\HasUuid;
+use App\NumberSequenceFormatter;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,6 +41,8 @@ use RuntimeException;
  * @property string|null $issued_by_email
  * @property string|null $issued_by_phone_number
  * @property string|null $issued_by_website
+ * @property \App\Models\NumberSequence|null $numberSequence
+ * @property int $invoice_number
  */
 class Invoice extends Model
 {
@@ -94,6 +97,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceLine::class);
     }
 
+    public function numberSequence(): BelongsTo
+    {
+        return $this->belongsTo(NumberSequence::class);
+    }
+
     /**
      * Get lines sorted by a position attribute.
      *
@@ -109,17 +117,45 @@ class Invoice extends Model
      */
     public function issue(): void
     {
-        if (! $this->draft) {
-            throw new RuntimeException("The invoice is already issued");
+        $formatter = new NumberSequenceFormatter(
+            format: $this->account->invoice_numbering_format,
+            date: $this->issued_at,
+        );
+
+        $sequenceToken = $formatter->formatSequenceToken();
+
+        /** @var \App\Models\NumberSequence $sequence */
+        $sequence = $this->account->numberSequences()->firstWhere('sequence_token', $sequenceToken) ?: $this->account->numberSequences()->create([
+            'sequence_token' => $sequenceToken,
+            'format' => $formatter->getFormat(),
+            'next_number' => 1,
+        ]);
+
+        // If the invoice number was already set by the user, we won't be touching that number.
+        if (! $this->public_invoice_number) {
+            $this->public_invoice_number = $formatter->formatNumber($sequence->next_number);
         }
 
-        // TODO: Generovat cislo faktury
-        // TODO: Generovat variabilny symbol
+        // If the invoice does not have variable symbol, we generate a new one.
+        if (! $this->variable_symbol) {
+            $variableSymbolFormatter = new NumberSequenceFormatter(
+                format: $this->account->invoice_variable_symbol_format,
+                date: $this->issued_at,
+            );
 
+            $this->variable_symbol = $variableSymbolFormatter->formatNumber($sequence->next_number);
+        }
+
+        // Mark the invoice as issued.
         $this->draft = false;
         $this->locked = true;
+        $this->invoice_number = $sequence->next_number;
+        $this->numberSequence()->associate($sequence);
 
         $this->save();
+
+        // Increment a sequence, so the next invoice gets new a number.
+        $sequence->incrementNextNumber();
     }
 
     /**

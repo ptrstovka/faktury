@@ -140,7 +140,7 @@ class UpdateInvoiceRequest extends FormRequest
         ];
     }
 
-    public function saveInvoice(Invoice $invoice): Invoice
+    public function updateInvoice(Invoice $invoice): Invoice
     {
         $invoice->fill([
             'issued_at' => $this->date('issued_at', 'Y-m-d'),
