@@ -1,3 +1,4 @@
+import type { BackendToast } from "@/Components/Sonner/useBackendSonner.ts";
 import { AppPageProps } from '@/Types';
 
 // Extend ImportMeta interface for Vite...
@@ -16,6 +17,7 @@ declare module 'vite/client' {
 
 declare module '@inertiajs/core' {
   interface PageProps extends InertiaPageProps, AppPageProps {
+    toasts: Array<BackendToast>
   }
 }
 
