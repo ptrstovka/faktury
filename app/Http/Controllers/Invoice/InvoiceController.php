@@ -88,6 +88,8 @@ class InvoiceController
                 'totalVatExclusive' => $line->total_price_vat_exclusive?->getMinorAmount(),
                 'totalVatInclusive' => $line->total_price_vat_inclusive?->getMinorAmount(),
             ]),
+            'logoUrl' => $invoice->logo?->url(),
+            'signatureUrl' => $invoice->signature?->url(),
 
             'countries' => Country::options(),
             'paymentMethods' => PaymentMethod::options(),

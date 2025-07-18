@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
 use App\Models\Concerns\HasUuid;
 use App\NumberSequenceFormatter;
-use Illuminate\Database\Eloquent\Collection;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 /**
@@ -43,6 +46,8 @@ use RuntimeException;
  * @property string|null $issued_by_website
  * @property \App\Models\NumberSequence|null $numberSequence
  * @property int $invoice_number
+ * @property Money|null $total_vat_inclusive
+ * @property Money|null $total_vat_exclusive
  */
 class Invoice extends Model
 {
@@ -64,6 +69,8 @@ class Invoice extends Model
             'show_pay_by_square' => 'boolean',
             'vat_reverse_charge' => 'boolean',
             'vat_enabled' => 'boolean',
+            'total_vat_inclusive' => AsMoney::class,
+            'total_vat_exclusive' => AsMoney::class,
         ];
     }
 
@@ -107,9 +114,22 @@ class Invoice extends Model
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\InvoiceLine>
      */
-    public function getSortedLines(): Collection
+    public function getSortedLines(): EloquentCollection
     {
         return $this->lines->sortBy('position')->values();
+    }
+
+    /**
+     * Calculate invoice totals.
+     */
+    public function calculateTotals(): void
+    {
+        $sum = fn (Collection $prices) => Money::total(Money::zero($this->currency), ...$prices->filter()->values());
+
+        $this->total_vat_inclusive = $sum($this->lines->map->total_price_vat_inclusive);
+        $this->total_vat_exclusive = $sum($this->lines->map->total_price_vat_exclusive);
+
+        $this->save();
     }
 
     /**

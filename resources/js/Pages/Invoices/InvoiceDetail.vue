@@ -421,6 +421,16 @@
                 <Textarea autocomplete="off" v-model="form.footer_note" @update:model-value="form.clearErrors('footer_note')" :disabled="locked" class="disabled:opacity-100" />
               </FormInlineError>
             </FormControl>
+
+            <div class="grid grid-cols-2 gap-4">
+              <FormControl label="Logo">
+                <img class="h-20 object-contain object-center" v-if="logoUrl" :src="logoUrl" alt="">
+              </FormControl>
+
+              <FormControl label="Podpis">
+                <img class="h-20 object-contain object-center" v-if="signatureUrl" :src="signatureUrl" alt="">
+              </FormControl>
+            </div>
           </div>
 
           <div class="flex flex-col gap-6">
@@ -500,29 +510,29 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from "@/Components/Button";
-import { CheckboxControl } from "@/Components/Checkbox";
-import { DatePicker } from "@/Components/DatePicker";
+import { Button } from "@/Components/Button"
+import { CheckboxControl } from "@/Components/Checkbox"
+import { DatePicker } from "@/Components/DatePicker"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/Components/DropdownMenu";
-import { FormControl, FormInlineError, FormSelect } from "@/Components/Form";
-import { Input } from "@/Components/Input";
-import { Textarea } from "@/Components/Textarea";
-import AppLayout from "@/Layouts/AppLayout.vue";
-import { cn } from "@/Utils";
-import { Head, router, useForm } from "@inertiajs/vue3";
-import type { SelectOption } from "@stacktrace/ui";
+} from "@/Components/DropdownMenu"
+import { FormControl, FormInlineError, FormSelect } from "@/Components/Form"
+import { Input } from "@/Components/Input"
+import { Textarea } from "@/Components/Textarea"
+import AppLayout from "@/Layouts/AppLayout.vue"
+import { cn } from "@/Utils"
+import { Head, router, useForm } from "@inertiajs/vue3"
+import type { SelectOption } from "@stacktrace/ui"
 import {
   createInvoiceLine,
   type InvoiceLine,
   InvoiceLineArrayInput,
-} from "@/Components/InvoiceLineInput";
-import { useMagicKeys } from "@vueuse/core";
+} from "@/Components/InvoiceLineInput"
+import { useMagicKeys } from "@vueuse/core"
 import {
   PlusIcon,
   SaveIcon,
@@ -536,69 +546,71 @@ import {
   Trash2Icon,
   BanknoteIcon,
   ClipboardCheckIcon,
-} from "lucide-vue-next";
-import { computed, nextTick, ref, watch } from "vue";
-import { toast } from "vue-sonner";
+} from "lucide-vue-next"
+import { computed, nextTick, ref, watch } from "vue"
+import { toast } from "vue-sonner"
 
 interface Company {
-  businessName: string | null;
-  businessId: string | null;
-  vatId: string | null;
-  euVatId: string | null;
-  email: string | null;
-  phoneNumber: string | null;
-  website: string | null;
-  additionalInfo: string | null;
-  addressLineOne: string | null;
-  addressLineTwo: string | null;
-  addressLineThree: string | null;
-  addressCity: string | null;
-  addressPostalCode: string | null;
-  addressCountry: string | null;
+  businessName: string | null
+  businessId: string | null
+  vatId: string | null
+  euVatId: string | null
+  email: string | null
+  phoneNumber: string | null
+  website: string | null
+  additionalInfo: string | null
+  addressLineOne: string | null
+  addressLineTwo: string | null
+  addressLineThree: string | null
+  addressCity: string | null
+  addressPostalCode: string | null
+  addressCountry: string | null
 }
 
 const props = defineProps<{
-  id: string;
-  draft: boolean;
-  locked: boolean;
-  sent: boolean;
-  publicInvoiceNumber: string | null;
-  supplier: Company;
-  customer: Company;
-  bankName: string | null;
-  bankAddress: string | null;
-  bankBic: string | null;
-  bankAccountNumber: string | null;
-  bankAccountIban: string | null;
-  issuedAt: string | null;
-  suppliedAt: string | null;
-  paymentDueTo: string | null;
-  vatEnabled: boolean;
-  locale: string;
-  template: string;
-  footerNote: string | null;
-  issuedBy: string | null;
-  issuedByEmail: string | null;
-  issuedByPhoneNumber: string | null;
-  issuedByWebsite: string | null;
-  paymentMethod: string;
-  variableSymbol: string | null;
-  specificSymbol: string | null;
-  constantSymbol: string | null;
-  showPayBySquare: boolean;
-  vatReverseCharge: boolean;
-  lines: Array<InvoiceLine>;
+  id: string
+  draft: boolean
+  locked: boolean
+  sent: boolean
+  publicInvoiceNumber: string | null
+  supplier: Company
+  customer: Company
+  bankName: string | null
+  bankAddress: string | null
+  bankBic: string | null
+  bankAccountNumber: string | null
+  bankAccountIban: string | null
+  issuedAt: string | null
+  suppliedAt: string | null
+  paymentDueTo: string | null
+  vatEnabled: boolean
+  locale: string
+  template: string
+  footerNote: string | null
+  issuedBy: string | null
+  issuedByEmail: string | null
+  issuedByPhoneNumber: string | null
+  issuedByWebsite: string | null
+  paymentMethod: string
+  variableSymbol: string | null
+  specificSymbol: string | null
+  constantSymbol: string | null
+  showPayBySquare: boolean
+  vatReverseCharge: boolean
+  lines: Array<InvoiceLine>
+  logoUrl: string | null
+  signatureUrl: string | null
 
-  countries: Array<SelectOption>;
-  templates: Array<SelectOption>;
-  paymentMethods: Array<SelectOption<"cash" | "bank-transfer">>;
+  countries: Array<SelectOption>
+  templates: Array<SelectOption>
+  paymentMethods: Array<SelectOption<"cash" | "bank-transfer">>
 
-  thousandsSeparator: string;
-  decimalSeparator: string;
-  quantityPrecision: number;
-  pricePrecision: number;
-  defaultVatRate: number;
-}>();
+  thousandsSeparator: string
+  decimalSeparator: string
+  quantityPrecision: number
+  pricePrecision: number
+  defaultVatRate: number
+}>()
 
 const isSaving = ref(false)
 const isIssuing = ref(false)
@@ -661,44 +673,44 @@ const form = useForm(() => ({
   vat_enabled: props.vatEnabled,
 
   lines: props.lines.map((line) => ({ ...line })) as Array<any>, // Array<InvoiceLine>
-}));
+}))
 
 const clearLineErrors = () => {
   Object.keys(form.errors).forEach((key) => {
     if (key.startsWith(`lines.`)) {
-      form.clearErrors(key as any);
+      form.clearErrors(key as any)
     }
-  });
-  form.clearErrors('lines');
-};
+  })
+  form.clearErrors('lines')
+}
 
 const clearLineError = (key: keyof InvoiceLine, index: number) => {
-  const field = `lines.${index}.${key}`;
-  form.clearErrors(field as any);
-};
+  const field = `lines.${index}.${key}`
+  form.clearErrors(field as any)
+}
 
 const lineErrors = computed<Array<Partial<Record<keyof InvoiceLine, string>>>>(
   () => {
-    const formErrors = form.errors as Record<string, string>;
+    const formErrors = form.errors as Record<string, string>
 
     return form.lines.map((_, idx) => {
-      const errors: Partial<Record<keyof InvoiceLine, string>> = {};
+      const errors: Partial<Record<keyof InvoiceLine, string>> = {}
 
       Object.keys(formErrors).forEach((key) => {
         if (key.startsWith(`lines.${idx}.`)) {
-          const lineError = formErrors[key];
+          const lineError = formErrors[key]
           const attribute = key
             .replace(`lines.${idx}.`, "")
-            .split(".")[0] as keyof InvoiceLine;
+            .split(".")[0] as keyof InvoiceLine
 
-          errors[attribute] = lineError;
+          errors[attribute] = lineError
         }
-      });
+      })
 
-      return errors;
-    });
+      return errors
+    })
   },
-);
+)
 
 const notifyAboutSaveFailure = (message: string) => {
   toast.error(message, {
@@ -706,26 +718,26 @@ const notifyAboutSaveFailure = (message: string) => {
       background: "var(--destructive)",
       color: "var(--destructive-foreground)",
     },
-  });
+  })
 
   nextTick(() => {
-    const firstElementWithError = document.querySelector(".has-error");
+    const firstElementWithError = document.querySelector(".has-error")
     if (firstElementWithError) {
-      const rect = firstElementWithError.getBoundingClientRect();
+      const rect = firstElementWithError.getBoundingClientRect()
       const isVisible =
         rect.top >= 0 &&
         rect.left >= 0 &&
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 
       if (!isVisible) {
         window.scrollTo({
           top: rect.top + window.pageYOffset - 80,
           behavior: "smooth",
-        });
+        })
       }
     }
-  });
+  })
 }
 
 const save = () => {
@@ -738,7 +750,7 @@ const save = () => {
   form.patch(route("invoices.update", props.id), {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success("Zmeny boli uložené.");
+      toast.success("Zmeny boli uložené.")
     },
     onFinish: () => {
       isSaving.value = false
@@ -746,32 +758,32 @@ const save = () => {
     onError: () => {
       notifyAboutSaveFailure('Niektoré polia sa nepodarilo uložiť.')
     },
-  });
-};
+  })
+}
 
 const addLine = () => {
-  const newLines = form.lines.map((it) => ({ ...it }));
-  const emptyLine = createInvoiceLine();
-  emptyLine.vat = props.defaultVatRate;
-  newLines.push(emptyLine);
-  form.lines = newLines;
-  clearLineErrors();
-};
+  const newLines = form.lines.map((it) => ({ ...it }))
+  const emptyLine = createInvoiceLine()
+  emptyLine.vat = props.defaultVatRate
+  newLines.push(emptyLine)
+  form.lines = newLines
+  clearLineErrors()
+}
 
 const { Meta_S, Ctrl_S } = useMagicKeys({
   passive: false,
   onEventFired(e) {
     if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
+      e.preventDefault()
     }
   },
-});
+})
 
 watch([Meta_S, Ctrl_S], (v) => {
   if (v[0] || v[1]) {
-    save();
+    save()
   }
-});
+})
 
 const issueInvoice = () => {
   isIssuing.value = true
@@ -779,7 +791,7 @@ const issueInvoice = () => {
   form.post(route("invoices.issue", props.id), {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success("Faktúra bola vystavená");
+      toast.success("Faktúra bola vystavená")
       form.reset()
     },
     onFinish: () => {
@@ -789,25 +801,25 @@ const issueInvoice = () => {
       notifyAboutSaveFailure('Faktúru sa nepodarilo vystaviť.')
     },
   })
-};
+}
 
 const lockInvoiceForm = useForm({})
 const lockInvoice = () => {
   lockInvoiceForm.post(route("invoices.lock.store", props.id), {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success("Faktúra bola uzamknutá");
+        toast.success("Faktúra bola uzamknutá")
       },
     },
-  );
-};
+  )
+}
 
 const unlockInvoice = () => {
   router.delete(route("invoices.lock.destroy", props.id), {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success("Faktúra bola odomknutá");
+      toast.success("Faktúra bola odomknutá")
     },
-  });
-};
+  })
+}
 </script>

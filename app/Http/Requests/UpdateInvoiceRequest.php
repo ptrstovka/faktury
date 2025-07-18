@@ -234,6 +234,9 @@ class UpdateInvoiceRequest extends FormRequest
             ]);
         });
 
+        $invoice->load('lines');
+        $invoice->calculateTotals();
+
         return $invoice;
     }
 }
