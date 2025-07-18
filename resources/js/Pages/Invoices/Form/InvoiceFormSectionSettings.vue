@@ -88,11 +88,15 @@
 
     <div class="grid grid-cols-2 gap-4">
       <FormControl label="Logo">
-        <img class="h-20 object-contain object-center" v-if="invoice.logoUrl" :src="invoice.logoUrl" alt="">
+        <div class="border border-dashed rounded-md border-input flex items-center justify-center p-2">
+          <img class="h-20 object-contain object-center" v-if="invoice.logoUrl" :src="invoice.logoUrl" alt="">
+        </div>
       </FormControl>
 
       <FormControl label="Podpis">
-        <img class="h-20 object-contain object-center" v-if="invoice.signatureUrl" :src="invoice.signatureUrl" alt="">
+        <div class="border border-dashed rounded-md border-input flex items-center justify-center p-2">
+          <img class="h-20 object-contain object-center" v-if="invoice.signatureUrl" :src="invoice.signatureUrl" alt="">
+        </div>
       </FormControl>
     </div>
   </div>
