@@ -79,6 +79,18 @@ class Invoice extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Invoice $invoice) {
+            $invoice->lines->each->delete();
+        });
+
+        static::deleted(function (Invoice $invoice) {
+            $invoice->signature?->delete();
+            $invoice->logo?->delete();
+        });
+    }
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);

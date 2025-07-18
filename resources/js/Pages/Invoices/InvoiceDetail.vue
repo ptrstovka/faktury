@@ -16,7 +16,7 @@
 
           <div class="flex gap-2">
             <template v-if="draft">
-              <Button @click="save" variant="ghost" size="sm">Zahodiť koncept</Button>
+              <Button @click="confirmDestroyDraft" variant="ghost" size="sm">Zahodiť koncept</Button>
               <Button :processing="isSaving" @click="save" variant="outline" size="sm" label="Uložiť koncept" :icon="SaveIcon" />
               <Button :processing="isIssuing" @click="issueInvoice" size="sm" label="Vystaviť" :icon="ClipboardCheckIcon" />
             </template>
@@ -35,7 +35,7 @@
                       <FileLockIcon /> Odomknúť úpravy
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
+                    <DropdownMenuItem @select="confirmDestroy" variant="destructive">
                       <Trash2Icon /> Odstrániť
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -77,6 +77,8 @@
 </template>
 
 <script setup lang="ts">
+import { useConfirmable } from "@/Components/ConfirmationDialog";
+import { asyncRouter } from "@stacktrace/ui";
 import InvoiceFormSectionCustomer from "./Form/InvoiceFormSectionCustomer.vue";
 import InvoiceFormSectionDates from "./Form/InvoiceFormSectionDates.vue";
 import InvoiceFormSectionLines from "./Form/InvoiceFormSectionLines.vue";
@@ -164,4 +166,14 @@ const unlockInvoice = () => {
 }
 
 useSaveShortcut(() => save())
+
+const { confirm } = useConfirmable()
+
+const confirmDestroyDraft = () => confirm('Naozaj chcete odstrániť tento koncept?', async () => {
+  await asyncRouter.delete(route('invoices.destroy', props.id))
+}, { destructive: true, cancelLabel: 'Ponechať', confirmLabel: 'Zahodiť', title: 'Zahodiť koncept' })
+
+const confirmDestroy = () => confirm('Naozaj chcete odstrániť túto faktúru? Vystavené faktúry by nemali byť odstránené. Po odstránení skontrolujte číslovanie faktúr aby nevznikli medzery.', async () => {
+  await asyncRouter.delete(route('invoices.destroy', props.id))
+}, { destructive: true, cancelLabel: 'Ponechať', confirmLabel: 'Odstrániť', title: 'Odstrániť faktúru' })
 </script>

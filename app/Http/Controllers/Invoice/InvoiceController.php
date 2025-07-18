@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Support\VatBreakdownLine;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -159,8 +160,14 @@ class InvoiceController
             $invoice->customer()->associate($customer);
 
             $invoice->account()->associate($account);
-            $invoice->logo()->associate($account->invoiceLogo);
-            $invoice->signature()->associate($account->invoiceSignature);
+
+            $signature = $account->invoiceSignature?->replicate();
+            $signature?->save();
+            $invoice->signature()->associate($signature);
+
+            $logo = $account->invoiceLogo?->replicate();
+            $logo?->save();
+            $invoice->logo()->associate($logo);
 
             $invoice->save();
 
@@ -177,10 +184,21 @@ class InvoiceController
 
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
-        // TODO: zamknutu fakturu neni možne editovať
-
         DB::transaction(fn () => $request->updateInvoice($invoice));
 
         return back();
+    }
+
+    public function destroy(Request $request, Invoice $invoice)
+    {
+        Gate::authorize('delete', $invoice);
+
+        DB::transaction(fn () => $invoice->delete());
+
+        if ($request->routeIs('invoices')) {
+            return back();
+        }
+
+        return to_route('invoices');
     }
 }
