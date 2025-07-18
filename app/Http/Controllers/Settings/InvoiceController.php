@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
-use App\NumberSequenceFormatter;
+use App\Support\NumberSequenceFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
