@@ -61,4 +61,8 @@ export interface InvoiceDetailProps {
   quantityPrecision: number
   pricePrecision: number
   defaultVatRate: number
+  currency: {
+    code: string
+    symbol: string
+  }
 }

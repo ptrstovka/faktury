@@ -1,8 +1,8 @@
 export * from './keyboard.ts'
+export * from './money.ts'
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import currency from "currency.js";
 import { nextTick } from "vue";
 import { toast } from "vue-sonner";
 
@@ -23,31 +23,6 @@ export function decimalPlaces(value: string, separator: string = '.'): number {
   }
 
   return value.split(separator)[1].length
-}
-
-/**
- * Create Money value for internal calculations.
- */
-export function createMoney(value: string | number, precision: number, symbol: string = '€') {
-  return currency(value, {
-    precision: precision,
-    symbol: symbol,
-    decimal: '.',
-    separator: '',
-  })
-}
-
-/**
- * Create Money value for internal calculations.
- */
-export function createMoneyFromMinor(value: string | number, precision: number, symbol: string = '€') {
-  return currency(value, {
-    fromCents: true,
-    precision: precision,
-    symbol: symbol,
-    decimal: '.',
-    separator: '',
-  })
 }
 
 export const notifyAboutFirstVisibleError = (message: string) => {

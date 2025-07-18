@@ -48,6 +48,8 @@ class InvoiceController
             'addressCountry' => $company->address?->country?->value,
         ];
 
+        $currency = $invoice->getCurrency();
+
         return Inertia::render('Invoices/InvoiceDetail', [
             'id' => $invoice->uuid,
             'draft' => $invoice->draft,
@@ -105,6 +107,10 @@ class InvoiceController
             // TODO: konfigurovateľne
             'pricePrecision' => 2,
             'defaultVatRate' => $account->default_vat_rate,
+            'currency' => [
+                'code' => $currency->getCurrencyCode(),
+                'symbol' => '€', // TODO: urobiť konfigurovateľne
+            ]
         ]);
     }
 

@@ -6,6 +6,7 @@ use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
 use App\Models\Concerns\HasUuid;
 use App\NumberSequenceFormatter;
+use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
@@ -198,5 +199,13 @@ class Invoice extends Model
     {
         $this->locked = false;
         $this->save();
+    }
+
+    /**
+     * Get the invoice currency.
+     */
+    public function getCurrency(): Currency
+    {
+        return Currency::of($this->currency);
     }
 }

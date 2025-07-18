@@ -1,6 +1,17 @@
 <template>
   <div>
-    <p class="font-bold text-lg mb-6">Položky</p>
+    <div class="relative">
+      <p class="font-bold text-lg mb-6">Položky</p>
+
+      <Button
+        v-if="form.lines.length > 0 && ! locked"
+        class="absolute bottom-0 right-0"
+        size="sm"
+        :icon="PlusIcon"
+        @click="addLine"
+        label="Nová položka"
+      />
+    </div>
 
     <FormControl v-if="form.lines.length === 0" :error="form.errors.lines">
       <div :class="cn('border border-input border-dashed rounded-md flex flex-col p-10 items-center justify-center', { 'border-destructive': !!form.errors.lines })">
@@ -32,7 +43,9 @@
         />
       </FormControl>
 
-      <Button v-if="! locked" class="mt-4" size="sm" :icon="PlusIcon" @click="addLine" label="Ďalšia položka" />
+      <div class="flex flex-row justify-end pt-4">
+        <InvoiceFormSectionTotals />
+      </div>
     </template>
   </div>
 </template>
@@ -41,7 +54,8 @@
 import { Button } from "@/Components/Button";
 import { FormControl } from "@/Components/Form";
 import { InvoiceLineArrayInput } from "@/Components/InvoiceLineInput";
-import { injectInvoiceFormContext } from "@/Pages/Invoices/Form/index.ts";
+import { injectInvoiceFormContext } from ".";
+import InvoiceFormSectionTotals from "./InvoiceFormSectionTotals.vue";
 import { cn } from "@/Utils";
 import { PlusIcon } from "lucide-vue-next";
 

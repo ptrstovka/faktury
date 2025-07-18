@@ -3,6 +3,12 @@ import type { InvoiceDetailProps } from "@/Pages/Invoices";
 import { useForm } from "@inertiajs/vue3";
 import { computed, type ComputedRef, inject, provide } from "vue";
 
+interface VatBreakdownItem {
+  vatRate: number
+  base: number
+  total: number
+}
+
 export function useInvoiceForm(props: ComputedRef<InvoiceDetailProps>) {
   const form = useForm(() => ({
     issued_at: props.value.issuedAt || "",
@@ -119,8 +125,51 @@ export function useInvoiceForm(props: ComputedRef<InvoiceDetailProps>) {
   const pricePrecision = computed(() => props.value.pricePrecision)
   const templates = computed(() => props.value.templates)
   const paymentMethods = computed(() => props.value.paymentMethods)
+  const currency = computed(() => props.value.currency)
 
   const invoice = computed(() => props.value)
+
+  const totalVatInclusive = computed<number>(() => form.lines.reduce((acc: number, line: InvoiceLine) => {
+    return line.totalVatInclusive !== null ? acc + Number(line.totalVatInclusive) : acc
+  }, 0))
+  const totalVatExclusive = computed<number>(() => form.lines.reduce((acc: number, line: InvoiceLine) => {
+    return line.totalVatExclusive !== null ? acc + Number(line.totalVatExclusive) : acc
+  }, 0))
+  const totalVat = computed<number>(() => Math.max(0, totalVatInclusive.value - totalVatExclusive.value))
+
+  const vatBreakdown = computed<Array<VatBreakdownItem>>(() => {
+    const byRate = form.lines.reduce((acc: Record<string, Array<InvoiceLine>>, line: InvoiceLine) => {
+      if (line.vat !== null) {
+        const rate = `${line.vat}`
+
+        if (!(rate in acc)) {
+          acc[rate] = []
+        }
+
+        acc[rate].push(line)
+      }
+
+      return acc
+    }, {})
+
+    return Object.keys(byRate).map<VatBreakdownItem>(key => {
+      const lines: Array<InvoiceLine> = byRate[key]
+
+      const totalVatExclusive = lines.reduce((total: number, line: InvoiceLine) => {
+        return line.totalVatExclusive !== null ? total + Number(line.totalVatExclusive) : total
+      }, 0)
+
+      const totalVatInclusive = lines.reduce((total: number, line: InvoiceLine) => {
+        return line.totalVatInclusive !== null ? total + Number(line.totalVatInclusive) : total
+      }, 0)
+
+      return {
+        vatRate: lines[0].vat!,
+        total: Math.max(0, totalVatInclusive - totalVatExclusive),
+        base: totalVatExclusive,
+      }
+    }).sort((a, b) => a.vatRate - b.vatRate)
+  })
 
   return {
     form,
@@ -138,6 +187,11 @@ export function useInvoiceForm(props: ComputedRef<InvoiceDetailProps>) {
     invoice,
     templates,
     paymentMethods,
+    totalVatExclusive,
+    totalVatInclusive,
+    totalVat,
+    vatBreakdown,
+    currency,
   }
 }
 

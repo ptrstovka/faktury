@@ -12,7 +12,6 @@
         >Zapnúť DPH</CheckboxControl>
 
         <CheckboxControl
-          v-if="form.vat_enabled"
           v-model="form.vat_reverse_charge"
           :error="form.errors.vat_reverse_charge"
           @update:model-value="form.clearErrors('vat_reverse_charge')"
