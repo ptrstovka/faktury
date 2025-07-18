@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Support\VatBreakdownLine;
+use App\Tables\InvoiceTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -24,7 +25,17 @@ class InvoiceController
     {
         Gate::authorize('viewAny', Invoice::class);
 
-        return Inertia::render('Invoices/InvoiceList');
+        $account = Accounts::current();
+
+        $invoices = (new InvoiceTable(
+            currency: $account->getCurrency(),
+            vatEnabled: $account->vat_enabled,
+            moneyFormattingLocale: $account->getMoneyFormattingLocale(),
+        ))->setSource($account->invoices()->getQuery());
+
+        return Inertia::render('Invoices/InvoiceList', [
+            'invoices' => $invoices,
+        ]);
     }
 
     public function show(Invoice $invoice)

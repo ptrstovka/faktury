@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentMethod;
+use Brick\Money\Currency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \App\Models\Upload|null $invoiceLogo
  * @property int $next_invoice_number
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  */
 class Account extends Model
 {
@@ -63,5 +65,26 @@ class Account extends Model
     public function numberSequences(): HasMany
     {
         return $this->hasMany(NumberSequence::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the account currency.
+     */
+    public function getCurrency(): Currency
+    {
+        return Currency::of('EUR');
+    }
+
+    /**
+     * Get the locale used for formatting monies.
+     */
+    public function getMoneyFormattingLocale(): string
+    {
+        return 'sk';
     }
 }

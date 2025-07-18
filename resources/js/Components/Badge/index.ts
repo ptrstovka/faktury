@@ -11,10 +11,14 @@ export const badgeVariants = cva(
           'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
         secondary:
           'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
-        destructive:
-         'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+        // destructive:
+        //  'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
           'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+
+        positive: 'bg-green-50 border-green-200 text-green-700 dark:bg-green-800 dark:text-green-50 dark:border-green-800',
+        destructive: 'bg-red-50 border-red-200 text-red-700 dark:bg-red-800 dark:text-red-50 dark:border-red-800',
+        warning: 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-800 dark:text-amber-50 dark:border-amber-800',
       },
     },
     defaultVariants: {

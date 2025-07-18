@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './Composables/useAppearance';
 import RootLayout from "@/Layouts/RootLayout.vue";
+import { DataTablePlugin } from '@/Components/DataTable'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -20,6 +21,7 @@ createInertiaApp({
   setup({el, App, props, plugin}) {
     createApp({render: () => h(App, props)})
       .use(plugin)
+      .use(DataTablePlugin)
       .use(ZiggyVue)
       .mount(el);
   },

@@ -6,9 +6,10 @@ namespace App\Enums;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use StackTrace\Ui\Contracts\HasLabel;
 use StackTrace\Ui\SelectOption;
 
-enum PaymentMethod: string
+enum PaymentMethod: string implements HasLabel
 {
     case Cash = 'cash';
     case BankTransfer = 'bank-transfer';
@@ -30,5 +31,13 @@ enum PaymentMethod: string
     {
         return collect(PaymentMethod::cases())
             ->map(fn (PaymentMethod $method) => new SelectOption($method->name(), $method->value));
+    }
+
+    /**
+     * Get the payment method name.
+     */
+    public function label(): string
+    {
+        return $this->name();
     }
 }

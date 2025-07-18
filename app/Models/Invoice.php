@@ -278,4 +278,16 @@ class Invoice extends Model
             ->values()
             ->sortBy(fn (VatBreakdownLine $line) => $line->rate);
     }
+
+    /**
+     * Determine whether the payment is due.
+     */
+    public function isPaymentDue(): bool
+    {
+        if ($this->paid) {
+            return false;
+        }
+
+        return $this->payment_due_to && $this->payment_due_to->isPast();
+    }
 }
