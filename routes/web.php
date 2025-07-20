@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Invoice\DownloadInvoiceController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\InvoiceLockController;
 use App\Http\Controllers\Invoice\IssueInvoiceController;
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/invoices/{invoice:uuid}/issue', IssueInvoiceController::class)->name('invoices.issue');
     Route::post('/invoices/{invoice:uuid}/lock', [InvoiceLockController::class, 'store'])->name('invoices.lock.store');
     Route::delete('/invoices/{invoice:uuid}/lock', [InvoiceLockController::class, 'destroy'])->name('invoices.lock.destroy');
+    Route::get('/invoices/{invoice:uuid}/download', DownloadInvoiceController::class)->name('invoices.download');
 });
 
 require __DIR__.'/settings.php';

@@ -18,7 +18,7 @@ class SerializeInvoiceController
         abort_if($invoice->draft, 400, "The draft invoice cannot be serialized");
 
         $options = new SerializerOptions(
-            locale: $invoice->template->getLocaleOrDefault(
+            locale: $invoice->template->resolveLocale(
                 $invoice->account->getPreferredDocumentLocale()
             ),
             moneyFormattingLocale: $invoice->account->getMoneyFormattingLocale(),

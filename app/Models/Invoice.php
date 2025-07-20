@@ -8,6 +8,7 @@ use App\Models\Concerns\HasUuid;
 use App\Support\MoneyUtils;
 use App\Support\NumberSequenceFormatter;
 use App\Support\VatBreakdownLine;
+use App\Templating\SerializerOptions;
 use Brick\Math\BigNumber;
 use Brick\Money\Currency;
 use Brick\Money\Exception\MoneyMismatchException;
@@ -346,5 +347,18 @@ class Invoice extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Generate a file name for the invoice.
+     */
+    public function createFileName(string $locale, string $extension): string
+    {
+        $prefix = match ($locale) {
+            'sk' => 'faktura',
+            default => 'invoice',
+        };
+
+        return Str::replace(' ', '_', $prefix.'_'.Str::snake($this->public_invoice_number)).'.'.$extension;
     }
 }

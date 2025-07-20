@@ -72,4 +72,6 @@ export interface InvoiceDetailProps {
     code: string
     symbol: string
   }
+
+  templateLocales: Array<SelectOption>
 }

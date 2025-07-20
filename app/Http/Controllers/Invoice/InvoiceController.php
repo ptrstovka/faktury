@@ -13,6 +13,7 @@ use App\Models\Company;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
+use App\Support\Locale;
 use App\Support\VatBreakdownLine;
 use App\Tables\InvoiceTable;
 use Illuminate\Http\Request;
@@ -121,6 +122,8 @@ class InvoiceController
                 ->availableForAccount($account)
                 ->get()
                 ->map(fn (DocumentTemplate $template) => new SelectOption($template->name, $template->id)),
+            'templateLocales' => collect($invoice->template->getLocales())
+                ->map(fn (string $locale) => new SelectOption(Locale::name($locale), $locale)),
 
             // TODO: konfigurovateľne
             'thousandsSeparator' => '',

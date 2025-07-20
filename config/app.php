@@ -125,4 +125,5 @@ return [
 
     'template_installation_path' => env('TEMPLATE_INSTALLATION_PATH', 'templates'),
 
+    'node_path' => env('NODE_PATH', 'node'),
 ];

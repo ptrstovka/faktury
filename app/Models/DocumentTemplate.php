@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -22,6 +24,7 @@ use RuntimeException;
  * @property array $options
  * @property boolean $is_default
  * @property string $name
+ * @property string $installation_path
  */
 class DocumentTemplate extends Model
 {
@@ -64,11 +67,29 @@ class DocumentTemplate extends Model
     /**
      * Get a given locale if it is supported by the template. Otherwise, return a first available locale.
      */
-    public function getLocaleOrDefault(string $locale): string
+    public function resolveLocale(string $locale): string
     {
         $locales = $this->getLocales();
 
         return in_array($locale, $locales) ? $locale : Arr::first($locales);
+    }
+
+    /**
+     * Render template to PDF.
+     */
+    public function render(array $input): string
+    {
+        // TODO: Add safe execution environment support
+
+        $node = config('app.node_path');
+
+        $script = Storage::path($this->installation_path).'/'.$this->options['entryPoint'];
+
+        if (! File::exists($script)) {
+            throw new RuntimeException("Invalid template: the rendering script does not exist");
+        }
+
+        return Process::run([$node, $script, base64_encode(json_encode($input))])->throw()->output();
     }
 
     public static function installFromFolder(string $folder, ?Account $account = null, bool $default = false): static

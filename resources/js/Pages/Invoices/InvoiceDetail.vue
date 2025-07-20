@@ -23,7 +23,26 @@
 
             <template v-else>
               <template v-if="locked">
-                <Button size="sm" label="Stiahnuť" :icon="FileDownIcon" />
+                <div v-if="templateLocales.length > 1" class="inline-flex items-center">
+                  <Button class="rounded-r-none" as="a" :href="route('invoices.download', id)" size="sm" label="Stiahnuť" :icon="FileDownIcon" />
+                  <div class="h-full w-px bg-primary/80"></div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                      <Button size="sm" :icon="ChevronDownIcon" class="px-2 rounded-l-none" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent class="min-w-48" align="end">
+                      <DropdownMenuLabel>Jazyk</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        v-for="locale in templateLocales"
+                        as="a"
+                        target="_blank"
+                        :href="route('invoices.download', { invoice: id, _query: { locale: locale.value } })"
+                      >{{ locale.label }}</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <Button v-else as="a" :href="route('invoices.download', id)" size="sm" label="Stiahnuť" :icon="FileDownIcon" />
                 <Button variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
                 <Button variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />
                 <DropdownMenu>
@@ -90,11 +109,18 @@ import InvoiceFormRoot from "./Form/InvoiceFormRoot.vue";
 import type { InvoiceDetailProps } from ".";
 import { useInvoiceForm } from './Form'
 import { Button } from "@/Components/Button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/Components/DropdownMenu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/Components/DropdownMenu";
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { SaveIcon, SendIcon, FileDownIcon, FileLockIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, Trash2Icon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import { SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, FileLockIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, Trash2Icon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 
