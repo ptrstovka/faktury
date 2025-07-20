@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'template_installation_path' => env('TEMPLATE_INSTALLATION_PATH', 'templates'),
+
 ];

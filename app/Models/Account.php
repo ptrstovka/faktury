@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \App\Enums\PaymentMethod $invoice_payment_method
  * @property string|null $invoice_footer_note
  * @property string $invoice_template
+ * @property \App\Models\DocumentTemplate $invoiceTemplate
  * @property \App\Models\Upload|null $invoiceSignature
  * @property \App\Models\Upload|null $invoiceLogo
  * @property int $next_invoice_number
@@ -72,6 +73,11 @@ class Account extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function invoiceTemplate(): BelongsTo
+    {
+        return $this->belongsTo(DocumentTemplate::class);
+    }
+
     /**
      * Get the account currency.
      */
@@ -84,6 +90,14 @@ class Account extends Model
      * Get the locale used for formatting monies.
      */
     public function getMoneyFormattingLocale(): string
+    {
+        return 'sk';
+    }
+
+    /**
+     * Get the preferred document locale.
+     */
+    public function getPreferredDocumentLocale(): string
     {
         return 'sk';
     }

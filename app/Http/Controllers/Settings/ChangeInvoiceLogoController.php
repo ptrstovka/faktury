@@ -7,11 +7,16 @@ namespace App\Http\Controllers\Settings;
 use App\Facades\Accounts;
 use App\Models\Upload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ChangeInvoiceLogoController
 {
     public function __invoke(Request $request)
     {
+        $account = Accounts::current();
+
+        Gate::authorize('update', $account);
+
         $request->validate([
             'file' => [
                 'nullable',
@@ -23,8 +28,6 @@ class ChangeInvoiceLogoController
             ],
             'remove_file' => ['boolean'],
         ]);
-
-        $account = Accounts::current();
 
         if ($request->boolean('remove_file') && ($logo = $account->invoiceLogo)) {
             $account->invoiceLogo()->dissociate()->save();

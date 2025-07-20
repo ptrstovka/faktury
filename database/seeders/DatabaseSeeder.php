@@ -2,13 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Enums\UserAccountRole;
 use App\Models\Account;
 use App\Models\Address;
 use App\Models\Company;
+use App\Models\DocumentTemplate;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use RuntimeException;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +21,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Peter Stovka',
             'email' => 'ps@stacktrace.sk',
         ]);
+
+        $template = DocumentTemplate::query()
+            ->where('document_type', DocumentType::Invoice)
+            ->where('is_default', true)
+            ->first();
+
+        if (! $template) {
+            throw new RuntimeException("The default document templates were not installed prior to running this seeder");
+        }
 
         $account = Account::factory()
             ->for(
@@ -49,6 +61,7 @@ class DatabaseSeeder extends Seeder
                 'default_vat_rate' => 23,
                 'invoice_payment_method' => PaymentMethod::BankTransfer,
                 'invoice_footer_note' => 'Spoločnosť je zapísaná v obchodnom registri Okresného súdu Prešov, oddiel: Sro, vložka č. 42064/P',
+                'invoice_template_id' => $template->id,
             ]);
 
         $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);
@@ -82,6 +95,7 @@ class DatabaseSeeder extends Seeder
                 'vat_enabled' => false,
                 'invoice_payment_method' => PaymentMethod::BankTransfer,
                 'invoice_footer_note' => 'Zapísaný v ŽR OÚ Vranov nad Topľou č. 790-16724',
+                'invoice_template_id' => $template->id,
             ]);
 
         $user->accounts()->attach($account, ['role' => UserAccountRole::Owner]);

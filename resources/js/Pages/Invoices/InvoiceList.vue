@@ -6,7 +6,7 @@
       <Heading title="Vystavené faktúry" class="mb-0" />
 
       <div class="inline-flex flex-row gap-2">
-        <Button :processing="draft.processing" @click="createDraft" size="sm" label="Nová faktúra" :icon="PlusIcon" />
+        <Button v-if="! invoices.isEmpty" :processing="draft.processing" @click="createDraft" size="sm" label="Nová faktúra" :icon="PlusIcon" />
       </div>
     </div>
 
@@ -15,7 +15,15 @@
         :table="invoices"
         inset-left="pl-1"
         inset-right="pr-1"
-      />
+        empty-table-message="Žiadne vystavené faktúry"
+        empty-table-description="Zatiaľ neboli vystavené žiadne faktúry."
+        empty-results-message="Žiadne výsledky"
+        empty-results-description="Neboli nájdené žiadne vystavené faktúry."
+      >
+        <template #empty-table>
+          <Button class="mt-4" :processing="draft.processing" @click="createDraft" size="sm" label="Nová faktúra" :icon="PlusIcon" />
+        </template>
+      </DataTable>
     </div>
   </AppLayout>
 </template>

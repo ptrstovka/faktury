@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('invoice_variable_symbol_format');
             $table->string('invoice_payment_method');
             $table->text('invoice_footer_note')->nullable();
-            $table->string('invoice_template');
             $table->foreignId('invoice_signature_id')->nullable()->constrained('uploads');
             $table->foreignId('invoice_logo_id')->nullable()->constrained('uploads');
             $table->timestamps();

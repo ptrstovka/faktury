@@ -116,7 +116,6 @@ class InvoiceTable extends Table
 
             Columns\Text::make(
                 $this->vatEnabled ? 'Spolu bez DPH' : 'Spolu',
-                // TODO: configurable locale
                 fn (Invoice $invoice) => $invoice->total_vat_exclusive?->formatTo($this->moneyFormattingLocale)
             )->numsTabular()->alignRight()->width(40)->sumarize(function (Collection $invoices) {
                 /** @var Collection<int, \Brick\Money\Money> $prices */

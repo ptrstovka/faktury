@@ -3,10 +3,13 @@
 namespace App\Http\Requests;
 
 use App\Enums\Country;
+use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Models\Address;
+use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use Brick\Money\Money;
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
@@ -91,9 +94,13 @@ class UpdateInvoiceRequest extends FormRequest
             'customer_address_city' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
             'customer_address_postal_code' => [$strict ? 'required' : 'nullable', 'string', 'max:191'],
             'customer_address_country' => [$strict ? 'required' : 'nullable', 'string', 'max:2', Rule::enum(Country::class)],
+            'template' => ['required', 'integer', 'min:1', function (string $attribute, int $value, Closure $fail) {
+                $account = $this->invoice()->account;
 
-            // TODO: pridať podporu šablony
-            'template' => ['required', 'string', Rule::in(['default']), 'max:191'],
+                if (DocumentTemplate::ofType(DocumentType::Invoice)->availableForAccount($account)->where('id', $value)->doesntExist()) {
+                    $fail("Táto šablóna nie je dostupná.");
+                }
+            }],
             'footer_note' => ['nullable', 'string', 'max:1000'],
             'issued_by' => ['nullable', 'string', 'max:191'],
             'issued_by_email' => ['nullable', 'string', 'max:191', 'email'],
@@ -147,7 +154,7 @@ class UpdateInvoiceRequest extends FormRequest
             'supplied_at' => $this->date('supplied_at', 'Y-m-d'),
             'payment_due_to' => $this->date('payment_due_to', 'Y-m-d'),
             'public_invoice_number' => $this->input('public_invoice_number'),
-            'template' => $this->input('template'),
+            'template_id' => $this->input('template'),
             'footer_note' => $this->input('footer_note'),
             'issued_by' => $this->input('issued_by'),
             'issued_by_email' => $this->input('issued_by_email'),

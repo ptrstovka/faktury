@@ -47,8 +47,7 @@ use RuntimeException;
  * @property boolean $paid
  * @property boolean $locked
  * @property boolean $vat_enabled
- * @property string $locale
- * @property string $template
+ * @property \App\Models\DocumentTemplate $template
  * @property string|null $footer_note
  * @property string|null $issued_by
  * @property string|null $issued_by_email
@@ -129,6 +128,11 @@ class Invoice extends Model
     public function numberSequence(): BelongsTo
     {
         return $this->belongsTo(NumberSequence::class);
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(DocumentTemplate::class);
     }
 
     /**

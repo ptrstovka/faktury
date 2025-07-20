@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Invoice;
 
 
 use App\Enums\Country;
+use App\Enums\DocumentType;
 use App\Enums\PaymentMethod;
 use App\Facades\Accounts;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Company;
+use App\Models\DocumentTemplate;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Support\VatBreakdownLine;
@@ -80,8 +82,7 @@ class InvoiceController
             'suppliedAt' => $invoice->supplied_at?->format('Y-m-d'),
             'paymentDueTo' => $invoice->payment_due_to?->format('Y-m-d'),
             'vatEnabled' => $invoice->vat_enabled,
-            'locale' => $invoice->locale,
-            'template' => $invoice->template,
+            'template' => $invoice->template->id,
             'footerNote' => $invoice->footer_note,
             'issuedBy' => $invoice->issued_by,
             'issuedByEmail' => $invoice->issued_by_email,
@@ -116,8 +117,10 @@ class InvoiceController
 
             'countries' => Country::options(),
             'paymentMethods' => PaymentMethod::options(),
-            // TODO: pridať šablóny
-            'templates' => [new SelectOption('Predvolená', 'default')],
+            'templates' => DocumentTemplate::ofType(DocumentType::Invoice)
+                ->availableForAccount($account)
+                ->get()
+                ->map(fn (DocumentTemplate $template) => new SelectOption($template->name, $template->id)),
 
             // TODO: konfigurovateľne
             'thousandsSeparator' => '',
@@ -148,12 +151,9 @@ class InvoiceController
                 'paid' => false,
                 'locked' => false,
                 'payment_method' => $account->invoice_payment_method,
-                // TODO: make configurable
-                'currency' => 'EUR',
+                'currency' => $account->getCurrency()->getCurrencyCode(),
                 'vat_enabled' => $account->vat_enabled,
-                // TODO: make configurable
-                'locale' => 'sk',
-                'template' => $account->invoice_template,
+                'template_id' => $account->invoiceTemplate->id,
                 'footer_note' => $account->invoice_footer_note,
                 'vat_reverse_charge' => false,
                 'show_pay_by_square' => true,

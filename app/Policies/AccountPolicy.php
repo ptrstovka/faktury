@@ -11,4 +11,9 @@ class AccountPolicy
     {
         return $user->accounts->contains($account);
     }
+
+    public function update(User $user, Account $account): bool
+    {
+        return $user->accounts->contains($account);
+    }
 }

@@ -9,6 +9,7 @@ use App\Facades\Accounts;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -17,6 +18,8 @@ class AccountController
     public function edit()
     {
         $account = Accounts::current();
+
+        Gate::authorize('update', $account);
 
         return Inertia::render('Settings/Account', [
             'id' => $account->id,
@@ -46,6 +49,10 @@ class AccountController
 
     public function update(Request $request)
     {
+        $account = Accounts::current();
+
+        Gate::authorize('update', $account);
+
         $request->validate([
             'business_name' => ['required', 'string', 'max:191'],
             'business_id' => ['nullable', 'string', 'max:191'],
@@ -63,8 +70,6 @@ class AccountController
             'additional_info' => ['nullable', 'string', 'max:500'],
             'vat_enabled' => ['boolean'],
         ]);
-
-        $account = Accounts::current();
 
         DB::transaction(function () use ($account, $request) {
             $company = $account->company;

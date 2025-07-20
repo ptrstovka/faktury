@@ -35,7 +35,6 @@ export interface InvoiceDetailProps {
   suppliedAt: string | null
   paymentDueTo: string | null
   vatEnabled: boolean
-  locale: string
   template: string
   footerNote: string | null
   issuedBy: string | null

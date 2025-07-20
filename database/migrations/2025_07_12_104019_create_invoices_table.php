@@ -35,8 +35,7 @@ return new class extends Migration
             $table->string('issued_by_phone_number')->nullable();
             $table->string('issued_by_website')->nullable();
             $table->boolean('vat_enabled');
-            $table->string('locale');
-            $table->string('template');
+            $table->foreignId('template_id')->constrained('document_templates');
             $table->text('footer_note')->nullable();
             $table->boolean('vat_reverse_charge');
             $table->boolean('show_pay_by_square');
