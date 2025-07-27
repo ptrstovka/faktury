@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Casts\AsMoney;
 use App\Enums\PaymentMethod;
+use App\Mail\SendInvoiceMail;
 use App\Models\Concerns\HasUuid;
 use App\Support\MoneyUtils;
 use App\Support\NumberSequenceFormatter;
 use App\Support\VatBreakdownLine;
+use App\Templating\InvoiceSerializer;
 use App\Templating\SerializerOptions;
 use Brick\Math\BigNumber;
 use Brick\Money\Currency;
@@ -22,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -360,5 +363,37 @@ class Invoice extends Model
         };
 
         return Str::replace(' ', '_', $prefix.'_'.Str::snake($this->public_invoice_number)).'.'.$extension;
+    }
+
+    /**
+     * Render invoice to PDF.
+     */
+    public function renderToPdf(string $locale, string $moneyFormattingLocale): string
+    {
+        $template = $this->template;
+
+        $options = new SerializerOptions(
+            locale: $this->template->resolveLocale($locale),
+            moneyFormattingLocale: $moneyFormattingLocale,
+        );
+
+        $content = (new InvoiceSerializer)->serialize($this, $options);
+
+        return $template->render($content);
+    }
+
+    /**
+     * Send an invoice to given email address.
+     */
+    public function send(string $email, string $message, ?string $locale = null): void
+    {
+        $mail = new SendInvoiceMail(
+            invoice: $this,
+            message: $message,
+            invoiceLocale: $locale ?: $this->account->getPreferredDocumentLocale(),
+            moneyFormattingLocale: $this->account->getMoneyFormattingLocale(),
+        );
+
+        Mail::to($email)->send($mail);
     }
 }

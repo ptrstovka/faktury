@@ -72,6 +72,7 @@ export interface InvoiceDetailProps {
     code: string
     symbol: string
   }
+  mailMessage: string | null
 
   templateLocales: Array<SelectOption>
 }

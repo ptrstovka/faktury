@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('invoice_footer_note')->nullable();
             $table->foreignId('invoice_signature_id')->nullable()->constrained('uploads');
             $table->foreignId('invoice_logo_id')->nullable()->constrained('uploads');
+            $table->text('invoice_mail_message')->nullable();
             $table->timestamps();
         });
     }

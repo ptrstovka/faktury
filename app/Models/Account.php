@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $next_invoice_number
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\NumberSequence> $numberSequences
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property string|null $invoice_mail_message
  */
 class Account extends Model
 {

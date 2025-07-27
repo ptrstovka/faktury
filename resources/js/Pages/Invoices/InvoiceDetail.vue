@@ -9,8 +9,24 @@
             <p class="text-2xl font-medium text-muted-foreground" v-if="draft">Nová faktúra</p>
             <div class="inline-flex items-center gap-2" v-else>
               <p class="text-2xl font-medium">Faktúra {{ publicInvoiceNumber }}</p>
-              <LockIcon v-if="locked" class="size-4 text-yellow-400" />
-              <LockOpenIcon v-else class="size-4 text-destructive" />
+
+              <TooltipProvider :delay-duration="0">
+                <Tooltip v-if="locked">
+                  <TooltipTrigger>
+                    <LockIcon class="size-4 text-yellow-400" />
+                  </TooltipTrigger>
+                  <TooltipContent>Modifikácie sú zakázané</TooltipContent>
+                </Tooltip>
+
+                <Tooltip v-else>
+                  <TooltipTrigger>
+                    <LockOpenIcon class="size-4 text-destructive" />
+                  </TooltipTrigger>
+                  <TooltipContent>Modifikácie sú povolené</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <Badge v-if="sent" variant="secondary"><SendIcon /> Odoslaná </Badge>
             </div>
           </div>
 
@@ -43,20 +59,37 @@
                 </div>
 
                 <Button v-else as="a" :href="route('invoices.download', id)" size="sm" label="Stiahnuť" :icon="FileDownIcon" />
-                <Button variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
+
+                <div v-if="! sent" class="inline-flex items-center">
+                  <Button @click="sendDialog.activate" class="rounded-r-none border-r-0" variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
+                  <div class="h-full w-px bg-border"></div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                      <Button size="sm" :icon="ChevronDownIcon" class="px-2 border-l-0 rounded-l-none" variant="outline" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent class="min-w-48" align="end">
+                      <DropdownMenuItem @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
                 <Button variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button class="px-2" size="sm" variant="outline" :icon="EllipsisIcon" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent class="min-w-48" align="end">
-                    <DropdownMenuItem @select="unlockInvoice">
-                      <FileLockIcon /> Odomknúť úpravy
-                    </DropdownMenuItem>
+                    <DropdownMenuLabel>Odoslanie</DropdownMenuLabel>
+                    <DropdownMenuItem @select="sendDialog.activate">Odoslať mailom</DropdownMenuItem>
+                    <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent">Označiť ako neodoslanú</DropdownMenuItem>
+                    <DropdownMenuItem v-else @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>
+
+                    <DropdownMenuLabel>Modifikácia</DropdownMenuLabel>
+                    <DropdownMenuItem @select="unlockInvoice">Odomknúť úpravy</DropdownMenuItem>
+
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem @select="confirmDestroy" variant="destructive">
-                      <Trash2Icon /> Odstrániť
-                    </DropdownMenuItem>
+
+                    <DropdownMenuItem @select="confirmDestroy" variant="destructive">Odstrániť</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </template>
@@ -91,13 +124,22 @@
           </div>
         </div>
       </div>
+
+      <SendInvoiceDialog
+        :id="id"
+        :email="customer.email || undefined"
+        :message="mailMessage || undefined"
+        :control="sendDialog"
+      />
     </InvoiceFormRoot>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
+import { Badge } from "@/Components/Badge";
 import { useConfirmable } from "@/Components/ConfirmationDialog";
-import { asyncRouter } from "@stacktrace/ui";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Components/Tooltip";
+import { asyncRouter, useToggle } from "@stacktrace/ui";
 import InvoiceFormSectionCustomer from "./Form/InvoiceFormSectionCustomer.vue";
 import InvoiceFormSectionDates from "./Form/InvoiceFormSectionDates.vue";
 import InvoiceFormSectionLines from "./Form/InvoiceFormSectionLines.vue";
@@ -106,6 +148,7 @@ import InvoiceFormSectionPayment from "./Form/InvoiceFormSectionPayment.vue";
 import InvoiceFormSectionSettings from "./Form/InvoiceFormSectionSettings.vue";
 import InvoiceFormSectionSupplier from "./Form/InvoiceFormSectionSupplier.vue";
 import InvoiceFormRoot from "./Form/InvoiceFormRoot.vue";
+import SendInvoiceDialog from './Dialogs/SendInvoiceDialog.vue'
 import type { InvoiceDetailProps } from ".";
 import { useInvoiceForm } from './Form'
 import { Button } from "@/Components/Button"
@@ -120,7 +163,7 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, FileLockIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, Trash2Icon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import { SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 
@@ -202,4 +245,12 @@ const confirmDestroyDraft = () => confirm('Naozaj chcete odstrániť tento konce
 const confirmDestroy = () => confirm('Naozaj chcete odstrániť túto faktúru? Vystavené faktúry by nemali byť odstránené. Po odstránení skontrolujte číslovanie faktúr aby nevznikli medzery.', async () => {
   await asyncRouter.delete(route('invoices.destroy', props.id))
 }, { destructive: true, cancelLabel: 'Ponechať', confirmLabel: 'Odstrániť', title: 'Odstrániť faktúru' })
+
+const sendDialog = useToggle()
+const confirmMarkAsSent = () => confirm('Naozaj chcete túto faktúru označiť ako odoslanú?', async () => {
+  await asyncRouter.post(route('invoices.sent-flag.store', props.id), {}, { preserveScroll: true })
+}, { title: 'Označiť ako odoslanú' })
+const confirmMarkAsNotSent = () => confirm('Naozaj chcete túto faktúro uznačiť ako neodoslanú?', async () => {
+  await asyncRouter.delete(route('invoices.sent-flag.destroy', props.id), { preserveScroll: true })
+}, { destructive: true,  title: 'Označiť ako neodoslanú' })
 </script>

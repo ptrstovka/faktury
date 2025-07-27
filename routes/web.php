@@ -4,6 +4,8 @@ use App\Http\Controllers\Invoice\DownloadInvoiceController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\InvoiceLockController;
 use App\Http\Controllers\Invoice\IssueInvoiceController;
+use App\Http\Controllers\Invoice\SendController;
+use App\Http\Controllers\Invoice\SentFlagController;
 use App\Http\Controllers\Invoice\SerializeInvoiceController;
 use App\Http\Controllers\SwitchAccountController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/invoices/{invoice:uuid}/lock', [InvoiceLockController::class, 'store'])->name('invoices.lock.store');
     Route::delete('/invoices/{invoice:uuid}/lock', [InvoiceLockController::class, 'destroy'])->name('invoices.lock.destroy');
     Route::get('/invoices/{invoice:uuid}/download', DownloadInvoiceController::class)->name('invoices.download');
+    Route::post('/invoices/{invoice:uuid}/flags/sent', [SentFlagController::class, 'store'])->name('invoices.sent-flag.store');
+    Route::delete('/invoices/{invoice:uuid}/flags/sent', [SentFlagController::class, 'destroy'])->name('invoices.sent-flag.destroy');
+    Route::post('/invoices/{invoice:uuid}/send', SendController::class)->name('invoices.send')->middleware('throttle:mail');
 });
 
 require __DIR__.'/settings.php';
