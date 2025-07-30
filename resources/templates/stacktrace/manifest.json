@@ -1,0 +1,8 @@
+{
+  "name": "StackTrace",
+  "description": "Šablóna pre StackTrace s.r.o.",
+  "package": "@stacktrace/stacktrace",
+  "type": "invoice",
+  "entryPoint": "render.js",
+  "locales": ["sk", "en"]
+}
