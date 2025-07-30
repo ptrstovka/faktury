@@ -71,6 +71,7 @@ class InvoiceController
             'draft' => $invoice->draft,
             'locked' => $invoice->locked,
             'sent' => $invoice->sent,
+            'paid' => $invoice->paid,
             'publicInvoiceNumber' => $invoice->public_invoice_number,
             'supplier' => $toCompany($invoice->supplier),
             'customer' => $toCompany($invoice->customer),

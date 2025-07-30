@@ -1,5 +1,5 @@
 <template>
-  <Head title="Faktúra" />
+  <Head :title="draft ? 'Nový koncept' : (publicInvoiceNumber ? `Faktúra ${publicInvoiceNumber}` : 'Faktúra')" />
 
   <AppLayout class="pb-16">
     <InvoiceFormRoot :context="context">
@@ -27,6 +27,7 @@
               </TooltipProvider>
 
               <Badge v-if="sent" variant="secondary"><SendIcon /> Odoslaná </Badge>
+              <Badge v-if="paid" variant="positive"><CheckIcon /> Uhradená </Badge>
             </div>
           </div>
 
@@ -44,10 +45,10 @@
                   <div class="h-full w-px bg-primary/80"></div>
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
-                      <Button size="sm" :icon="ChevronDownIcon" class="px-2 rounded-l-none" />
+                      <Button size="sm" :icon="LanguagesIcon" class="px-2 rounded-l-none" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent class="min-w-48" align="end">
-                      <DropdownMenuLabel>Jazyk</DropdownMenuLabel>
+                      <DropdownMenuLabel>Stiahnuť v jazyku</DropdownMenuLabel>
                       <DropdownMenuItem
                         v-for="locale in templateLocales"
                         as="a"
@@ -73,23 +74,30 @@
                   </DropdownMenu>
                 </div>
 
-                <Button variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />
+                <Button v-if="!paid" @click="confirmMarkAsPaid" variant="outline" size="sm" label="Označiť ako uhradenú" :icon="BanknoteIcon" />
+                <!-- TODO: Pridať support pre platby -->
+                <!--<Button variant="outline" size="sm" label="Pridať úhradu" :icon="BanknoteIcon" />-->
+
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
                     <Button class="px-2" size="sm" variant="outline" :icon="EllipsisIcon" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent class="min-w-48" align="end">
-                    <DropdownMenuLabel>Odoslanie</DropdownMenuLabel>
-                    <DropdownMenuItem @select="sendDialog.activate">Odoslať mailom</DropdownMenuItem>
-                    <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent">Označiť ako neodoslanú</DropdownMenuItem>
-                    <DropdownMenuItem v-else @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>
+                    <DropdownMenuLabel>Platba</DropdownMenuLabel>
+                    <DropdownMenuItem v-if="paid" @select="confirmMarkAsUnpaid"><BanknoteXIcon /> Označiť ako neuhradenú</DropdownMenuItem>
+                    <DropdownMenuItem v-else @select="confirmMarkAsPaid"><BanknoteIcon /> Označiť ako uhradenú</DropdownMenuItem>
+
+                    <DropdownMenuLabel>Odoslať</DropdownMenuLabel>
+                    <DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať cez e-mail</DropdownMenuItem>
+                    <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent"><MailXIcon /> Označiť ako neodoslanú</DropdownMenuItem>
+                    <DropdownMenuItem v-else @select="confirmMarkAsSent"><MailCheckIcon /> Označiť ako odoslanú</DropdownMenuItem>
 
                     <DropdownMenuLabel>Modifikácia</DropdownMenuLabel>
-                    <DropdownMenuItem @select="unlockInvoice">Odomknúť úpravy</DropdownMenuItem>
+                    <DropdownMenuItem @select="unlockInvoice"><LockOpenIcon /> Odomknúť úpravy</DropdownMenuItem>
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem @select="confirmDestroy" variant="destructive">Odstrániť</DropdownMenuItem>
+                    <DropdownMenuItem @select="confirmDestroy" variant="destructive"><Trash2Icon /> Odstrániť</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </template>
@@ -163,7 +171,7 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import { LanguagesIcon, BanknoteXIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 
@@ -253,4 +261,11 @@ const confirmMarkAsSent = () => confirm('Naozaj chcete túto faktúru označiť 
 const confirmMarkAsNotSent = () => confirm('Naozaj chcete túto faktúro uznačiť ako neodoslanú?', async () => {
   await asyncRouter.delete(route('invoices.sent-flag.destroy', props.id), { preserveScroll: true })
 }, { destructive: true,  title: 'Označiť ako neodoslanú' })
+
+const confirmMarkAsPaid = () => confirm('Naozaj chcete túto faktúru označiť ako uhradenú?', async () => {
+  await asyncRouter.post(route('invoices.paid-flag.store', props.id), {}, { preserveScroll: true })
+}, { title: 'Označiť ako uhradenú' })
+const confirmMarkAsUnpaid = () => confirm('Naozaj chcete túto faktúru označiť ako neuhradenú?', async () => {
+  await asyncRouter.delete(route('invoices.paid-flag.destroy', props.id), { preserveScroll: true })
+}, { destructive: true, title: 'Označiť ako neuhradenú' })
 </script>

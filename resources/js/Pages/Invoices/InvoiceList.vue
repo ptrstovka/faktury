@@ -1,5 +1,5 @@
 <template>
-  <Head title="Faktúry"/>
+  <Head title="Vystavené faktúry"/>
 
   <AppLayout class="pb-12">
     <div class="flex flex-row items-end justify-between pt-6 px-4">

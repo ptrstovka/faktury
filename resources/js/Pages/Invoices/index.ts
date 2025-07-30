@@ -23,6 +23,7 @@ export interface InvoiceDetailProps {
   draft: boolean
   locked: boolean
   sent: boolean
+  paid: boolean
   publicInvoiceNumber: string | null
   supplier: Company
   customer: Company
