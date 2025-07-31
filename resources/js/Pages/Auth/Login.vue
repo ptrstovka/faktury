@@ -1,6 +1,6 @@
 <template>
-  <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
-    <Head title="Log in"/>
+  <AuthBase title="Prihláste sa do svojho účtu" description="Zadajte email a heslo nižšie pre prihlásenie">
+    <Head title="Prihlásenie"/>
 
     <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
       {{ status }}
@@ -8,7 +8,7 @@
 
     <form @submit.prevent="submit" class="flex flex-col gap-6">
       <div class="grid gap-6">
-        <FormControl for="email" label="Email address" :error="form.errors.email || errors?.email">
+        <FormControl for="email" label="E-Mail" :error="form.errors.email || errors?.email">
           <Input
             id="email"
             type="email"
@@ -21,7 +21,7 @@
           />
         </FormControl>
 
-        <FormControl for="password" label="Password" :error="form.errors.password">
+        <FormControl for="password" label="Heslo" :error="form.errors.password">
           <Input
             id="password"
             type="password"
@@ -33,26 +33,26 @@
           />
 
           <TextLink v-if="canResetPassword" :href="route('password.request')" class="block text-sm mt-4" :tabindex="5">
-            Forgot password?
+            Zabudli ste heslo?
           </TextLink>
         </FormControl>
 
         <div class="flex items-center justify-between">
           <Label for="remember" class="flex items-center space-x-3">
             <Checkbox id="remember" v-model="form.remember" :tabindex="3"/>
-            <span>Remember me</span>
+            <span>Zapamätať si prihlásenie</span>
           </Label>
         </div>
 
         <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing" :processing="form.processing">
-          Log in
+          Prihlásiť
         </Button>
       </div>
 
-      <div class="text-center text-sm text-muted-foreground">
-        Don't have an account?
-        <TextLink :href="route('register')" :tabindex="6">Sign up</TextLink>
-      </div>
+      <!--<div class="text-center text-sm text-muted-foreground">-->
+      <!--  Ešte nemáte účet?-->
+      <!--  <TextLink :href="route('register')" :tabindex="6">Registrujte sa</TextLink>-->
+      <!--</div>-->
     </form>
   </AuthBase>
 </template>

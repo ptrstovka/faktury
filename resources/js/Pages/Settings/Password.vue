@@ -1,13 +1,13 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head title="Password settings"/>
+    <Head title="Nastavenia hesla"/>
 
     <SettingsLayout>
       <div class="space-y-6">
-        <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure"/>
+        <HeadingSmall title="Aktualizácia hesla" description="Uistite sa, že používate dlhé, náhodné a bezpečné heslo"/>
 
         <form @submit.prevent="updatePassword" class="space-y-6">
-          <FormControl for="current_password" label="Current password" :error="form.errors.current_password">
+          <FormControl for="current_password" label="Aktuálne heslo" :error="form.errors.current_password">
             <Input
               id="current_password"
               ref="currentPasswordInput"
@@ -15,11 +15,10 @@
               type="password"
               class="mt-1 block w-full"
               autocomplete="current-password"
-              placeholder="Current password"
             />
           </FormControl>
 
-          <FormControl for="password" label="New password" :error="form.errors.password">
+          <FormControl for="password" label="Nové heslo" :error="form.errors.password">
             <Input
               id="password"
               ref="passwordInput"
@@ -27,25 +26,22 @@
               type="password"
               class="mt-1 block w-full"
               autocomplete="new-password"
-              placeholder="New password"
             />
           </FormControl>
 
-          <FormControl for="password_confirmation" label="Confirm password" :error="form.errors.password_confirmation">
+          <FormControl for="password_confirmation" label="Potvrdenie nového hesla" :error="form.errors.password_confirmation">
             <Input
               id="password_confirmation"
               v-model="form.password_confirmation"
               type="password"
               class="mt-1 block w-full"
               autocomplete="new-password"
-              placeholder="Confirm password"
             />
           </FormControl>
 
 
           <div class="flex items-center gap-4">
-            <Button :disabled="form.processing" :processing="form.processing" :recently-successful="form.recentlySuccessful">Save password
-            </Button>
+            <Button :disabled="form.processing" :processing="form.processing" :recently-successful="form.recentlySuccessful">Uložiť heslo</Button>
           </div>
         </form>
       </div>

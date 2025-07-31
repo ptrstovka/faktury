@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Invoice\DownloadInvoiceController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\InvoiceLockController;
@@ -11,14 +13,10 @@ use App\Http\Controllers\Invoice\SerializeInvoiceController;
 use App\Http\Controllers\SwitchAccountController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return inertia('Welcome');
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return inertia('Dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::post('/switch-account/{account}', SwitchAccountController::class)->name('accounts.switch');
 

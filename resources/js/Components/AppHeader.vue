@@ -60,11 +60,11 @@
         </div>
 
         <div class="ml-auto flex items-center">
-          <div class="relative flex items-center space-x-1">
-            <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
-              <SearchIcon class="size-5 opacity-80 group-hover:opacity-100"/>
-            </Button>
-          </div>
+          <!--<div class="relative flex items-center space-x-1">-->
+          <!--  <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">-->
+          <!--    <SearchIcon class="size-5 opacity-80 group-hover:opacity-100"/>-->
+          <!--  </Button>-->
+          <!--</div>-->
 
           <DropdownMenu>
             <DropdownMenuTrigger :as-child="true">
@@ -120,11 +120,11 @@ const auth = computed(() => page.props.auth)
 const account = computed(() => page.props.auth.user.accounts.find(it => it.current)!)
 
 const navigation = useNavigation([
-  {
-    title: 'Prehľad',
-    action: { route: 'dashboard' },
-    icon: LayoutGridIcon,
-  },
+  // {
+  //   title: 'Prehľad',
+  //   action: { route: 'dashboard' },
+  //   icon: LayoutGridIcon,
+  // },
   {
     title: 'Faktúry',
     action: { route: 'invoices' },

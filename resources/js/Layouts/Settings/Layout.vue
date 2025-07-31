@@ -1,8 +1,8 @@
 <template>
   <div class="px-4 py-6">
     <Heading
-      title="Settings"
-      description="Manage your profile and account settings"
+      title="Nastavenia"
+      description="Spravujte informácie Vašej firmy a nastavenia aplikácie"
     />
 
     <div
@@ -17,7 +17,7 @@
             },
             {
               title: 'Faktúry',
-              action: { route: 'invoices.settings.edit' },
+              action: { route: 'settings.invoices.edit' },
             },
           ]"
           orientation="vertical"

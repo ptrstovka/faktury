@@ -11,7 +11,9 @@ use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use StackTrace\Ui\DateRange;
 use StackTrace\Ui\Link;
 use StackTrace\Ui\NumberValue;
@@ -29,14 +31,19 @@ class InvoiceTable extends Table
         protected string $moneyFormattingLocale,
     )
     {
-        // $this->defaultSorting(function (Builder $builder) {
-        //     $builder
-        //         ->orderByDesc('issued_at')
-        //         ->orderByDesc('invoice_number');
-        // });
+        $this->defaultSorting(function (Builder $builder) {
+            $builder
+                ->orderByRaw('CASE WHEN draft = 1 THEN 0 ELSE 1 END ASC')
+                ->orderByDesc('issued_at')
+                ->orderByDesc('invoice_number');
+        });
 
         $this->searchable(function (Builder $builder, string $term) {
+            $term = Str::lower($term);
 
+            $builder->whereHas('customer', function (Builder $builder) use ($term) {
+                $builder->where(DB::raw('lower(business_name)'), 'like', '%'.$term.'%');
+            });
         });
 
         $this->highlight(function (Invoice $invoice) {
@@ -46,6 +53,8 @@ class InvoiceTable extends Table
 
             return null;
         });
+
+        $this->perPageOptions([25, 50, 100, 200]);
     }
 
     public function source(): Builder
@@ -76,12 +85,12 @@ class InvoiceTable extends Table
                     return 'draft';
                 }
 
-                if (! $invoice->sent) {
-                    return 'issued';
-                }
-
                 if ($invoice->paid) {
                     return 'paid';
+                }
+
+                if (! $invoice->sent) {
+                    return 'issued';
                 }
 
                 return $invoice->isPaymentDue() ? 'unpaid' : 'sent';

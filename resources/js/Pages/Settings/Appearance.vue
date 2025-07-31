@@ -1,10 +1,10 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head title="Appearance settings"/>
+    <Head title="Vzhľad"/>
 
     <SettingsLayout>
       <div class="space-y-6">
-        <HeadingSmall title="Appearance settings" description="Update your account's appearance settings"/>
+        <HeadingSmall title="Nastavenie vzhľadu" description="Nastavte si preferovaný vzhľad aplikácie"/>
         <AppearanceTabs/>
       </div>
     </SettingsLayout>

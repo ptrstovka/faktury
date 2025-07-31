@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('settings/account', [AccountController::class, 'update'])->name('accounts.update');
     Route::patch('settings/bank-account', [BankAccountController::class, 'update'])->name('bank-accounts.update');
 
-    Route::get('settings/invoices', [InvoiceController::class, 'edit'])->name('invoices.settings.edit');
+    Route::get('settings/invoices', [InvoiceController::class, 'edit'])->name('settings.invoices.edit');
     Route::patch('settings/invoices', [InvoiceController::class, 'update'])->name('invoices.settings.update');
     Route::patch('settings/invoices/signature', ChangeInvoiceSignatureController::class)->name('invoices.settings.signature');
     Route::patch('settings/invoices/logo', ChangeInvoiceLogoController::class)->name('invoices.settings.logo');

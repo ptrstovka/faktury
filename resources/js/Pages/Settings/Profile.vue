@@ -1,17 +1,17 @@
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
-    <Head title="Profile settings"/>
+    <Head title="Používateľ"/>
 
     <SettingsLayout>
       <div class="flex flex-col space-y-6">
-        <HeadingSmall title="Profile information" description="Update your name and email address"/>
+        <HeadingSmall title="Používateľske nastavenia" description="Nastavte si osobné údaje a emailovú adresu"/>
 
         <form @submit.prevent="submit" class="space-y-6">
-          <FormControl for="name" label="Name" :error="form.errors.name">
-            <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Full name"/>
+          <FormControl for="name" label="Meno a priezvisko" :error="form.errors.name">
+            <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" />
           </FormControl>
 
-          <FormControl for="email" label="Email address" :error="form.errors.email">
+          <FormControl for="email" label="E-Mail" :error="form.errors.email">
             <Input
               id="email"
               type="email"
@@ -19,7 +19,6 @@
               v-model="form.email"
               required
               autocomplete="username"
-              placeholder="Email address"
             />
           </FormControl>
 
@@ -42,13 +41,12 @@
           </div>
 
           <div class="flex items-center gap-4">
-            <Button :disabled="form.processing" :processing="form.processing" :recently-successful="form.recentlySuccessful">Save
-            </Button>
+            <Button :disabled="form.processing" :processing="form.processing" :recently-successful="form.recentlySuccessful">Uložiť</Button>
           </div>
         </form>
       </div>
 
-      <DeleteUser/>
+      <!--<DeleteUser/>-->
     </SettingsLayout>
   </AppLayout>
 </template>

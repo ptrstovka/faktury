@@ -30,7 +30,9 @@ const value = ref(props.modelValue || '')
 
 const emitValue = (val: string | number) => emits('update:modelValue', val)
 
-const emitDebouncedValue = useDebounceFn(() => emitValue, props.debounce, { maxWait: props.maxWait })
+const emitDebouncedValue = useDebounceFn((arg: any) => {
+  emitValue(arg)
+}, props.debounce, { maxWait: props.maxWait })
 const shouldDebounce = props.debounce && props.debounce > 0
 
 watch(value, val =>{
