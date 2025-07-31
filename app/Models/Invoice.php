@@ -359,6 +359,7 @@ class Invoice extends Model
     {
         $prefix = match ($locale) {
             'sk' => 'faktura',
+            'de' => 'rechnung',
             default => 'invoice',
         };
 
