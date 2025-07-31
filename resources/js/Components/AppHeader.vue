@@ -72,7 +72,7 @@
                 <TooltipContent class="w-56">
                   Aplikácia je aktívne vo vývoji a obsahuje chyby. Prípadné problémy môžete hlásiť mailom na
                   <a class="underline" href="mailto:ps@stacktrace.sk">ps@stacktrace.sk</a>.
-                  PR na Githube sú vítané. 😄️
+                  PR na <a class="underline" href="https://github.com/ptrstovka/faktury">Githube</a> sú vítané. 😄️
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
