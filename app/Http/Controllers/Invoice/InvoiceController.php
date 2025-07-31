@@ -126,6 +126,7 @@ class InvoiceController
             'templateLocales' => collect($invoice->template->getLocales())
                 ->map(fn (string $locale) => new SelectOption(Locale::name($locale), $locale)),
             'mailMessage' => $account->invoice_mail_message,
+            'isPaymentDue' => $invoice->isPaymentDue(),
 
             // TODO: konfigurovateľne
             'thousandsSeparator' => '',

@@ -9,6 +9,8 @@ use App\Models\Invoice;
 use App\Support\MoneyUtils;
 use App\Tables\Actions\DiscardInvoiceDraftAction;
 use App\Tables\Actions\DuplicateInvoiceAction;
+use App\Tables\Actions\MarkInvoiceAsPaidAction;
+use App\Tables\Actions\MarkInvoiceAsSentAction;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
@@ -147,6 +149,12 @@ class InvoiceTable extends Table
         return [
             Actions\Link::make('Zobraziť', fn (Invoice $invoice) => Link::to(route('invoices.show', $invoice)))
                 ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice)),
+
+            MarkInvoiceAsSentAction::make()
+                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->sent),
+
+            MarkInvoiceAsPaidAction::make()
+                ->can(fn (Invoice $invoice) => Gate::allows('update', $invoice) && !$invoice->draft && !$invoice->paid),
 
             DuplicateInvoiceAction::make()
                 ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice) && !$invoice->draft),

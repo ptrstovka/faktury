@@ -59,6 +59,7 @@ export interface InvoiceDetailProps {
     base: number
     total: number
   }>
+  isPaymentDue: boolean
 
   countries: Array<SelectOption>
   templates: Array<SelectOption>

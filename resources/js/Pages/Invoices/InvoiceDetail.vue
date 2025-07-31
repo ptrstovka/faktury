@@ -28,6 +28,8 @@
 
               <Badge v-if="sent" variant="secondary"><SendIcon /> Odoslaná </Badge>
               <Badge v-if="paid" variant="positive"><CheckIcon /> Uhradená </Badge>
+
+              <Badge v-if="sent && !paid && isPaymentDue" variant="destructive"><CalendarClockIcon /> Po splatnosti</Badge>
             </div>
           </div>
 
@@ -176,7 +178,7 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { LanguagesIcon, FilesIcon, BanknoteXIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import { LanguagesIcon, CalendarClockIcon, FilesIcon, BanknoteXIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 
