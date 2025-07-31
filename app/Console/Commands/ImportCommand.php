@@ -43,7 +43,11 @@ class ImportCommand extends Command
             'stovka.peter@gmail.com' => 1,
             'faktury@stacktrace.sk' => 2,
             'peter@stovka.eu' => 3,
-        ], $item['email'], 4))->map(function (array $data) {
+        ], $item['email'], 4))->each(function (array $data) {
+            if (User::query()->where('email', $data['email'])->exists()) {
+                return;
+            }
+
             $data = new Fluent($data);
 
             $user = new User();
