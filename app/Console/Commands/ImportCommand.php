@@ -46,13 +46,14 @@ class ImportCommand extends Command
         ], $item['email'], 4))->map(function (array $data) {
             $data = new Fluent($data);
 
-            $user = User::create([
+            $user = new User();
+            $user->setRawAttributes(['password' => $data['password']]);
+            $user->fill([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => $data['password'],
-                'password' => Hash::make('password'),
                 'created_at' => Carbon::createFromTimestamp($data['created_at']),
             ]);
+            $user->save();
 
             $address = new Address([
                 'line_one' => $data->get('company.address.line_one'),
@@ -249,8 +250,12 @@ class ImportCommand extends Command
                         ->setMonth((int) ltrim(Str::substr($number, 4, 2), '0'));
                 } else if (Str::length($number) === 8) {
                     $format = "RRRRCCCC";
+                } else if (Str::length($number) === 7) {
+                    $format = "RRRRCCC";
                 } else if (Str::length($number) === 6) {
                     $format = 'RRCCCC';
+                }  else if (Str::length($number) === 5) {
+                    $format = "RRCCC";
                 } else {
                     throw new \RuntimeException("Unable to guess format: {$number}");
                 }
@@ -327,6 +332,7 @@ class ImportCommand extends Command
         return match ($template) {
             'minima' => DocumentTemplate::query()->where('package', '@stacktrace/minimal')->firstOrFail(),
             'stacktrace' => DocumentTemplate::query()->where('package', '@stacktrace/stacktrace')->firstOrFail(),
+            'vinisoft' => DocumentTemplate::query()->where('package', '@vinisoft/invoice')->firstOrFail(),
         };
     }
 
@@ -337,9 +343,10 @@ class ImportCommand extends Command
         }
 
         return match ($country) {
-            "Slovensko", "Slovenská republika" => Country::Slovakia,
-            "Nemecko", "Germany" => Country::Germany,
+            "Slovensko", 'Slovakia', "Slovenská republika", 'Slovenská Republika', 'asdasd' => Country::Slovakia,
+            "Nemecko", "Germany", 'Deutschland' => Country::Germany,
             "United Arab Emirates" => Country::UnitedArabEmirates,
+            'Austria', 'Österreich' => Country::Austria,
             default => throw new \InvalidArgumentException("The country could not be found: [$country]"),
         };
     }
