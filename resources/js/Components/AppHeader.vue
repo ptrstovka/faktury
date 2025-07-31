@@ -126,7 +126,7 @@ const navigation = useNavigation([
   //   icon: LayoutGridIcon,
   // },
   {
-    title: 'Faktúry',
+    title: 'Vystavené faktúry',
     action: { route: 'invoices' },
     active: { route: 'invoices*' },
     icon: FileTextIcon,
