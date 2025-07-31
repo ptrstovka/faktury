@@ -13,6 +13,7 @@ use Brick\Money\Money;
 use Bysqr\Encoder;
 use Bysqr\Pay;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 
 class InvoiceSerializer
 {
@@ -21,7 +22,10 @@ class InvoiceSerializer
      */
     public function serialize(Invoice $invoice, SerializerOptions $options): array
     {
-        return [
+        $previousLocale = App::getLocale();
+        App::setLocale($options->locale);
+
+        $serialized = [
             'locale' => $options->locale,
             'document' => [
                 'public_number' => $invoice->public_invoice_number,
@@ -88,6 +92,10 @@ class InvoiceSerializer
                 'total_to_pay' => ($toPay = $invoice->getAmountToPay()) ? $this->money($toPay, $options->moneyFormattingLocale) : null,
             ],
         ];
+
+        App::setLocale($previousLocale);
+
+        return $serialized;
     }
 
     protected function payBySquare(Pay $pay): string

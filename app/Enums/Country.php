@@ -21,9 +21,7 @@ enum Country: string
      */
     public function name(): string
     {
-        // TODO: Pridať z jazykoveho suboru
-
-        return Str::headline($this->name);
+        return __('countries.'.$this->value);
     }
 
     /**
@@ -32,7 +30,7 @@ enum Country: string
     public static function all(): Collection
     {
         return collect(Country::cases())
-            ->sortBy(fn (Country $country) => $country->name())
+            ->sortBy(fn (Country $country) => Str::ascii($country->name()))
             ->values();
     }
 

@@ -5,7 +5,6 @@ namespace App\Enums;
 
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use StackTrace\Ui\Contracts\HasLabel;
 use StackTrace\Ui\SelectOption;
 
@@ -19,7 +18,7 @@ enum PaymentMethod: string implements HasLabel
      */
     public function name(): string
     {
-        return Str::headline($this->name);
+        return __('payment-methods.'.$this->value);
     }
 
     /**
