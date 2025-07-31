@@ -84,18 +84,21 @@
                   </DropdownMenuTrigger>
                   <DropdownMenuContent class="min-w-48" align="end">
                     <DropdownMenuItem @select="confirmDuplicate"><FilesIcon /> Duplikovať</DropdownMenuItem>
+                    <DropdownMenuItem @select="unlockInvoice"><LockOpenIcon /> Odomknúť úpravy</DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator />
 
                     <DropdownMenuLabel>Platba</DropdownMenuLabel>
                     <DropdownMenuItem v-if="paid" @select="confirmMarkAsUnpaid"><BanknoteXIcon /> Označiť ako neuhradenú</DropdownMenuItem>
                     <DropdownMenuItem v-else @select="confirmMarkAsPaid"><BanknoteIcon /> Označiť ako uhradenú</DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
 
                     <DropdownMenuLabel>Odoslať</DropdownMenuLabel>
                     <DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať cez e-mail</DropdownMenuItem>
                     <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent"><MailXIcon /> Označiť ako neodoslanú</DropdownMenuItem>
                     <DropdownMenuItem v-else @select="confirmMarkAsSent"><MailCheckIcon /> Označiť ako odoslanú</DropdownMenuItem>
 
-                    <DropdownMenuLabel>Modifikácia</DropdownMenuLabel>
-                    <DropdownMenuItem @select="unlockInvoice"><LockOpenIcon /> Odomknúť úpravy</DropdownMenuItem>
 
                     <DropdownMenuSeparator />
 
