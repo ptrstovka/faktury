@@ -55,7 +55,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import { FormControl } from '@/Components/Form'
-import DeleteUser from '@/Components/DeleteUser.vue';
+// import DeleteUser from '@/Components/DeleteUser.vue';
 import HeadingSmall from '@/Components/HeadingSmall.vue';
 import { Button } from '@/Components/Button';
 import { Input } from '@/Components/Input';

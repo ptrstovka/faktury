@@ -60,11 +60,23 @@
         </div>
 
         <div class="ml-auto flex items-center">
-          <!--<div class="relative flex items-center space-x-1">-->
+          <div class="relative flex items-center space-x-1 mr-1">
           <!--  <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">-->
           <!--    <SearchIcon class="size-5 opacity-80 group-hover:opacity-100"/>-->
           <!--  </Button>-->
-          <!--</div>-->
+            <TooltipProvider :delay-duration="0">
+              <Tooltip>
+                <TooltipTrigger class="hidden sm:block">
+                  <a class="flex" href="mailto:ps@stacktrace.sk"><DevPreview /></a>
+                </TooltipTrigger>
+                <TooltipContent class="w-56">
+                  Aplikácia je aktívne vo vývoji a obsahuje chyby. Prípadné problémy môžete hlásiť mailom na
+                  <a class="underline" href="mailto:ps@stacktrace.sk">ps@stacktrace.sk</a>.
+                  PR na Githube sú vítané. 😄️
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger :as-child="true">
@@ -99,12 +111,14 @@ import {
   navigationMenuTriggerStyle
 } from '@/Components/NavigationMenu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/Components/Sheet'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Components/Tooltip";
 import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
-import { LayoutGridIcon, MenuIcon, SearchIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'
+import { MenuIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
+import { DevPreview } from '@/Components/FeatureFlags'
 
 interface Props {
   breadcrumbs?: BreadcrumbItem[]
