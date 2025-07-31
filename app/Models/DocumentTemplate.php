@@ -89,7 +89,9 @@ class DocumentTemplate extends Model
             throw new RuntimeException("Invalid template: the rendering script does not exist");
         }
 
-        return Process::run([$node, $script, base64_encode(json_encode($input))])->throw()->output();
+        $data = base64_encode(json_encode($input));
+
+        return Process::input($data)->run([$node, $script])->throw()->output();
     }
 
     public static function installFromFolder(string $folder, ?Account $account = null, bool $default = false): static

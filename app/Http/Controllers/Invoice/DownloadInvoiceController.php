@@ -37,5 +37,4 @@ class DownloadInvoiceController
         return response()->streamDownload(function () use ($template, $input) {
             echo $template->render($input);
         }, $invoice->createFileName($locale, extension: 'pdf'));
-    }
-}
+    }}
