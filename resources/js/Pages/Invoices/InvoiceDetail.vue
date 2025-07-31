@@ -83,6 +83,8 @@
                     <Button class="px-2" size="sm" variant="outline" :icon="EllipsisIcon" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent class="min-w-48" align="end">
+                    <DropdownMenuItem @select="confirmDuplicate"><FilesIcon /> Duplikovať</DropdownMenuItem>
+
                     <DropdownMenuLabel>Platba</DropdownMenuLabel>
                     <DropdownMenuItem v-if="paid" @select="confirmMarkAsUnpaid"><BanknoteXIcon /> Označiť ako neuhradenú</DropdownMenuItem>
                     <DropdownMenuItem v-else @select="confirmMarkAsPaid"><BanknoteIcon /> Označiť ako uhradenú</DropdownMenuItem>
@@ -171,7 +173,7 @@ import {
 import AppLayout from "@/Layouts/AppLayout.vue"
 import { notifyAboutFirstVisibleError, useSaveShortcut } from "@/Utils";
 import { Head, router, useForm } from "@inertiajs/vue3"
-import { LanguagesIcon, BanknoteXIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
+import { LanguagesIcon, FilesIcon, BanknoteXIcon, Trash2Icon, MailCheckIcon, MailXIcon, CheckIcon, SaveIcon, SendIcon, FileDownIcon, ChevronDownIcon, EllipsisIcon, LockIcon, LockOpenIcon, KeySquareIcon, BanknoteIcon, ClipboardCheckIcon } from "lucide-vue-next"
 import { computed, ref } from "vue"
 import { toast } from "vue-sonner"
 
@@ -268,4 +270,8 @@ const confirmMarkAsPaid = () => confirm('Naozaj chcete túto faktúru označiť 
 const confirmMarkAsUnpaid = () => confirm('Naozaj chcete túto faktúru označiť ako neuhradenú?', async () => {
   await asyncRouter.delete(route('invoices.paid-flag.destroy', props.id), { preserveScroll: true })
 }, { destructive: true, title: 'Označiť ako neuhradenú' })
+
+const confirmDuplicate = () => confirm('Chcete vytvoriť kópiu tejto faktúry?', async () => {
+  await asyncRouter.post(route('invoices.duplicate', props.id))
+}, { title: 'Vytvoriť kópiu' })
 </script>

@@ -396,4 +396,59 @@ class Invoice extends Model
 
         Mail::to($email)->send($mail);
     }
+
+    /**
+     * Create copy of the invoice.
+     */
+    public function duplicate(bool $withLines = true): static
+    {
+        $supplierAddress = $this->supplier->address?->replicate();
+        $supplierAddress?->save();
+
+        $supplier = $this->supplier->replicate();
+        $supplier->address()->associate($supplierAddress);
+        $supplier->save();
+
+        $customerAddress = $this->customer->address?->replicate();
+        $customerAddress?->save();
+
+        $customer = $this->customer->replicate();
+        $customer->address()->associate($customerAddress);
+        $customer->save();
+
+        $signature = $this->signature?->replicate();
+        $signature?->save();
+
+        $logo = $this->logo?->replicate();
+        $logo?->save();
+
+        $invoice = $this->replicate([
+            'uuid', 'public_invoice_number', 'invoice_number', 'variable_symbol',
+            'specific_symbol', 'constant_symbol', 'total_vat_inclusive', 'total_vat_exclusive',
+        ]);
+        $invoice->numberSequence()->dissociate();
+        $invoice->logo()->associate($logo);
+        $invoice->signature()->associate($signature);
+        $invoice->supplier()->associate($supplier);
+        $invoice->customer()->associate($customer);
+        $invoice->draft = true;
+        $invoice->sent = false;
+        $invoice->paid = false;
+        $invoice->locked = false;
+        $invoice->issued_at = now();
+        $invoice->supplied_at = now();
+        $invoice->payment_due_to = now()->addDays($this->account->invoice_due_days - 1);
+
+        $invoice->save();
+
+        if ($withLines) {
+            $this->lines->each(function (InvoiceLine $line) use ($invoice) {
+                $copy = $line->replicate(['uuid']);
+                $copy->invoice()->associate($invoice);
+                $copy->save();
+            });
+        }
+
+        return $invoice;
+    }
 }

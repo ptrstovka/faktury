@@ -7,6 +7,8 @@ namespace App\Tables;
 use App\Enums\PaymentMethod;
 use App\Models\Invoice;
 use App\Support\MoneyUtils;
+use App\Tables\Actions\DiscardInvoiceDraftAction;
+use App\Tables\Actions\DuplicateInvoiceAction;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
@@ -145,6 +147,12 @@ class InvoiceTable extends Table
         return [
             Actions\Link::make('Zobraziť', fn (Invoice $invoice) => Link::to(route('invoices.show', $invoice)))
                 ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice)),
+
+            DuplicateInvoiceAction::make()
+                ->can(fn (Invoice $invoice) => Gate::allows('view', $invoice) && !$invoice->draft),
+
+            DiscardInvoiceDraftAction::make()
+                ->can(fn (Invoice $invoice) => Gate::allows('delete', $invoice) && $invoice->draft),
         ];
     }
 

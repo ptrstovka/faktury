@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Invoice\DownloadInvoiceController;
+use App\Http\Controllers\Invoice\DuplicateController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\InvoiceLockController;
 use App\Http\Controllers\Invoice\IssueInvoiceController;
@@ -35,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/invoices/{invoice:uuid}/flags/paid', [PaidFlagController::class, 'store'])->name('invoices.paid-flag.store');
     Route::delete('/invoices/{invoice:uuid}/flags/paid', [PaidFlagController::class, 'destroy'])->name('invoices.paid-flag.destroy');
     Route::post('/invoices/{invoice:uuid}/send', SendController::class)->name('invoices.send')->middleware('throttle:mail');
+    Route::post('/invoices/{invoice:uuid}/duplicate', DuplicateController::class)->name('invoices.duplicate');
 });
 
 require __DIR__.'/settings.php';
