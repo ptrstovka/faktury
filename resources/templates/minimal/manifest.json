@@ -1,8 +1,8 @@
 {
   "name": "Minimal",
   "description": "Predvolená šablóna faktúry",
-  "package": "@stacktrace/minimal",
+  "package": "@faktury/minimal",
   "type": "invoice",
   "entryPoint": "render.js",
-  "locales": ["sk", "en"]
+  "locales": ["sk", "en", "de"]
 }

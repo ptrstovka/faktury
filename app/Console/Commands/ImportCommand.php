@@ -334,8 +334,8 @@ class ImportCommand extends Command
     protected function resolveTemplate(string $template): DocumentTemplate
     {
         return match ($template) {
-            'minima' => DocumentTemplate::query()->where('package', '@stacktrace/minimal')->firstOrFail(),
-            'stacktrace' => DocumentTemplate::query()->where('package', '@stacktrace/stacktrace')->firstOrFail(),
+            'minima' => DocumentTemplate::query()->where('package', '@faktury/minimal')->firstOrFail(),
+            'stacktrace' => DocumentTemplate::query()->where('package', '@stacktrace/invoice')->firstOrFail(),
             'vinisoft' => DocumentTemplate::query()->where('package', '@vinisoft/invoice')->firstOrFail(),
         };
     }
