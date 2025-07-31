@@ -85,7 +85,7 @@
                   <DropdownMenuContent class="min-w-48" align="end">
                     <DropdownMenuItem @select="confirmDuplicate"><FilesIcon /> Duplikovať</DropdownMenuItem>
                     <DropdownMenuItem @select="unlockInvoice"><LockOpenIcon /> Odomknúť úpravy</DropdownMenuItem>
-                    
+
                     <DropdownMenuSeparator />
 
                     <DropdownMenuLabel>Platba</DropdownMenuLabel>
