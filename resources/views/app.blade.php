@@ -43,5 +43,11 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        @production
+            @if(($plausibleDomain = config('services.plausible.domain')) && ($plausibleServer = config('services.plausible.server')))
+                <script defer data-domain="{{ $plausibleDomain }}" src="{{ rtrim($plausibleServer, '/') }}/js/script.js"></script>
+            @endif
+        @endproduction
     </body>
 </html>

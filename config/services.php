@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'plausible' => [
+        'domain' => env('PLAUSIBLE_DOMAIN'),
+        'server' => env('PLAUSIBLE_SERVER'),
+    ],
+
 ];
