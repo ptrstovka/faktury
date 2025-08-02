@@ -1,8 +1,0 @@
-{
-  "name": "Vinisoft",
-  "description": "Šablóna pre Vinisoft s.r.o.",
-  "package": "@vinisoft/invoice",
-  "type": "invoice",
-  "entryPoint": "render.js",
-  "locales": ["sk", "en", "de"]
-}
