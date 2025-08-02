@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Settings;
 
 
 use App\Facades\Accounts;
+use App\Models\TemporaryUpload;
 use App\Models\Upload;
+use App\Rules\TemporaryUploadRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,23 +20,21 @@ class ChangeInvoiceLogoController
         Gate::authorize('update', $account);
 
         $request->validate([
-            'file' => [
-                'nullable',
-                'image',
-                'max:8192',
-                'dimensions:min_width=100,min_height=100,max_width=400,max_height=400',
-                'extensions:jpg,png,jpeg',
-                'mimes:jpg,png,jpeg',
-            ],
-            'remove_file' => ['boolean'],
+            'file' => [TemporaryUploadRule::scope('InvoiceLogo')],
+            'remove' => ['boolean'],
         ]);
 
-        if ($request->boolean('remove_file') && ($logo = $account->invoiceLogo)) {
+        $file = $request->input('file');
+        $remove = $request->boolean('remove');
+
+        if ($remove && ($logo = $account->invoiceLogo)) {
             $account->invoiceLogo()->dissociate()->save();
             $logo->delete();
-        } else if ($request->has('file') && ($file = $request->file('file'))) {
-            $upload = Upload::storePublicly($file);
+        } else if ($file) {
+            $temporaryUpload = TemporaryUpload::findOrFailByUUID($file);
+            $upload = Upload::storePublicly($temporaryUpload);
             $account->invoiceLogo()->associate($upload)->save();
+            $temporaryUpload->delete();
         }
 
         return back();

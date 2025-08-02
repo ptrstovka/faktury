@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -60,8 +61,23 @@ class Upload extends Model
     /**
      * Store uploaded file to public folder.
      */
-    public static function storePublicly(UploadedFile $file, string $dir = 'uploads'): static
+    public static function storePublicly(UploadedFile|TemporaryUpload $file, string $dir = 'uploads'): static
     {
+        if ($file instanceof TemporaryUpload) {
+            $fileName = Str::random(20).'.'.File::extension($file->path);
+
+            Storage::disk('public')
+                ->writeStream(
+                    path: $dir.DIRECTORY_SEPARATOR.$fileName,
+                    resource: Storage::disk($file->disk)->readStream($file->path),
+                );
+
+            return static::create([
+                'disk' => 'public',
+                'file_path' => $dir.'/'.$fileName,
+            ]);
+        }
+
         $fileName = Str::random(20).'.'.$file->extension();
 
         $file->storePubliclyAs($dir, $fileName, ['disk' => 'public']);

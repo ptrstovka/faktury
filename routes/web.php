@@ -12,6 +12,7 @@ use App\Http\Controllers\Invoice\SendController;
 use App\Http\Controllers\Invoice\SentFlagController;
 use App\Http\Controllers\Invoice\SerializeInvoiceController;
 use App\Http\Controllers\SwitchAccountController;
+use App\Http\Controllers\TemporaryUploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -37,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/invoices/{invoice:uuid}/flags/paid', [PaidFlagController::class, 'destroy'])->name('invoices.paid-flag.destroy');
     Route::post('/invoices/{invoice:uuid}/send', SendController::class)->name('invoices.send')->middleware('throttle:mail');
     Route::post('/invoices/{invoice:uuid}/duplicate', DuplicateController::class)->name('invoices.duplicate');
+
+    Route::post('/files', [TemporaryUploadController::class, 'store'])->name('files.store');
 });
 
 require __DIR__.'/settings.php';

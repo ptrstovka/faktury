@@ -22,4 +22,20 @@ trait HasUuid
             }
         });
     }
+
+    /**
+     * Find model by UUID.
+     */
+    public static function findByUUID(string $uuid): ?static
+    {
+        return static::query()->firstWhere('uuid', $uuid);
+    }
+
+    /**
+     * Get the model by UUID or throw exception where it does not exist.
+     */
+    public static function findOrFailByUUID(string $uuid): static
+    {
+        return static::query()->where('uuid', $uuid)->firstOrFail();
+    }
 }

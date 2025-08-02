@@ -44,18 +44,34 @@
       </section>
 
       <section class="space-y-6">
-        <HeadingSmall title="Logo" description="Nastavte si logo zbrazené v hlavičke faktúry"/>
+        <HeadingSmall title="Logo" description="Nastavte si logo zobrazené v hlavičke faktúry. Obrázok musí mať rozmery minimálne 100x100px a maximálne 400x400px. Odporúčame priehľadný PNG obrázok alebo obrázok s bielym pozadím. Maximálna veľkosť súboru nesmie presiahnuť 8 MB."/>
 
         <div class="space-y-6">
-          <UploadSingleImage :url="route('invoices.settings.logo')" :src="logoFileUrl" />
+          <TemporaryFileInput
+            :error="logoForm.errors.file || logoForm.errors.remove"
+            scope="InvoiceLogo"
+            :source="logoFileUrl"
+            v-model:file="logoForm.file"
+            v-model:remove="logoForm.remove"
+          />
+
+          <Button @click="saveLogo" :processing="logoForm.processing" :recently-successful="logoForm.recentlySuccessful">Uložiť</Button>
         </div>
       </section>
 
       <section class="space-y-6">
-        <HeadingSmall title="Podpis" description="Nastavte si podpis zbrazený na Vašich faktúrach"/>
+        <HeadingSmall title="Podpis" description="Nastavte si podpis zbrazený na Vašich faktúrach. Obrázok musí mať rozmery minimálne 100x100px a maximálne 400x400px. Odporúčame priehľadný PNG obrázok alebo obrázok s bielym pozadím. Maximálna veľkosť súboru nesmie presiahnuť 8 MB."/>
 
         <div class="space-y-6">
-          <UploadSingleImage :url="route('invoices.settings.signature')" :src="signatureFileUrl" />
+          <TemporaryFileInput
+            :error="signatureForm.errors.file || signatureForm.errors.remove"
+            scope="InvoiceSignature"
+            :source="signatureFileUrl"
+            v-model:file="signatureForm.file"
+            v-model:remove="signatureForm.remove"
+          />
+
+          <Button @click="saveSignature" :processing="signatureForm.processing" :recently-successful="signatureForm.recentlySuccessful">Uložiť</Button>
         </div>
       </section>
     </SettingsLayout>
@@ -73,7 +89,7 @@ import { Input } from '@/Components/Input'
 import { Textarea } from '@/Components/Textarea'
 import { type SelectOption } from '@stacktrace/ui'
 import { Button } from '@/Components/Button'
-import UploadSingleImage from "@/Components/Settings/UploadSingleImage.vue";
+import { TemporaryFileInput } from '@/Components/TemporaryFileInput'
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
@@ -110,5 +126,27 @@ const form = useForm(() => ({
 }))
 const save = () => {
   form.patch(route('invoices.settings.update'), { preserveScroll: true })
+}
+
+const logoForm = useForm(() => ({
+  file: null,
+  remove: false,
+}))
+const saveLogo = () => {
+  logoForm.patch(route('invoices.settings.logo'), {
+    preserveScroll: true,
+    onSuccess: () => logoForm.reset()
+  })
+}
+
+const signatureForm = useForm(() => ({
+  file: null,
+  remove: false,
+}))
+const saveSignature = () => {
+  signatureForm.patch(route('invoices.settings.signature'), {
+    preserveScroll: true,
+    onSuccess: () => signatureForm.reset()
+  })
 }
 </script>
