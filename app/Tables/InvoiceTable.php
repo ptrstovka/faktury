@@ -112,7 +112,7 @@ class InvoiceTable extends Table
                 'unpaid' => 'destructive',
             ])->width(32),
 
-            Columns\Date::make('Dodanie', 'supplied_at')
+            Columns\Date::make('Dodaná', 'supplied_at')
                 ->sortable(using: 'supplied_at', named: 'supplied')
                 ->alignCenter()
                 ->width(32),
@@ -122,7 +122,7 @@ class InvoiceTable extends Table
                 ->alignCenter()
                 ->width(32),
 
-            Columns\Date::make('Splatnosť', 'payment_due_to')
+            Columns\Date::make('Splatná', 'payment_due_to')
                 ->sortable(using: 'payment_due_to', named: 'paymentDue')
                 ->alignCenter()
                 ->width(32),
