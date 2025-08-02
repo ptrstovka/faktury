@@ -63,18 +63,20 @@
 
                 <Button v-else as="a" :href="route('invoices.download', id)" size="sm" label="Stiahnuť" :icon="FileDownIcon" />
 
-                <div v-if="! sent" class="inline-flex items-center">
-                  <Button @click="sendDialog.activate" class="rounded-r-none border-r-0" variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />
-                  <div class="h-full w-px bg-border"></div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button size="sm" :icon="ChevronDownIcon" class="px-2 border-l-0 rounded-l-none" variant="outline" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent class="min-w-48" align="end">
-                      <DropdownMenuItem @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                <!-- TODO: Pridať support pre email -->
+                <!--<div v-if="! sent" class="inline-flex items-center">-->
+                <!--  <Button @click="sendDialog.activate" class="rounded-r-none border-r-0" variant="outline" size="sm" label="Odoslať" :icon="SendIcon" />-->
+                <!--  <div class="h-full w-px bg-border"></div>-->
+                <!--  <DropdownMenu>-->
+                <!--    <DropdownMenuTrigger as-child>-->
+                <!--      <Button size="sm" :icon="ChevronDownIcon" class="px-2 border-l-0 rounded-l-none" variant="outline" />-->
+                <!--    </DropdownMenuTrigger>-->
+                <!--    <DropdownMenuContent class="min-w-48" align="end">-->
+                <!--      <DropdownMenuItem @select="confirmMarkAsSent">Označiť ako odoslanú</DropdownMenuItem>-->
+                <!--    </DropdownMenuContent>-->
+                <!--  </DropdownMenu>-->
+                <!--</div>-->
+                <Button v-if="!sent" @click="confirmMarkAsSent" variant="outline" size="sm" label="Označiť ako odoslanú" :icon="SendIcon" />
 
                 <Button v-if="!paid" @click="confirmMarkAsPaid" variant="outline" size="sm" label="Označiť ako uhradenú" :icon="BanknoteIcon" />
                 <!-- TODO: Pridať support pre platby -->
@@ -97,10 +99,9 @@
                     <DropdownMenuSeparator />
 
                     <DropdownMenuLabel>Odoslať</DropdownMenuLabel>
-                    <DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať cez e-mail</DropdownMenuItem>
+                    <!--<DropdownMenuItem @select="sendDialog.activate"><SendIcon /> Odoslať cez e-mail</DropdownMenuItem>-->
                     <DropdownMenuItem v-if="sent" @select="confirmMarkAsNotSent"><MailXIcon /> Označiť ako neodoslanú</DropdownMenuItem>
                     <DropdownMenuItem v-else @select="confirmMarkAsSent"><MailCheckIcon /> Označiť ako odoslanú</DropdownMenuItem>
-
 
                     <DropdownMenuSeparator />
 
