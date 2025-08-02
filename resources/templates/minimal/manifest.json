@@ -1,8 +1,0 @@
-{
-  "name": "Minimal",
-  "description": "Predvolená šablóna faktúry",
-  "package": "@faktury/minimal",
-  "type": "invoice",
-  "entryPoint": "render.js",
-  "locales": ["sk", "en", "de"]
-}

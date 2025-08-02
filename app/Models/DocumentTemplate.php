@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 use RuntimeException;
+use ZipArchive;
 
 /**
  * @property int $id
@@ -25,6 +26,7 @@ use RuntimeException;
  * @property boolean $is_default
  * @property string $name
  * @property string $installation_path
+ * @property string $package
  */
 class DocumentTemplate extends Model
 {
@@ -94,9 +96,48 @@ class DocumentTemplate extends Model
         return Process::input($data)->run([$node, $script])->throw()->output();
     }
 
-    public static function installFromFolder(string $folder, ?Account $account = null, bool $default = false): static
+    /**
+     * Install template from archive.
+     */
+    public static function installFromArchive(string $path, ?Account $account = null, bool $default = false): static
     {
-        $src = Storage::build(['driver' => 'local', 'root' => $folder]);
+        $tempDir = "temp/unpack-".Str::random("10");
+
+        $archive = new ZipArchive;
+
+        if ($archive->open($path) !== true) {
+            throw new InvalidArgumentException("Unable to open archive [$path]");
+        }
+
+        if (! Storage::exists("temp")) {
+            Storage::makeDirectory("temp");
+        }
+
+        Storage::makeDirectory($tempDir);
+
+        $extractPath = Storage::path($tempDir);
+
+        if ($archive->extractTo($extractPath) !== true) {
+            $archive->close();
+
+            throw new InvalidArgumentException("Unable to extract archive [$path]");
+        }
+
+        $archive->close();
+
+        $template = static::installFromDirectory($extractPath, $account, $default);
+
+        Storage::deleteDirectory($tempDir);
+
+        return $template;
+    }
+
+    /**
+     * Install unpacked template from a directory.
+     */
+    public static function installFromDirectory(string $directory, ?Account $account = null, bool $default = false): static
+    {
+        $src = Storage::build(['driver' => 'local', 'root' => $directory]);
 
         if (! $src->exists('manifest.json')) {
             throw new InvalidArgumentException("The folder does not contain a manifest file");
@@ -139,7 +180,34 @@ class DocumentTemplate extends Model
             Storage::makeDirectory($dest);
         }
 
-        $installationPath = $dest.'/'.hash('sha256', $package);
+        if (
+            $existingInstallation = static::query()
+                ->where('document_type', $type)
+                ->where('package', $package)
+                ->when($account, fn (Builder $builder, Account $account) => $builder->whereBelongsTo($account))
+                ->first()
+        ) {
+            $installationPath = $existingInstallation->installation_path;
+
+            Storage::deleteDirectory($installationPath);
+            Storage::makeDirectory($installationPath);
+
+            Storage::writeStream($installationPath.'/manifest.json', $src->readStream('manifest.json'));
+            Storage::writeStream($installationPath.'/'.$entryPoint, $src->readStream($entryPoint));
+
+            $existingInstallation->update([
+                'name' => $name,
+                'description' => $description,
+                'options' => [
+                    'locales' => $locales,
+                    'entryPoint' => $entryPoint,
+                ],
+            ]);
+
+            return $existingInstallation;
+        }
+
+        $installationPath = $dest.'/'.hash('sha256', $package.($account ? ':'.$account->id : ''));
 
         if (Storage::exists($installationPath)) {
             throw new InvalidArgumentException("The template is already installed");

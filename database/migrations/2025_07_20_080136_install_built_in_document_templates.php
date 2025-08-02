@@ -16,11 +16,11 @@ return new class extends Migration
             Storage::deleteDirectory($installationPath);
         }
 
-        collect(Finder::create()->directories()->in(resource_path('templates'))->depth(0))
+        collect(Finder::create()->files()->name('*.zip')->in(resource_path('templates'))->depth(0))
             ->each(function (SplFileInfo $dir) {
                 $name = $dir->getFilename();
 
-                DocumentTemplate::installFromFolder($dir->getPathname(), default: $name === 'minimal');
+                DocumentTemplate::installFromArchive($dir->getPathname(), default: $name === 'minimal.zip');
             });
     }
 };
