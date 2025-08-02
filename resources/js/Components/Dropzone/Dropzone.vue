@@ -1,13 +1,14 @@
 <template>
   <div ref="zoneEl" :class="cn(
     'relative flex flex-col w-full items-center justify-center text-sm border-2 overflow-hidden border-dashed rounded-md py-8 px-3 transition-colors',
-    isOverDropZone ? 'border-primary' : 'border-input',
+    isOverDropZone && !disabled ? 'border-primary' : 'border-input',
+    { 'opacity-80 cursor-not-allowed text-muted-foreground': disabled },
     $attrs.class || ''
   )">
-    <UploadIcon class="size-6 mb-2 text-primary" />
+    <UploadIcon v-if="showIcon" class="size-6 mb-2 text-primary" />
     <span class="font-medium">Natiahnite súbor sem</span>
     <span class="text-muted-foreground mt-2">alebo</span>
-    <Button @click.prevent.stop="selectFile" variant="link">vyberte súbor z počítača</Button>
+    <Button :disabled="disabled" @click.prevent.stop="selectFile" variant="link">vyberte súbor z počítača</Button>
     <input ref="inputEl" type="file" class="hidden" :multiple="multiple" :accept="accept" @change="onInputChange">
 
     <div v-if="processing" class="bg-background absolute inset-0 flex flex-col items-center justify-center">
@@ -32,14 +33,21 @@ const props = withDefaults(defineProps<{
   multiple?: boolean
   allowed?: Array<string>
   processing?: boolean
+  disabled?: boolean
+  showIcon?: boolean
 }>(), {
   multiple: true,
+  showIcon: true,
 })
 
 const zoneEl = ref<HTMLDivElement>()
 const inputEl = ref<HTMLInputElement>()
 
 const onFiles = (files: Array<File> | null) => {
+  if (props.disabled) {
+    return
+  }
+
   if (files && files.length > 0) {
     emit('files', props.multiple === true ? files : [files[0]])
   }

@@ -67,6 +67,12 @@ export function useInvoiceForm(props: ComputedRef<InvoiceDetailProps>) {
     vat_reverse_charge: props.value.vatReverseCharge,
     vat_enabled: props.value.vatEnabled,
 
+    logo: null,
+    remove_logo: false,
+
+    signature: null,
+    remove_signature: false,
+
     lines: props.value.lines.map((line) => ({ ...line })) as Array<any>, // Array<InvoiceLine>
   }))
 

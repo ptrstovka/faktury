@@ -8,6 +8,9 @@ use App\Enums\PaymentMethod;
 use App\Models\Address;
 use App\Models\DocumentTemplate;
 use App\Models\Invoice;
+use App\Models\TemporaryUpload;
+use App\Models\Upload;
+use App\Rules\TemporaryUploadRule;
 use Brick\Money\Money;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
@@ -130,6 +133,12 @@ class UpdateInvoiceRequest extends FormRequest
             'lines.*.vat' => [$strict && $vatEnabled ? 'required' : 'nullable', 'numeric', 'min:0', 'max:100'],
             'lines.*.totalVatExclusive' => ['nullable', 'integer'],
             'lines.*.totalVatInclusive' => [$strict && $vatEnabled ? 'required' : 'nullable', 'integer'],
+
+            'logo' => ['nullable', TemporaryUploadRule::scope('InvoiceLogo')],
+            'remove_logo' => ['boolean'],
+
+            'signature' => ['nullable', TemporaryUploadRule::scope('InvoiceSignature')],
+            'remove_signature' => ['boolean'],
         ];
     }
 
@@ -243,6 +252,26 @@ class UpdateInvoiceRequest extends FormRequest
 
         $invoice->load('lines');
         $invoice->calculateTotals();
+
+        if ($this->boolean('remove_logo') && ($logo = $invoice->logo)) {
+            $invoice->logo()->dissociate()->save();
+            $logo->delete();
+        } else if ($logoFile = $this->input('logo')) {
+            $temporaryUpload = TemporaryUpload::findOrFailByUUID($logoFile);
+            $upload = Upload::storePublicly($temporaryUpload);
+            $invoice->logo()->associate($upload)->save();
+            $temporaryUpload->delete();
+        }
+
+        if ($this->boolean('remove_signature') && ($signature = $invoice->signature)) {
+            $invoice->signature()->dissociate()->save();
+            $signature->delete();
+        } else if ($signatureFile = $this->input('signature')) {
+            $temporaryUpload = TemporaryUpload::findOrFailByUUID($signatureFile);
+            $upload = Upload::storePublicly($temporaryUpload);
+            $invoice->signature()->associate($upload)->save();
+            $temporaryUpload->delete();
+        }
 
         return $invoice;
     }

@@ -1,20 +1,23 @@
 <template>
   <FormControl :error="error || errorMessage">
     <Dropzone
+      :class="dropClass"
       v-if="showDropZone"
       @files="onFiles"
       :processing="uploading"
+      :disabled="disabled"
+      :show-icon="showIcon"
     />
 
     <div
       v-else
       :class="cn(
-        'relative w-fit border border-dashed p-2 rounded-md',
+        'relative w-fit flex items-center justify-center border border-dashed p-2 rounded-md',
         $attrs.class || ''
       )"
     >
       <img class="h-32" v-if="preview" :src="preview" alt="">
-      <TooltipProvider :delay-duration="0">
+      <TooltipProvider :delay-duration="0" v-if="! disabled">
         <Tooltip @click.stop>
           <TooltipTrigger as-child>
             <button class="text-destructive absolute -top-4 -right-4 opacity-70 hover:opacity-100 p-2" @click="remove">
@@ -35,17 +38,22 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/Comp
 import { cn } from "@/Utils";
 import axios from 'axios'
 import { XCircleIcon } from "lucide-vue-next";
-import { computed, ref, watch } from "vue";
+import { computed, type HTMLAttributes, ref, watch } from "vue";
 
 const emit = defineEmits(['update:file', 'update:remove'])
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   error?: string | null | undefined
   scope: string
   source: string | null
   remove: boolean
   file: string | null
-}>()
+  disabled?: boolean
+  dropClass?: HTMLAttributes['class']
+  showIcon?: boolean
+}>(), {
+  showIcon: true,
+})
 
 interface Upload {
   id: string

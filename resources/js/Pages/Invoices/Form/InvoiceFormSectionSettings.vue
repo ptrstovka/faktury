@@ -85,19 +85,31 @@
       </FormInlineError>
     </FormControl>
 
-    <div class="grid grid-cols-2 gap-4">
-      <!-- TODO: pridať možnosť nastaviť si custom logo priamo na fakture -->
-      <FormControl label="Logo" v-if="invoice.logoUrl">
-        <div class="border border-dashed rounded-md border-input flex items-center justify-center p-2">
-          <img class="h-20 object-contain object-center" :src="invoice.logoUrl" alt="">
-        </div>
+    <div class="grid grid-cols-2 gap-4" v-if="! (hideLogo && hideSignature)">
+      <FormControl label="Logo" v-if="! hideLogo">
+        <TemporaryFileInput
+          class="w-full"
+          :source="invoice.logoUrl"
+          scope="InvoiceLogo"
+          v-model:file="form.logo"
+          v-model:remove="form.remove_logo"
+          :disabled="locked"
+          drop-class="h-36"
+          :show-icon="false"
+        />
       </FormControl>
 
-      <!-- TODO: pridať možnosť nastaviť si custom podpis priamo na fakture -->
-      <FormControl label="Podpis" v-if="invoice.signatureUrl">
-        <div class="border border-dashed rounded-md border-input flex items-center justify-center p-2">
-          <img class="h-20 object-contain object-center" :src="invoice.signatureUrl" alt="">
-        </div>
+      <FormControl label="Podpis" v-if="! hideSignature">
+        <TemporaryFileInput
+          class="w-full"
+          :source="invoice.signatureUrl"
+          scope="InvoiceSignature"
+          v-model:file="form.signature"
+          v-model:remove="form.remove_signature"
+          :disabled="locked"
+          drop-class="h-36"
+          :show-icon="false"
+        />
       </FormControl>
     </div>
   </div>
@@ -108,7 +120,12 @@ import { CheckboxControl } from "@/Components/Checkbox";
 import { FormControl, FormInlineError, FormSelect } from "@/Components/Form";
 import { Input } from "@/Components/Input";
 import { Textarea } from "@/Components/Textarea";
-import { injectInvoiceFormContext } from "@/Pages/Invoices/Form/index.ts";
+import { injectInvoiceFormContext } from "@/Pages/Invoices/Form"
+import { TemporaryFileInput } from "@/Components/TemporaryFileInput"
+import { computed } from "vue";
 
 const { form, locked, templates, invoice } = injectInvoiceFormContext()
+
+const hideLogo = computed(() => locked.value && !invoice.value.logoUrl)
+const hideSignature = computed(() => locked.value && !invoice.value.signatureUrl)
 </script>

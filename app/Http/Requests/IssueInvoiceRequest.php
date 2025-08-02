@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Invoice;
 use Illuminate\Support\Facades\Gate;
 
 class IssueInvoiceRequest extends UpdateInvoiceRequest
