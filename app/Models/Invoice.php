@@ -338,7 +338,8 @@ class Invoice extends Model
                                 bic: $this->supplier->bank_bic,
                             )
                         ],
-                        paymentDueDate: $this->payment_due_to?->format('Y-m-d'),
+                        // TODO: urobit nastavitelne
+                        // paymentDueDate: $this->payment_due_to?->format('Y-m-d'),
                         variableSymbol: $this->variable_symbol,
                         constantSymbol: $this->constant_symbol,
                         specificSymbol: $this->specific_symbol,
