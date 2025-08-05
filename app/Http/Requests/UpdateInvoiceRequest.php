@@ -116,9 +116,9 @@ class UpdateInvoiceRequest extends FormRequest
             'bank_bic' => ['nullable', 'string', 'max:191'],
             'bank_account_number' => ['nullable', 'string', 'max:191'],
             'bank_account_iban' => ['nullable', 'string', 'max:191'],
-            'variable_symbol' => ['nullable', 'string', 'max:191'],
-            'specific_symbol' => ['nullable', 'string', 'max:191'],
-            'constant_symbol' => ['nullable', 'string', 'max:191'],
+            'variable_symbol' => ['nullable', 'integer', 'max_digits:10'],
+            'specific_symbol' => ['nullable', 'integer', 'max_digits:10'],
+            'constant_symbol' => ['nullable', 'integer', 'max_digits:4'],
             'show_pay_by_square' => ['boolean'],
 
             'vat_reverse_charge' => ['boolean'],
