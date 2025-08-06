@@ -1,4 +1,5 @@
 export { default as AnalyticsMetric } from './AnalyticsMetric.vue'
+export { default as AnalyticsBarChart } from './AnalyticsBarChart.vue'
 
 export type Trend = 'increasing' | 'none' | 'decreasing'
 export type TrendStyle = 'positive' | 'neutral' | 'negative'
@@ -34,4 +35,17 @@ export const resolveTrendColor = (style: TrendStyle) => {
   }
 
   return 'text-muted-foreground'
+}
+
+export interface AnalyticsChartValue {
+  points: Array<{
+    group: string
+    values: Array<{
+      label: string
+      value: number
+    }>
+  }>
+  showLegend: boolean
+  maxPrecision: number
+  format: 'percentage' | 'number' | 'money'
 }

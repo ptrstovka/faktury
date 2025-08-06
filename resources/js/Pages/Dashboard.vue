@@ -21,13 +21,23 @@
       <div class="grid auto-rows-min gap-4 md:grid-cols-3">
         <AnalyticsMetric v-for="metric in topMetrics" v-bind="metric" />
       </div>
-    </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle class="text-sm font-medium">Podľa mesiaca</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AnalyticsBarChart v-bind="yearChart" />
+        </CardContent>
+      </Card>
+    </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { type AnalyticsMetricValue, AnalyticsMetric } from "@/Components/Analytics";
+import type { AnalyticsMetricValue, AnalyticsChartValue } from "@/Components/Analytics";
+import { AnalyticsMetric, AnalyticsBarChart } from "@/Components/Analytics";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/Card";
 import Heading from "@/Components/Heading.vue";
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/Types';
@@ -49,6 +59,7 @@ const props = defineProps<{
   topMetrics: Array<AnalyticsMetricValue>
   defaultYear: number
   allYears: Array<number>
+  yearChart: AnalyticsChartValue
 }>()
 
 const filter = useFilter({

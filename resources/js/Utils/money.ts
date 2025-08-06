@@ -24,3 +24,16 @@ export function createMoneyFromMinor(value: string | number, precision: number, 
     separator: '',
   })
 }
+
+/**
+ * Format a minor money value.
+ */
+export function formatMinorMoney(amount: number) {
+  return currency(amount, {
+    symbol: '€',
+    pattern: '# !',
+    decimal: ',',
+    separator: ' ',
+    fromCents: true,
+  }).format()
+}

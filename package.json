@@ -44,6 +44,8 @@
     "ziggy-js": "^2.4.2"
   },
   "dependencies": {
+    "@unovis/ts": "^1.5.2",
+    "@unovis/vue": "^1.5.2",
     "currency.js": "^2.0.4",
     "vue-sonner": "^2.0.1"
   }

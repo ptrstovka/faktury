@@ -4,12 +4,17 @@
 namespace App\Http\Controllers;
 
 
+use App\Analytics\Chart;
+use App\Analytics\ChartValue;
 use App\Analytics\Link;
 use App\Analytics\MoneyMetric;
 use App\Facades\Accounts;
 use App\Models\Invoice;
 use Brick\Money\Money;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController
@@ -32,7 +37,7 @@ class DashboardController
         $allYears = Invoice::query()
             ->toBase()
             ->where('account_id', $account->id)
-            ->selectRaw("date_format(issued_at, '%Y') AS year")
+            ->selectRaw("date_format(issued_at, '%Y') as year")
             ->distinct()
             ->get()
             ->map(fn (object $result) => (int) $result->year)
@@ -95,11 +100,45 @@ class DashboardController
             ),
         ];
 
+        $totalPerMonth = Invoice::query()
+            ->toBase()
+            ->select(
+                DB::raw("date_format(issued_at, '%Y-%m') as date"),
+                DB::raw('sum(total_vat_exclusive) as total')
+            )
+            ->where('account_id', $account->id)
+            ->where('draft', false)
+            ->whereBetween('issued_at', [$periodFrom, $periodUntil])
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date')
+            ->map
+            ->total;
+
+        $yearChart = Chart::make()->formatAsMoney()->showLegend(false);
+
+        Collection::range(1, 12)
+            ->map(fn (int $month) => $periodFrom->copy()->startOfMonth()->setMonth($month))
+            ->map(function (Carbon $period) use ($totalPerMonth, $currency) {
+                $perMonth = $totalPerMonth->get($period->format('Y-m'));
+
+                if (is_numeric($perMonth)) {
+                    return [$period, Money::ofMinor($perMonth, $currency)];
+                }
+
+                return [$period, Money::zero($currency)];
+            })
+            ->each(fn (array $perMonth) => $yearChart->valueForMonth(
+                date: $perMonth[0],
+                value: new ChartValue('Vystavené', $perMonth[1]),
+            ));
+
         return Inertia::render('Dashboard', [
             'topMetrics' => $metrics,
             'year' => $periodFrom->format('Y'),
             'allYears' => $allYears,
             'defaultYear' => $periodFrom->year,
+            'yearChart' => $yearChart,
         ]);
     }
 }
