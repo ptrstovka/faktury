@@ -116,7 +116,7 @@ import UserMenuContent from '@/Components/UserMenuContent.vue'
 import type { BreadcrumbItem } from '@/Types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useNavigation, NavigationButton, NavigationButtonIcon } from "@stacktrace/ui";
-import { MenuIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'
+import { MenuIcon, LayoutGridIcon, ChevronDownIcon, FileTextIcon } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { DevPreview } from '@/Components/FeatureFlags'
 
@@ -134,11 +134,11 @@ const auth = computed(() => page.props.auth)
 const account = computed(() => page.props.auth.user.accounts.find(it => it.current)!)
 
 const navigation = useNavigation([
-  // {
-  //   title: 'Prehľad',
-  //   action: { route: 'dashboard' },
-  //   icon: LayoutGridIcon,
-  // },
+  {
+    title: 'Prehľad',
+    action: { route: 'dashboard' },
+    icon: LayoutGridIcon,
+  },
   {
     title: 'Vystavené faktúry',
     action: { route: 'invoices' },
