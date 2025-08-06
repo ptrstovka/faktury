@@ -240,6 +240,9 @@ class InvoiceTable extends Table
 
             Filters\Enum::make('Spôsob platby', PaymentMethod::class, 'paymentMethod')
                 ->using(fn (Builder $builder, array $paymentMethods) => $builder->whereIn('payment_method', $paymentMethods)),
+
+            Filters\Boolean::make('Po splatnosti', 'due')
+                ->using(fn (Builder $builder) => $builder->where('paid', false)->where('payment_due_to', '<', now()->startOfDay())),
         ];
     }
 }
