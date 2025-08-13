@@ -46,7 +46,7 @@ class DashboardController
 
         $metrics = [
             MoneyMetric::make(
-                title: "Vystavené",
+                title: "Fakturovaný obrat",
                 value: Money::ofMinor(
                     minorAmount: $account
                         ->invoices()
@@ -130,7 +130,7 @@ class DashboardController
             })
             ->each(fn (array $perMonth) => $yearChart->valueForMonth(
                 date: $perMonth[0],
-                value: new ChartValue('Vystavené', $perMonth[1]),
+                value: new ChartValue('Fakturovaný obrat', $perMonth[1]),
             ));
 
         return Inertia::render('Dashboard', [
