@@ -37,7 +37,7 @@ class DashboardController
         $allYears = Invoice::query()
             ->toBase()
             ->where('account_id', $account->id)
-            ->selectRaw("date_format(issued_at, '%Y') as year")
+            ->selectRaw("date_format(supplied_at, '%Y') as year")
             ->distinct()
             ->get()
             ->map(fn (object $result) => (int) $result->year)
@@ -51,7 +51,7 @@ class DashboardController
                     minorAmount: $account
                         ->invoices()
                         ->where('draft', false)
-                        ->whereBetween('issued_at', [$periodFrom, $periodUntil])
+                        ->whereBetween('supplied_at', [$periodFrom, $periodUntil])
                         ->sum('total_vat_exclusive'),
                     currency: $currency,
                 ),
@@ -69,7 +69,7 @@ class DashboardController
                         ->invoices()
                         ->where('draft', false)
                         ->where('paid', false)
-                        ->whereBetween('issued_at', [$periodFrom, $periodUntil])
+                        ->whereBetween('supplied_at', [$periodFrom, $periodUntil])
                         ->sum('total_vat_exclusive'),
                     currency: $currency,
                 ),
@@ -87,7 +87,7 @@ class DashboardController
                         ->invoices()
                         ->where('draft', false)
                         ->where('paid', false)
-                        ->whereBetween('issued_at', [$periodFrom, $periodUntil])
+                        ->whereBetween('supplied_at', [$periodFrom, $periodUntil])
                         ->where('payment_due_to', '<', now()->startOfDay())
                         ->sum('total_vat_exclusive'),
                     currency: $currency,
@@ -103,12 +103,12 @@ class DashboardController
         $totalPerMonth = Invoice::query()
             ->toBase()
             ->select(
-                DB::raw("date_format(issued_at, '%Y-%m') as date"),
+                DB::raw("date_format(supplied_at, '%Y-%m') as date"),
                 DB::raw('sum(total_vat_exclusive) as total')
             )
             ->where('account_id', $account->id)
             ->where('draft', false)
-            ->whereBetween('issued_at', [$periodFrom, $periodUntil])
+            ->whereBetween('supplied_at', [$periodFrom, $periodUntil])
             ->groupBy('date')
             ->get()
             ->keyBy('date')
